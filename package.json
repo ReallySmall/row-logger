@@ -4,7 +4,7 @@
   "description": "An IOT project for logging indoor rowing stats",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahat/hackathon-starter.git"
+    "url": "https://github.com/ReallySmall/row-logger.git"
   },
   "author": "richard iles",
   "license": "MIT",

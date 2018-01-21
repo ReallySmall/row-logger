@@ -1,3 +1,5 @@
+include ./mixins
+
 doctype html
 html
   head
@@ -6,11 +8,14 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='theme-color' content='#4DA5F4')
     meta(name='csrf-token', content=_csrf)
-    title #{title} - Hackathon Starter
+    title #{title} - Rowing Stats
     link(rel='shortcut icon', href='/favicon.png')
     link(rel='stylesheet', href='/css/main.css')
+    link(rel='stylesheet', href='/css/icons.css')
 
   body
+    div.svg-icon-source
+      include ../public/img/symbol/svg/sprite.symbol.svg
     include partials/header
 
     .container

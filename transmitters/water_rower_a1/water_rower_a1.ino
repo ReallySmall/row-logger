@@ -13,7 +13,8 @@ const char* wifiSSID = "***********"; // WIFI SSID password
 const char getTimeApi[] = "http://***.***.*.**:8080/api/currentTime"; // API for getting current time
 const char postRowingDataApi[] = "***.***.*.**:8080/api/rowingData"; // API for logging rowing data
 const char apiKey[] = "***********"; // key to send to API
-const char waterVolume[] = "2000"; // ml
+const char machineId[] = "water_rower_a1"
+const char damping[] = "2000"; // ml
 
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 
@@ -57,10 +58,10 @@ void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
 void postRowingData() {
 
   // create a data buffer large enough to hold the string which will be posted
-  char data[16 + sizeof(apiKey) + sizeof(waterVolume) + sizeof(baseTime) + sizeof(rowingStrokesData)];
+  char data[16 + sizeof(apiKey) + sizeof(machineId) + sizeof(damping) + sizeof(baseTime) + sizeof(rowingStrokesData)];
 
   // build the string to post
-  sprintf(data, "key=%s&vol=%s&base=%s&data=%s", apiKey, waterVolume, baseTime, rowingStrokesData);
+  sprintf(data, "key=%s&machineId=%s&damping=%s&base=%s&data=%s", apiKey, machineId, damping, baseTime, rowingStrokesData);
   
   // initialise the request
   handleHttpInit(postRowingDataApi);

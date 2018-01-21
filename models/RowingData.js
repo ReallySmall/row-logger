@@ -8,8 +8,9 @@ const rowingDataSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  volume: Number,
-  time: String
+  machineId: String,
+  damping: String,
+  times: Array
 
 }, { timestamps: true });
 

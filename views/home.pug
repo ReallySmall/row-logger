@@ -1,8 +1,11 @@
 extends layout
 
 block content
-  +icon('#arduino')
-  +icon('#node.js')
 
   if user
-    h2 logged in
+    article.row
+      include partials/currentSession
+      include partials/recentStats
+  else
+    +icon('#arduino')
+    +icon('#node.js')

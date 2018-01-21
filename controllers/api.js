@@ -1,9 +1,7 @@
 const bluebird = require('bluebird');
 const request = bluebird.promisifyAll(require('request'), { multiArgs: true });
 const graph = require('fbgraph');
-const tumblr = require('tumblr.js');
 const GitHub = require('github');
-const Twit = require('twit');
 const Linkedin = require('node-linkedin')(process.env.LINKEDIN_ID, process.env.LINKEDIN_SECRET, process.env.LINKEDIN_CALLBACK_URL);
 const paypal = require('paypal-rest-sdk');
 const ig = bluebird.promisifyAll(require('instagram-node').instagram());
@@ -39,44 +37,53 @@ const saveRowingData = (key) => {
  */
 exports.postRowingData = (req, res, next) => {
 
-  const { key, vol, base, data } = req.body;
+  const { key, machineId, damping, base, data } = req.body;
   const rawData = typeof data === 'string' ? data.split(',') : [];
-  const times = rawData.map(datum => base + datum);
+  const times = rawData.map(datum => parseInt(base) + parseInt(datum));
 
   clearTimeout(timeOut);
 
-  if(cachedRowingApiData[key]){
+  if(!key || !machineId || !damping || !base){
 
-    cachedRowingApiData[key].times = [...cachedRowingApiData[key].times, ...times];
-    saveRowingData(key);
-
-    return res.status(200).end(); 
+    return res.status(400).end();
 
   } else {
 
-    User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
-    
-      if (err) { 
-        return res.status(500).end();
-      } else if (!existingUser) { 
-        return res.status(401).end();
-      }
+    if(cachedRowingApiData[key]){
 
-      else if (existingUser) {
-
-        cachedRowingApiData[key] = {
-          user: existingUser._id,
-          volume: vol,
-          times: times
-        }
-
+        cachedRowingApiData[key].times = [...cachedRowingApiData[key].times, ...times];
         saveRowingData(key);
 
-        return res.status(200).end();
+        return res.status(200).end(); 
 
-      }
+    } else {
 
-    });
+      User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
+      
+        if (err) { 
+          return res.status(500).end();
+        } else if (!existingUser) { 
+          return res.status(401).end();
+        }
+
+        else if (existingUser) {
+
+          cachedRowingApiData[key] = {
+            user: existingUser._id,
+            machineId: machineId,
+            damping: damping,
+            times: times
+          }
+
+          saveRowingData(key);
+
+          return res.status(200).end();
+
+        }
+
+      });
+
+    }
 
   }
 

@@ -9,3 +9,40 @@
 	width: 100%;
 	display: inline-block;
 }
+
+body {
+	background: whitesmoke;
+}
+
+.plain {
+	margin: 0;
+	padding: 0;
+}
+
+ul, ol {
+	&.plain {
+		list-style-type: none;
+	}	
+}
+
+.mdl-card {
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 16px;
+	border-top: 4px solid #c9defa;
+	&.no-trim {
+		border-top: none;
+	}
+}
+
+.mdl-card__title {
+	.svg-icon {
+		height: 20px;
+		width: 20px;
+		margin: 4px 8px 4px 0px;
+	}
+}
+
+.mdl-card__actions {
+	margin-bottom: 0px;
+}

@@ -1,17 +1,25 @@
 section.col-md-9
-  h2 Recent sessions
-  ul.list-group
+  h2.col-md-12 Recent sessions
+  ul.plain
     each element in userData
-      li.list-group-item.col-md-6
-        h3 #{dateTimeHelpers.formatDateHumanFriendly(element.createdAt)}
-        table.table.table-striped.table-dark
-          tr
-            td Distance
-            td #{rowingDataHelpers.timesToKm(element.times, 4.8) + 'km'}
-          tr
-            td Duration
-            td #{dateTimeHelpers.timesToDuration(element.times)}
-        p
-          a.btn(href='#') More...
-  p
-    a.btn.btn-primary(href='#') View all
+      li.col-md-6
+        article.mdl-card.mdl-shadow--2dp
+          div.mdl-card__title
+            +icon('#calendar')
+            h3.mdl-card__title-text #{dateTimeHelpers.formatDateHumanFriendly(element.createdAt)}
+          div.mdl-card__supporting-text
+            table
+              thead
+                tr
+                  th Distance
+                  th Duration
+                  th Average pace
+              tbody
+                tr
+                  td #{rowingDataHelpers.timesToKm(element.times, element.multi, 4.8) + 'km'}
+                  td #{dateTimeHelpers.timesToDuration(element.times)}
+                  td -
+          p.mdl-card__actions.mdl-card--border
+            a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(href='#') More
+    p.col-md-12
+      a.mdl-button.mdl-js-button.mdl-button--raised.mdl-js-ripple-effect(href='#') View all sessions

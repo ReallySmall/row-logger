@@ -25,6 +25,9 @@ volatile long lastTriggered = 0; //the last time the interrupt pin was triggered
 
 unsigned long lastPosted = millis(); // reference point for time elapsed since last post to API
 
+int pulses = 0;
+int multiplier = 10;
+
 int timeOut = 3000; // millis to wait between posts to API
 int networkFailures = 0; // log any network failures
 
@@ -38,12 +41,18 @@ void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
   
     // detach the interrupt listener while the interrupt is dealt with
     detachInterrupt(rowingStrokesSwitch); // unregister interrupt while dealing with this interrupt
-  
-    // append the timestamp to the global variable
-    sprintf((char *)rowingStrokesData + strlen((char *)rowingStrokesData), "%s%lu", rowingStrokesData[0] != '\0' ? "," : "", millis());
+
+    if(pulses + 1 >= multiplier){
+            
+      // append the timestamp to the global variable
+      sprintf((char *)rowingStrokesData + strlen((char *)rowingStrokesData), "%s%lu", rowingStrokesData[0] != '\0' ? "," : "", millis());
     
-    // set flag that global variable has been updated
-    rowingStrokesDataUpdated = true;
+      // set flag that global variable has been updated
+      rowingStrokesDataUpdated = true;
+
+      pulses = 0;
+
+    }
 
     // update debouncing timer
     lastTriggered = millis();
@@ -58,10 +67,10 @@ void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
 void postRowingData() {
 
   // create a data buffer large enough to hold the string which will be posted
-  char data[16 + sizeof(apiKey) + sizeof(machineId) + sizeof(damping) + sizeof(baseTime) + sizeof(rowingStrokesData)];
+  char data[50 + sizeof(apiKey) + sizeof(machineId) + sizeof(damping) + sizeof(baseTime) + sizeof(rowingStrokesData)];
 
   // build the string to post
-  sprintf(data, "key=%s&machineId=%s&damping=%s&base=%s&data=%s", apiKey, machineId, damping, baseTime, rowingStrokesData);
+  sprintf(data, "key=%s&machineId=%s&damping=%s&multi=%s&base=%s&data=%s", apiKey, machineId, damping, multiplier, baseTime, rowingStrokesData);
   
   // initialise the request
   handleHttpInit(postRowingDataApi);

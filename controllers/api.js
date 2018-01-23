@@ -37,13 +37,13 @@ const saveRowingData = (key) => {
  */
 exports.postRowingData = (req, res, next) => {
 
-  const { key, machineId, damping, base, data } = req.body;
+  const { key, machineId, damping, multi, base, data } = req.body;
   const rawData = typeof data === 'string' ? data.split(',') : [];
   const times = rawData.map(datum => parseInt(base) + parseInt(datum));
 
   clearTimeout(timeOut);
 
-  if(!key || !machineId || !damping || !base){
+  if(!key || !machineId || !damping || !multi ||!base){
 
     return res.status(400).end();
 
@@ -72,6 +72,7 @@ exports.postRowingData = (req, res, next) => {
             user: existingUser._id,
             machineId: machineId,
             damping: damping,
+            multi: multi,
             times: times
           }
 

@@ -10,6 +10,7 @@ const rowingDataSchema = new mongoose.Schema({
   },
   machineId: String,
   damping: String,
+  multi: String,
   times: Array
 
 }, { timestamps: true });

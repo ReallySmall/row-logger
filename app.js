@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const chalk = require('chalk');
 const errorHandler = require('errorhandler');
+const expressSanitizer = require('express-sanitizer');
 const lusca = require('lusca');
 const dotenv = require('dotenv');
 const MongoStore = require('connect-mongo')(session);
@@ -18,8 +19,6 @@ const passport = require('passport');
 const expressValidator = require('express-validator');
 const multer = require('multer');
 
-const upload = multer({ dest: path.join(__dirname, 'uploads') });
-
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
@@ -29,6 +28,7 @@ dotenv.load({ path: '.env.example' });
  * Controllers (route handlers).
  */
 const homeController = require('./controllers/home');
+const sessionsController = require('./controllers/sessions');
 const userController = require('./controllers/user');
 const apiController = require('./controllers/api');
 
@@ -64,6 +64,7 @@ app.use(compression());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressSanitizer());
 app.use(expressValidator());
 app.use(session({
   resave: true,
@@ -79,7 +80,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use((req, res, next) => {
-  if (req.path === '/api/upload' || req.path === '/api/rowingData' || req.path === '/api/currentTime') {
+  if (req.path === '/api/rowingData' || req.path === '/api/currentTime') {
     next();
   } else {
     lusca.csrf()(req, res, next);
@@ -111,6 +112,9 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
  * Primary app routes.
  */
 app.get('/', homeController.index);
+app.get('/sessions', sessionsController.index);
+app.get('/sessions/:date', sessionsController.index);
+app.get('/sessions/:date/:time', sessionsController.session);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
@@ -124,20 +128,14 @@ app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
-app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 
 /**
- * API examples routes.
+ * API routes.
  */
-app.get('/api/github', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getGithub);
-app.get('/api/paypal', apiController.getPayPal);
-app.get('/api/paypal/success', apiController.getPayPalSuccess);
-app.get('/api/paypal/cancel', apiController.getPayPalCancel);
-app.get('/api/upload', apiController.getFileUpload);
-app.post('/api/upload', upload.single('myFile'), apiController.postFileUpload);
-app.get('/api/google-maps', apiController.getGoogleMaps);
 app.post('/api/currentTime', apiController.getCurrentTime);
 app.post('/api/rowingData', apiController.postRowingData);
+app.post('/api/rowingData/delete', apiController.deleteRowingData);
+app.post('/api/rowingData/update', apiController.updateRowingData);
 
 /**
  * Error Handler.

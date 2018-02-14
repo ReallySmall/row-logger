@@ -7,11 +7,14 @@ const paypal = require('paypal-rest-sdk');
 const ig = bluebird.promisifyAll(require('instagram-node').instagram());
 const User = require('../models/User');
 const RowingData = require('../models/RowingData');
+const rowingDataHelpers = require('../helpers/rowingDataHelper');
+
 
 const cachedRowingApiData = {};
-let timeOut;
 
-const saveRowingData = (key) => {
+let timeOut = null;
+
+const saveRowingData = (key, timeOutMillis) => {
 
   timeOut = setTimeout(() => {
 
@@ -27,7 +30,7 @@ const saveRowingData = (key) => {
 
     delete cachedRowingApiData[key];
 
-  }, 5000);
+  }, timeOutMillis);
 
 }
 
@@ -51,8 +54,15 @@ exports.postRowingData = (req, res, next) => {
 
     if(cachedRowingApiData[key]){
 
-        cachedRowingApiData[key].times = [...cachedRowingApiData[key].times, ...times];
-        saveRowingData(key);
+        times.map(time => {
+
+          if(cachedRowingApiData[key].times.indexOf(time) < 0){
+            cachedRowingApiData[key].times.push(time);
+          }
+
+        });
+
+        saveRowingData(key, 10000);
 
         return res.status(200).end(); 
 
@@ -76,7 +86,7 @@ exports.postRowingData = (req, res, next) => {
             times: times
           }
 
-          saveRowingData(key);
+          saveRowingData(key, 10000);
 
           return res.status(200).end();
 
@@ -96,7 +106,7 @@ exports.postRowingData = (req, res, next) => {
  */
 exports.getCurrentTime = (req, res, next) => {
 
-  User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
+  User.findOne({ rowingDataApiKey: req.body.key }, (err, existingUser) => {
     
     if (err) { 
       return res.status(500).end();
@@ -117,108 +127,42 @@ exports.getCurrentTime = (req, res, next) => {
 };
 
 /**
- * GET /api/github
- * GitHub API Example.
+ * POST /api/rowingData/delete
+ * Delete rowing session.
  */
-exports.getGithub = (req, res, next) => {
-  const github = new GitHub();
-  github.repos.get({ owner: 'sahat', repo: 'hackathon-starter' }, (err, repo) => {
-    if (err) { return next(err); }
-    res.render('api/github', {
-      title: 'GitHub API',
-      repo
-    });
-  });
-};
+exports.deleteRowingData = (req, res, next) => {
 
-/**
- * GET /api/paypal
- * PayPal SDK example.
- */
-exports.getPayPal = (req, res, next) => {
-  paypal.configure({
-    mode: 'sandbox',
-    client_id: process.env.PAYPAL_ID,
-    client_secret: process.env.PAYPAL_SECRET
-  });
+  const id = req.body.sessionId;
 
-  const paymentDetails = {
-    intent: 'sale',
-    payer: {
-      payment_method: 'paypal'
-    },
-    redirect_urls: {
-      return_url: process.env.PAYPAL_RETURN_URL,
-      cancel_url: process.env.PAYPAL_CANCEL_URL
-    },
-    transactions: [{
-      description: 'Hackathon Starter',
-      amount: {
-        currency: 'USD',
-        total: '1.99'
-      }
-    }]
-  };
-
-  paypal.payment.create(paymentDetails, (err, payment) => {
-    if (err) { return next(err); }
-    req.session.paymentId = payment.id;
-    const links = payment.links;
-    for (let i = 0; i < links.length; i++) {
-      if (links[i].rel === 'approval_url') {
-        res.render('api/paypal', {
-          approvalUrl: links[i].href
-        });
-      }
+  RowingData.findByIdAndRemove(id, req.body, (err,data) => {
+    
+    if(!err){
+      return res.redirect('/sessions');
+    } else {
+      return res.status(500).redirect('/sessions');
     }
+
   });
+
 };
 
 /**
- * GET /api/paypal/success
- * PayPal SDK example.
+ * POST /api/rowingData/update
+ * Update rowing session.
  */
-exports.getPayPalSuccess = (req, res) => {
-  const paymentId = req.session.paymentId;
-  const paymentDetails = { payer_id: req.query.PayerID };
-  paypal.payment.execute(paymentId, paymentDetails, (err) => {
-    res.render('api/paypal', {
-      result: true,
-      success: !err
-    });
+exports.updateRowingData = (req, res, next) => {
+
+  const id = req.body.sessionId;
+  const refDistance = req.body.refDistance;
+
+  RowingData.findByIdAndUpdate(id, {$set: { refDistance: refDistance }}, (err, doc) => {
+    
+    if(!err){
+      return res.status(200).redirect('back');
+    } else {
+      return res.status(500).redirect('/sessions');
+    }
+
   });
-};
 
-/**
- * GET /api/paypal/cancel
- * PayPal SDK example.
- */
-exports.getPayPalCancel = (req, res) => {
-  req.session.paymentId = null;
-  res.render('api/paypal', {
-    result: true,
-    canceled: true
-  });
-};
-
-/**
- * GET /api/upload
- * File Upload API example.
- */
-
-exports.getFileUpload = (req, res) => {
-  res.render('api/upload', {
-    title: 'File Upload'
-  });
-};
-
-exports.postFileUpload = (req, res) => {
-  req.flash('success', { msg: 'File was uploaded successfully.' });
-  res.redirect('/api/upload');
-};
-
-exports.getGoogleMaps = (req, res) => {
-  res.render('api/google-maps', {
-    title: 'Google Maps API'
-  });
 };

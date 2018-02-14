@@ -1,0 +1,18 @@
+div.stats-panel
+  article.card
+    div.card-content
+      form
+        table.striped.responsive-table
+          thead
+            tr
+              th 
+                button(type=submit name=date) Date
+              th
+                button(type=submit name=distance) Distance
+              th 
+                button(type=submit name=duration) Duration
+              th
+                button(type=submit name=pace) Average pace
+          tbody
+            each element in userData
+              include statsRow

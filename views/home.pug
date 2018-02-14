@@ -4,10 +4,16 @@ block content
 
   if user
     article.row
-      include partials/currentSession
-      include partials/recentStats
+      section.col.s12.m3.current-session
+        +icon('#rowing-machine')
+        include partials/currentSession
+      section.col.s12.m9
+        h3 Recent
+        include partials/statsTable
+        p
+          a.waves-effect.waves-light.btn(href='/sessions') View all sessions
   else
-    div.col-md-2
+    div.col.s2
       +icon('#arduino')
-    div.col-md-2
+    div.col.s2
       +icon('#node.js')

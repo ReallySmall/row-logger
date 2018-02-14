@@ -10,12 +10,11 @@ html
     meta(name='csrf-token', content=_csrf)
     title #{title} - Row Logger
     link(rel='shortcut icon', href='/favicon.png')
-    link(rel='stylesheet', href='/css/material.min.css')
     link(rel='stylesheet', href='/css/main.css')
 
   body
     div.svg-icon-source
-      include ../public/img/symbol/svg/sprite.symbol.svg
+      include ../public/img/symbol/svg/sprite.symbol.svg      
     include partials/header
 
     .container
@@ -24,10 +23,9 @@ html
 
     include partials/footer
 
-    script(defer src='https://code.getmdl.io/1.3.0/material.min.js')
     script(src='/js/lib/jquery-3.1.1.min.js')
-    script(src='/js/lib/bootstrap.min.js')
-    script(src='/js/main.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js')
+    script(src='/js/charts.js')
 
     // Google Analytics: change UA-XXXXX-X to be your site's ID
     script.

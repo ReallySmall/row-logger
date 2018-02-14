@@ -1,8 +1,55 @@
-.site-title {
+.brand-logo {
+
+}
+
+.navbar-fixed {
+	margin-bottom: 20px;
+}
+
+.stats-panel {
+
+}
+
+.centre-wrapper {
+	text-align: center;
+	.centre-child {
+		margin: 0px auto;
+	}
+}
+
+.progress {
+	margin: 0;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.plain {
+	margin: 0;
+}
+
+.visually-hidden {
+	position: absolute; 
+  	overflow: hidden; 
+  	clip: rect(0 0 0 0); 
+  	height: 1px; width: 1px; 
+  	margin: -1px; padding: 0; border: 0;
+}
+
+.current-session {
 	.svg-icon {
-		height: 39px;
-		width: 60px;
-		margin-left: 4px;
-		vertical-align: middle;
+		margin-top: 28px;
+		fill: lightgray;
+	}
+}
+
+.btn-floating {
+	.svg-icon {
+		height: 50%;
+	    width: 50%;
+	    margin-top: 25%;
+	    margin-left: 25%;
+	    fill: white;
 	}
 }

@@ -7,13 +7,13 @@
 ESP8266WiFiMulti WiFiMulti;
 HTTPClient http;
 
-const char* wifiAP = "***********"; // WIFI Access Point name
-const char* wifiSSID = "***********"; // WIFI SSID password
+const char* wifiAP = "PLUSNET-98HF"; // WIFI Access Point name
+const char* wifiSSID = "a769b594ad"; // WIFI SSID password
 
-const char getTimeApi[] = "http://***.***.*.**:8080/api/currentTime"; // API for getting current time
-const char postRowingDataApi[] = "***.***.*.**:8080/api/rowingData"; // API for logging rowing data
-const char apiKey[] = "***********"; // key to send to API
-const char machineId[] = "water_rower_a1"
+const char getTimeApi[] = "http://192.168.1.64:8080/api/currentTime"; // API for getting current time
+const char postRowingDataApi[] = "http://192.168.1.64:8080/api/rowingData"; // API for logging rowing data
+const char apiKey[] = "_my15charapikey"; // key to send to API
+const char machineId[] = "water_rower_a1";
 const char damping[] = "2000"; // ml
 
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch

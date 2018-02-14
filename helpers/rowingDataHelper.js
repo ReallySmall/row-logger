@@ -4,12 +4,13 @@ exports.timesToKm = (timesArray, multi, ratioConstant) => {
 	const multiplier = parseInt(multi);
 
 	if(!times){
-		return '0.000';
+		return '0m';
 	}
 
 	const metres = (times * multiplier) / ratioConstant;
-	const km = metres > 0 ? metres / 1000 : 0;
+	
+	const formattedOutput = metres < 1000 ? Math.floor(metres) + 'm' : (metres / 1000).toFixed(3) + 'km';
 
-	return km.toFixed(3);
+	return formattedOutput;
 
 };

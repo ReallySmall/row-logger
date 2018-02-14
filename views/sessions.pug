@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+  article.row
+    div.col.s12.m3
+      form.card
+        .card-content
+          label(for='fromDate') From 
+          input#fromDate.datepicker(type=text)
+          label(for='toDate') To
+          input#toDate.datepicker(type=text)
+          button.btn(type=submit) Filter
+    div.col.s12.m9
+      include partials/statsTableFilterable

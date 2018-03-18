@@ -1,6 +1,5 @@
 tr
   td 
     a(href='/sessions/' + dateTimeHelpers.timeStampToUrlPath(element.createdAt)) #{dateTimeHelpers.formatDateHumanFriendly(element.createdAt)}
-  td #{rowingDataHelpers.timesToKm(element.times, element.multi, 4.805)}
+  td #{rowingDataHelpers.metrestoKmString(rowingDataHelpers.timesToMetres([element.times], element.multi, 4.805))}
   td #{dateTimeHelpers.timesToDuration(element.times)}
-  td -

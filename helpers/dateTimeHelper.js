@@ -34,7 +34,7 @@ exports.urlPathToTimeStamp = (dateString, timeString) => {
 
 }
 
-exports.timesToDuration = (timesArray, timeOut) => {
+exports.timesToDuration = (timesArray) => {
 
   const times = timesArray.length;
   const noTime = moment.utc(0).format('HH:mm:ss');
@@ -53,5 +53,11 @@ exports.timesToDuration = (timesArray, timeOut) => {
   const millisElapsed = endTime - startTime;
 
   return moment.utc(millisElapsed).format('HH:mm:ss');
+
+};
+
+exports.millisToDuration = (millis) => {
+
+  return moment.utc(millis).format('HH:mm:ss');
 
 };

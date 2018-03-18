@@ -1,17 +1,40 @@
 import * as $ from 'jquery';
 import * as materialize from 'materialize-css';
-import { RowingStatLineChart } from '../modules/charts';
+import { RowingStatLineChart, RowingDistanceDoughnutChart } from '../modules/charts';
 
 $(document).ready(() => {
 
   	$('.js-data-chart').each((index, chart) => {
   		const $chart = $(chart);
-  		const rowingStatLineChart = new RowingStatLineChart(
-  											chart, 
-  											parseInt($chart.data('constant'), 10), 
-  											$chart.data('strokes'), 
-  											parseInt($chart.data('sample-point'), 10)
-  										);
+      const chartType = $chart.data('chart-type');
+
+      console.log(chartType);
+
+      switch(chartType){
+
+        case 'rowingStatLineChart':
+
+          const rowingStatLineChart = new RowingStatLineChart(
+                                        chart, 
+                                        parseInt($chart.data('constant'), 10), 
+                                        $chart.data('strokes'), 
+                                        parseInt($chart.data('sample-point'), 10)
+                                      );
+
+          break;
+
+        case 'rowingDistanceDoughnutChart':
+
+          const rowingDistanceDoughnutChart = new RowingDistanceDoughnutChart(
+                                                chart, 
+                                                parseInt($chart.data('progress'), 10), 
+                                                parseInt($chart.data('total'), 10) 
+                                              );
+
+          break;
+
+      }
+  		
   	});
 
   	$('.js-fade').each((index, fade) => {

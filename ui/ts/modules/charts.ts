@@ -1,6 +1,37 @@
 import * as $ from 'jquery';
 import * as Chart from 'chart.js';
 
+export class RowingDistanceDoughnutChart {
+
+	constructor(selector: any, progress: number, total: number){
+
+		const ctx = selector.getContext('2d');
+
+		const remaining: number = total - progress;
+	
+		const lineChart = new Chart(ctx, {
+			type:'doughnut',
+			data: {
+				datasets: [{
+        			data: [progress, remaining],
+        			backgroundColor: ['#039be5', 'lightgray'];
+    			}],
+			    labels: [
+			        'Rowed so far',
+			        'Remaining'
+			    ]
+			},
+			options: {
+				legend: {
+					display: false
+				}
+			}
+		});
+
+	}
+
+}
+
 export class RowingStatLineChart {
 
 	constructor(selector: any, constant: number, data: Array<any>, samplePointSeconds: number){
@@ -14,10 +45,12 @@ export class RowingStatLineChart {
 			y: '0'
 		}];
 
+		let samplePoint: number = samplePointSeconds * 1000;
+		let tick: number = samplePointSeconds;
+
 		strokes.forEach((strokeData: number, index: number)=>{
 
 			const stroke: number = strokeData - firstStroke;
-			const samplePoint = samplePointSeconds * 1000;
 
 			if(stroke >= samplePoint){
 
@@ -25,12 +58,13 @@ export class RowingStatLineChart {
 
 				chartStrokesData.push({
 					x: stroke,
-					y: ((index * (10 / constant)) / ratio).toFixed(2)
+					y: (((index * 10) / 4.805) / ratio).toFixed(2)
 				})
 
-				timeAxisTicks.push(samplePointSeconds % 60 === 0 ? samplePointSeconds / 60 + ':00' : Math.floor(samplePointSeconds / 60) + ':' + samplePointSeconds % 60);
+				timeAxisTicks.push(tick % 60 === 0 ? tick / 60 + ':00' : Math.floor(tick / 60) + ':' + tick % 60);
 
-				samplePointSeconds += samplePointSeconds;
+				tick += samplePointSeconds;
+				samplePoint += samplePointSeconds * 1000;
 
 			}
 
@@ -50,7 +84,7 @@ export class RowingStatLineChart {
 					}
 				]
 			},
-			'options': {
+			options: {
 				animation: {
 					duration: 0
 				},

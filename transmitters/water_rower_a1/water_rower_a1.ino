@@ -7,12 +7,6 @@
 ESP8266WiFiMulti WiFiMulti;
 HTTPClient http;
 
-const char* wifiAP = "**********"; // WIFI Access Point name - uncomment and add yours
-const char* wifiSSID = "**********"; // WIFI SSID password - uncomment and add yours
-
-const char getTimeApi[] = "http://************/api/currentTime"; // API for getting current time - uncomment and add url
-const char postRowingDataApi[] = "http://************/api/rowingData"; // API for logging rowing data - uncomment and add url
-const char apiKey[] = "***************"; // key to send to API - uncomment and add api key
 const char machineId[] = "water_rower_a1";
 const char damping[] = "2000"; // ml - however full your water tank is
 

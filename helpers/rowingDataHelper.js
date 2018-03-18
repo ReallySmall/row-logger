@@ -1,16 +1,44 @@
-exports.timesToKm = (timesArray, multi, ratioConstant) => {
+exports.metrestoKmString = (metres) => {
 
-	const times = timesArray.length;
-	const multiplier = parseInt(multi);
+	return metres < 1000 ? Math.floor(metres) + ' m' : (metres / 1000).toFixed(3) + ' km'; 
 
-	if(!times){
-		return '0m';
-	}
+}
 
-	const metres = (times * multiplier) / ratioConstant;
+exports.timesToMetres = (timesArrayArray, multi, ratioConstant) => {
+
+	const multiplier = parseInt(multi, 10);
+
+	let totalMetres = 0;
+
+	timesArrayArray.map(timesArray => {
+
+		const times = timesArray.length;
+		const metres = (times * multiplier) / ratioConstant;
+
+		totalMetres += metres;
+
+	});
+
+	return Math.ceil(totalMetres);
 	
-	const formattedOutput = metres < 1000 ? Math.floor(metres) + 'm' : (metres / 1000).toFixed(3) + 'km';
+};
 
-	return formattedOutput;
+exports.timesToTotalMillis = (timesArrayArray) => {
+
+	let totalMillis = 0;
+
+	timesArrayArray.map(timesArray => {
+
+		if(timesArray.length){
+
+			const millis = timesArray[timesArray.length - 1] - timesArray[0];
+
+			totalMillis += millis;
+
+		}
+
+	});
+
+	return totalMillis;
 
 };

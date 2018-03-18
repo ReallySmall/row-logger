@@ -22,6 +22,8 @@ const userSchema = new mongoose.Schema({
   rowingDataApiKey: String,
   rowingLoggingTimeout: Number,
   shareRowingData: Boolean,
+  rowingTotalMetres: Number,
+  rowingTotalTime: Number,
 
   profile: {
     name: String,

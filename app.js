@@ -18,6 +18,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const multer = require('multer');
+const expressWs = require('express-ws');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -41,6 +42,7 @@ const passportConfig = require('./config/passport');
  * Create Express server.
  */
 const app = express();
+const wsHandler = expressWs(app);
 
 /**
  * Connect to MongoDB.
@@ -136,6 +138,8 @@ app.post('/api/currentTime', apiController.getCurrentTime);
 app.post('/api/rowingData', apiController.postRowingData);
 app.post('/api/rowingData/delete', apiController.deleteRowingData);
 app.post('/api/rowingData/update', apiController.updateRowingData);
+
+app.ws('/data', apiController.socketHandler);
 
 /**
  * Error Handler.

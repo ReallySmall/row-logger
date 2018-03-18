@@ -17266,7 +17266,16 @@ var charts_1 = __webpack_require__(128);
 $(document).ready(function () {
     $('.js-data-chart').each(function (index, chart) {
         var $chart = $(chart);
-        var rowingStatLineChart = new charts_1.RowingStatLineChart(chart, parseInt($chart.data('constant'), 10), $chart.data('strokes'), parseInt($chart.data('sample-point'), 10));
+        var chartType = $chart.data('chart-type');
+        console.log(chartType);
+        switch (chartType) {
+            case 'rowingStatLineChart':
+                var rowingStatLineChart = new charts_1.RowingStatLineChart(chart, parseInt($chart.data('constant'), 10), $chart.data('strokes'), parseInt($chart.data('sample-point'), 10));
+                break;
+            case 'rowingDistanceDoughnutChart':
+                var rowingDistanceDoughnutChart = new charts_1.RowingDistanceDoughnutChart(chart, parseInt($chart.data('progress'), 10), parseInt($chart.data('total'), 10));
+                break;
+        }
     });
     $('.js-fade').each(function (index, fade) {
         setTimeout(function () {
@@ -17314,6 +17323,32 @@ module.exports = jQuery;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Chart = __webpack_require__(129);
+var RowingDistanceDoughnutChart = (function () {
+    function RowingDistanceDoughnutChart(selector, progress, total) {
+        var ctx = selector.getContext('2d');
+        var remaining = total - progress;
+        var lineChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                        data: [progress, remaining],
+                        backgroundColor: ['#039be5', 'lightgray']
+                    }],
+                labels: [
+                    'Rowed so far',
+                    'Remaining'
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                }
+            }
+        });
+    }
+    return RowingDistanceDoughnutChart;
+}());
+exports.RowingDistanceDoughnutChart = RowingDistanceDoughnutChart;
 var RowingStatLineChart = (function () {
     function RowingStatLineChart(selector, constant, data, samplePointSeconds) {
         var ctx = selector.getContext('2d');
@@ -17324,17 +17359,19 @@ var RowingStatLineChart = (function () {
                 x: 0,
                 y: '0'
             }];
+        var samplePoint = samplePointSeconds * 1000;
+        var tick = samplePointSeconds;
         strokes.forEach(function (strokeData, index) {
             var stroke = strokeData - firstStroke;
-            var samplePoint = samplePointSeconds * 1000;
             if (stroke >= samplePoint) {
                 var ratio = stroke / samplePoint;
                 chartStrokesData.push({
                     x: stroke,
-                    y: ((index * (10 / constant)) / ratio).toFixed(2)
+                    y: (((index * 10) / 4.805) / ratio).toFixed(2)
                 });
-                timeAxisTicks.push(samplePointSeconds % 60 === 0 ? samplePointSeconds / 60 + ':00' : Math.floor(samplePointSeconds / 60) + ':' + samplePointSeconds % 60);
-                samplePointSeconds += samplePointSeconds;
+                timeAxisTicks.push(tick % 60 === 0 ? tick / 60 + ':00' : Math.floor(tick / 60) + ':' + tick % 60);
+                tick += samplePointSeconds;
+                samplePoint += samplePointSeconds * 1000;
             }
         });
         var lineChart = new Chart(ctx, {
@@ -17351,7 +17388,7 @@ var RowingStatLineChart = (function () {
                     }
                 ]
             },
-            'options': {
+            options: {
                 animation: {
                     duration: 0
                 },

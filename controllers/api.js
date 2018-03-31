@@ -1,11 +1,4 @@
 const mongoose = require('mongoose');
-const bluebird = require('bluebird');
-const request = bluebird.promisifyAll(require('request'), { multiArgs: true });
-const graph = require('fbgraph');
-const GitHub = require('github');
-const Linkedin = require('node-linkedin')(process.env.LINKEDIN_ID, process.env.LINKEDIN_SECRET, process.env.LINKEDIN_CALLBACK_URL);
-const paypal = require('paypal-rest-sdk');
-const ig = bluebird.promisifyAll(require('instagram-node').instagram());
 const User = require('../models/User');
 const RowingData = require('../models/RowingData');
 const rowingDataHelpers = require('../helpers/rowingDataHelper');
@@ -13,6 +6,18 @@ const rowingDataHelpers = require('../helpers/rowingDataHelper');
 const cachedRowingApiData = {};
 
 let timeOut = null;
+
+const isInvalidJson = (input) => {
+
+   try {
+      JSON.parse(input);
+   } catch(ex) {
+      return ex.message; // Is invalid 
+   }
+
+   return false; // Is valid 
+
+}
 
 /**
  * Update rowing totals.
@@ -69,106 +74,6 @@ const saveRowingData = (key, timeOutMillis) => {
   }, timeOutMillis);
 
 }
-
-/**
- * POST /api/rowingData
- * Log rowing data.
- */
-exports.postRowingData = (req, res, next) => {
-
-  const { key, machineId, damping, multi, base, data } = req.body;
-  const rawData = typeof data === 'string' ? data.split(',') : [];
-  const times = rawData.map(datum => parseInt(base) + parseInt(datum));
-
-  clearTimeout(timeOut);
-
-  if(!key || !machineId || !damping || !multi ||!base){
-
-    return res.status(400).end();
-
-  } else {
-
-    if(cachedRowingApiData[key]){
-
-        times.map(time => {
-
-          if(cachedRowingApiData[key].times.indexOf(time) < 0){
-            cachedRowingApiData[key].times.push(time);
-          }
-
-        });
-
-        saveRowingData(key, 10000);
-
-        return res
-          .status(200)
-          .end(); 
-
-    } else {
-
-      User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
-      
-        if (err) { 
-          return res
-            .status(500)
-            .end();
-        } else if (!existingUser) { 
-          return res
-            .status(401)
-            .end();
-        }
-
-        else if (existingUser) {
-
-          cachedRowingApiData[key] = {
-            user: existingUser._id,
-            machineId: machineId,
-            damping: damping,
-            multi: multi,
-            times: times
-          }
-
-          saveRowingData(key, 10000);
-
-          return res
-            .status(200)
-            .end();
-
-        }
-
-      });
-
-    }
-
-  }
-
-};
-
-/**
- * POST /api/currentTime
- * Return current time.
- */
-exports.getCurrentTime = (req, res, next) => {
-
-  User.findOne({ rowingDataApiKey: req.body.key }, (err, existingUser) => {
-    
-    if (err) { 
-      return res.status(500).end();
-    } else if (!existingUser) { 
-      return res.status(401).end();
-    }
-
-    else if (existingUser) {
-
-      res
-        .status(200)
-        .json(Date.now());
-
-    }
-
-  });
-
-};
 
 /**
  * POST /api/rowingData/delete
@@ -231,65 +136,72 @@ exports.socketHandler = (ws, req) => {
 
   ws.on('message', msgString => {
 
-    const msgObj = JSON.parse(msgString);
-    const { key, machineId, damping, multi, base, data } = msgObj;
+    console.log(msgString);
+
+    if(isInvalidJson(msgString)){
+      ws.terminate();
+      return;
+    }
+
+    const { key, machineId, damping, multi, base, data } = JSON.parse(msgString);
+
+    if(!key || typeof key !== 'string'){
+      ws.terminate();
+      return;
+    }
+
     const rawData = typeof data === 'string' ? data.split(',') : [];
     const times = rawData.map(datum => parseInt(base) + parseInt(datum));
 
     clearTimeout(timeOut);
 
-    if(!key){
+    if(!cachedRowingApiData[key]){
 
-      ws.terminate();
+      User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
+
+        if(err || !existingUser){
+          ws.terminate();
+          return;
+        }
+
+        if(machineId && damping && multi && base){
+
+          cachedRowingApiData[key] = {
+            user: existingUser._id,
+            machineId: machineId,
+            damping: damping,
+            multi: multi,
+            times: times
+          }
+
+          saveRowingData(key, 10000);
+
+        } else if(!base){
+
+          ws.send(JSON.stringify({
+            base: Date.now().toString() 
+          }), (error) => {
+            if(error){ 
+              console.log(error)
+            }
+          });
+
+        }
+
+      });
 
     } else {
 
-      if(cachedRowingApiData[key]){
+      times.map(time => {
 
-        times.map(time => {
+        // if time is not a duplicate reading
+        if(cachedRowingApiData[key].times.indexOf(time) < 0){
+          cachedRowingApiData[key].times.push(time);
+        }
 
-          // if time is not a duplicate reading
-          if(cachedRowingApiData[key].times.indexOf(time) < 0){
-            cachedRowingApiData[key].times.push(time);
-          }
+      });
 
-        });
-
-        saveRowingData(key, 10000);
-
-        ws.send(Date.now());
-
-      } else {
-
-        User.findOne({ rowingDataApiKey: key }, (err, existingUser) => {
-
-          if(err || !existingUser){
-
-            ws.terminate();
-
-          } else {
-
-            if(machineId && damping && multi && base){
-
-              cachedRowingApiData[key] = {
-                user: existingUser._id,
-                machineId: machineId,
-                damping: damping,
-                multi: multi,
-                times: times
-              }
-
-              saveRowingData(key, 10000);
-
-            }
-
-            ws.send(Date.now());
-
-          }
-
-        });
-
-      }
+      saveRowingData(key, 10000);
 
     }
 

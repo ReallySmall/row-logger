@@ -134,12 +134,10 @@ app.post('/account/delete', passportConfig.isAuthenticated, userController.postD
 /**
  * API routes.
  */
-app.post('/api/currentTime', apiController.getCurrentTime);
-app.post('/api/rowingData', apiController.postRowingData);
 app.post('/api/rowingData/delete', apiController.deleteRowingData);
 app.post('/api/rowingData/update', apiController.updateRowingData);
 
-app.ws('/data', apiController.socketHandler);
+app.ws('/', apiController.socketHandler);
 
 /**
  * Error Handler.

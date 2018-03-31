@@ -1,51 +1,67 @@
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INCLUDES AND GLOBAL VARS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
-#include <ESP8266HTTPClient.h>
+#include <WebSocketClient.h>
 
 ESP8266WiFiMulti WiFiMulti;
-HTTPClient http;
+WiFiClient client;
+WebSocketClient webSocketClient;
 
-const char machineId[] = "water_rower_a1";
-const char damping[] = "2000"; // ml - however full your water tank is
+StaticJsonBuffer<200> jsonBuffer;
 
-char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 
-const byte rowingStrokesSwitch = 0; // DPIO connected to rower, triggers interrupt function
 
-volatile char* rowingStrokesData[300]; // populated with csv of timestamps for rowing strokes
 volatile long lastTriggered = 0; //the last time the interrupt pin was triggered
 
 unsigned long lastPosted = millis(); // reference point for time elapsed since last post to API
+unsigned long dataArray[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // array for holding rower pulse time values
 
-int pulses = 0;
-int multiplier = 10;
+const int timeOut = 4000; // millis to wait between posts to API
 
-int timeOut = 4000; // millis to wait between posts to API
-int networkFailures = 0; // log any network failures
+const byte rowingStrokesSwitch = 4; // DPIO connected to rower, triggers interrupt function
+const byte debounce = 30;
+const byte dataArrayLength = 20;
+const byte multiplier = 10;
+
+byte currentDataArrayIndex = 0;
+byte pulses = 0;
 
 boolean rowingStrokesDataUpdated; // has more data been logged by the ISR?
-boolean fatalError = false; // did anything go horribly wrong? TODO
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// INTERRUPT HANDLER
+// called by sensor on rower
+// adds current system time to array
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
 
   // debounce the input
-  if(millis() > lastTriggered + 15){
+  if (millis() > lastTriggered + debounce) {
 
     pulses++;
 
-    if(pulses >= multiplier){
+    // only record every nth pulse from the rower
+    // every pulse is needlessly granular
+    // and creates large data files
+    if (pulses >= multiplier) {
 
-      // detach the interrupt listener while the interrupt is dealt with
-      detachInterrupt(rowingStrokesSwitch); // unregister interrupt while dealing with this interrupt
-            
-      // append the timestamp to the global variable
-      sprintf((char *)rowingStrokesData + strlen((char *)rowingStrokesData), "%s%lu", rowingStrokesData[0] != '\0' ? "," : "", millis());
-    
-      // set flag that global variable has been updated
+      detachInterrupt(rowingStrokesSwitch); // detach interrupt handler while dealing with interrupt
+
+      if (currentDataArrayIndex + 1 < dataArrayLength) { // if the data array isn't full
+        dataArray[currentDataArrayIndex] = millis(); // record current time
+        currentDataArrayIndex++; // and update the array index for the next call
+      } else {
+        Serial.print("Strokes missed"); // alert if a pulse log was attempted but the array was full
+      }
+
+      // set flags that global variable has been updated
       rowingStrokesDataUpdated = true;
-
       pulses = 0;
 
       // re-attach the interrupt listener
@@ -57,143 +73,173 @@ void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
     lastTriggered = millis();
 
   }
-  
-}
-
-void postRowingData() {
-
-  // create a data buffer large enough to hold the string which will be posted
-  char data[200 + sizeof(apiKey) + sizeof(machineId) + sizeof(damping) + sizeof(baseTime) + sizeof(rowingStrokesData)];
-
-  // build the string to post
-  sprintf(data, "key=%s&machineId=%s&damping=%s&multi=%d&base=%s&data=%s", apiKey, machineId, damping, multiplier, baseTime, rowingStrokesData);
-  
-  // initialise the request
-  handleHttpInit(postRowingDataApi);
-
-  Serial.printf("Posting data to API: %s\n", data);
-
-  // post the data to the API
-  int httpCode = http.POST(data);
-
-  if(httpCode == HTTP_CODE_OK) {
-
-    Serial.println("Successfully posted data to API");
-
-  }
-
-  // handle any request errors
-  handleHttpError(httpCode, false);
-  
-  // close the connection
-  http.end();
 
 }
 
-void handleHttpInit(const char* api) {
 
-  http.begin(api);
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  http.addHeader("Accept", "application/json");
-  Serial.println("Initialising connection to API");
-  
-}
 
-void handleHttpError(int httpCode, boolean isFatal) {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SEND ROWING DATA TO SERVER
+// builds a json object
+// and sends it to websocket
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void sendRowingData() {
 
-  Serial.println(httpCode);
-  
-  if(httpCode < 0 || httpCode != HTTP_CODE_OK) {
+  Serial.print("Sending data to API");
 
-    if(isFatal){
-      fatalError = true;
-    } else {
-      networkFailures++;
+  JsonObject& rowingDataJsonObj = jsonBuffer.createObject();
+  JsonArray& data = rowingDataJsonObj.createNestedArray("data");
+
+  char jsonBuffer[300]; // create a data buffer large enough to hold the string which will be posted
+
+  rowingDataJsonObj["key"] = apiKey;
+  rowingDataJsonObj["machineId"] = machineId;
+  rowingDataJsonObj["damping"] = damping;
+  rowingDataJsonObj["multi"] = multiplier;
+  rowingDataJsonObj["base"] = baseTime;
+
+  detachInterrupt(rowingStrokesSwitch);
+
+  for (int i = 0; i < dataArrayLength; i++) {
+    if(dataArray[i] > 0){
+      data.add(dataArray[i]);
     }
-    
-    Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
-    
+    dataArray[i] = 0;
   }
-  
+
+  attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING);
+
+  rowingDataJsonObj.printTo(jsonBuffer);
+  webSocketClient.sendData(jsonBuffer);
+
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HALT ON NETWORK ERRORS
+// todo - retry conncetions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void halt(const char* message) {
+
+  while (true) {
+    Serial.println(message);
+    delay(1000);
+  }
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// REQUEST THE CURRENT TIME FROM EPOCH FROM SERVER
+// builds a json object
+// and sends it through websocket connection
+// to request the current time
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void getServerTime() {
+
+  Serial.println("Getting time from API");
+  JsonObject& jsonReqObject = jsonBuffer.createObject();
+
+  jsonReqObject["key"] = apiKey;
+
+  char baseTimeRequest[30]; // create a data buffer large enough to hold the string which will be posted
+
+  jsonReqObject.printTo(baseTimeRequest);
+  webSocketClient.sendData(baseTimeRequest);
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SETUP
+// connect to internet, then server websocket
+// initialise IO pins
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
 
-    Serial.begin(115200); // start serial
-    WiFi.mode(WIFI_STA); // start wifi
-    WiFiMulti.addAP(wifiAP, wifiSSID); // and add connection config
+  Serial.begin(115200); // start serial
+  WiFi.begin(wifiAP, wifiSSID); // start WIFI
+
+  // wait for WIFI to connect
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(50); // delay required between checks or client will crash
+  }
+
+  // once WIFI connected
+  if (WiFi.status() == WL_CONNECTED) {
+
+    // first connect to server
+    if (client.connect(postRowingDataSocket, 8080)) {
+      Serial.println("Connected");
+    } else {
+      halt("Connection failed");
+    }
+
+    // then set options for websocket upgrade handshake
+    webSocketClient.path = "/";
+    webSocketClient.host = postRowingDataSocket;
+
+    // then upgrade connection to websocket
+    if (webSocketClient.handshake(client)) {
+      Serial.println("Websocket handshake successful");
+    } else {
+      halt("Websocket handshake failed");
+    }
+
+    getServerTime(); // get the current time from the server
 
     attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
-
     pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
     digitalWrite(rowingStrokesSwitch, HIGH); // and set high
 
+  } else {
+    
+    Serial.print("Error connecting");
+    
+  }
+
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MAIN LOOP
+// posts rowing data to server
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
 
-    if(fatalError){
+  String data; // todo, get rid of this String
 
-      Serial.println("Halted, something went wrong");
-      delay(5000);
+  webSocketClient.getData(data); // check for any messages from the server
+
+  if (data.length() > 0) { // if a message exists, read it
+
+    JsonObject& jsonData = jsonBuffer.parseObject(data); // parse the JSON message
+
+    if (!jsonData.success()) { // if parsing the JSON failed
       
-    }
+      Serial.println("parseObject() failed");
+    
+    } else { // otherwise handle it
 
-    // wait for WiFi connection
-    else if((WiFiMulti.run() == WL_CONNECTED)) {
-
-      // first get the current time from the API
-      // this will be used to save the correct time against each recorded stroke
-      // so that data will not be affected by network latency
-      // and can be posted in batches
-      if(strlen(baseTime) == 0){
-        
-        char data[5 + sizeof(apiKey)]; // create a data buffer large enough to hold the string which will be posted
-
-        sprintf(data, "key=%s", apiKey);
-
-        Serial.println("Getting time from API");
-        
-        handleHttpInit(getTimeApi);
-
-        int httpCode = http.POST(data);
-
-        if(httpCode > 0 && httpCode == HTTP_CODE_OK) {
-          sprintf(baseTime, "%s", http.getString().c_str());
-        }
-  
-        handleHttpError(httpCode, true);
-        
-        http.end();
-
-      // then check if any rowing data has been logged
-      // by the interrupt, and process it
-      // but not more than once per n seconds
-      } else if(rowingStrokesDataUpdated && millis() > (lastPosted + timeOut)) {
-
-        // get the length of the data string
-        byte rowingStrokesDataLength = strlen((const char*)rowingStrokesData);
-
-        // first clear the flag
-        rowingStrokesDataUpdated = false;
-
-        // then post the rowing data to the API
-        postRowingData();
-
-        // if the interrupt hasn't added any new rowing data while the last set of data was being posted to the API, clear it,
-        // otherwise if it has, rowingStrokeDataUpdated will be true again, so leave it to be included in the next POST
-        if(!rowingStrokesDataUpdated) {
-          
-          rowingStrokesData[0] = '\0';
-                   
-        }
-
-        // reset last posted flag to current time
-        lastPosted = millis();
-        
+      if (jsonData["base"]) { // if message is returning the base time
+        const char* value = jsonData["base"]; // get the base time
+        sprintf(baseTime, "%s", value); // and assign to the global variable
+        Serial.println(baseTime);
       }
 
     }
-    
-}
 
+  }
+
+  // if base time has been obtained, there is new logged rowing data and minimum time since last message send has elapsed
+  if (strlen(baseTime) > 0 && rowingStrokesDataUpdated && millis() > (lastPosted + timeOut)) {
+
+    sendRowingData(); // send the rowing data to the API
+    rowingStrokesDataUpdated = false; // reset flag
+    lastPosted = millis(); // reset flag
+
+  }
+
+}

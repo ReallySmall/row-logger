@@ -5,10 +5,9 @@ import { RowingStatLineChart, RowingDistanceDoughnutChart } from '../modules/cha
 $(document).ready(() => {
 
   	$('.js-data-chart').each((index, chart) => {
+
   		const $chart = $(chart);
       const chartType = $chart.data('chart-type');
-
-      console.log(chartType);
 
       switch(chartType){
 

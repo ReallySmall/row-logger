@@ -2,11 +2,16 @@ const gulp = require('gulp'),
 svgSprite = require('gulp-svg-sprite'),
 sass = require('gulp-sass'),
 plumber = require('gulp-plumber'),
+ts = require('gulp-typescript'),
 webpack = require('webpack-stream'),
-webpackConfig = require('./webpack.config.js');
+uiWebpackConfig = require('./webpack.ui.config.js');
 
 const paths = {
-	ts: {
+	serverTs: {
+		src: ['server/src/**/*.ts'],
+		dist: 'server/dist'
+	},
+	uiTs: {
 		src:'ui/ts/**/*.ts',
 		dist: 'public/js'
 	},
@@ -20,12 +25,25 @@ const paths = {
 	}
 }
 
-gulp.task('ts', () => {
+gulp.task('serverTs', () => {
 
-	return gulp.src(paths.ts.src)
+	return gulp.src(paths.serverTs.src)
 		.pipe(plumber())
-		.pipe(webpack(webpackConfig))
-		.pipe(gulp.dest(paths.ts.dist));
+		.pipe(ts({
+            noImplicitAny: false,
+            rootDir: './server/src',
+            lib: ['es6']
+        }))	
+        .pipe(gulp.dest(paths.serverTs.dist));
+
+});
+
+gulp.task('uiTs', () => {
+
+	return gulp.src(paths.uiTs.src)
+		.pipe(plumber())
+		.pipe(webpack(uiWebpackConfig))
+		.pipe(gulp.dest(paths.uiTs.dist));
 
 });
 
@@ -55,8 +73,9 @@ gulp.task('watch', () => {
 
 	gulp.watch(paths.svg.src, ['buildSvgSprite']);
     gulp.watch(paths.sass.src, ['sass']);
-    gulp.watch(paths.ts.src, ['ts']);
+    gulp.watch(paths.serverTs.src, ['serverTs']);
+    gulp.watch(paths.uiTs.src, ['uiTs']);
 
 });
 
-gulp.task('default', ['ts', 'sass', 'buildSvgSprite', 'watch']);
+gulp.task('default', ['serverTs', 'uiTs', 'sass', 'buildSvgSprite', 'watch']);

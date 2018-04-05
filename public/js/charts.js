@@ -17267,7 +17267,6 @@ $(document).ready(function () {
     $('.js-data-chart').each(function (index, chart) {
         var $chart = $(chart);
         var chartType = $chart.data('chart-type');
-        console.log(chartType);
         switch (chartType) {
             case 'rowingStatLineChart':
                 var rowingStatLineChart = new charts_1.RowingStatLineChart(chart, parseInt($chart.data('constant'), 10), $chart.data('strokes'), parseInt($chart.data('sample-point'), 10));

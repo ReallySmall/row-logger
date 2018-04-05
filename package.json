@@ -9,7 +9,7 @@
   "author": "richard iles",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon app.js",
+    "dev": "start nodemon server/dist/app.js && gulp",
     "test": "mocha --reporter spec",
     "postinstall": "npm rebuild node-sass",
     "eslint": "eslint **/*.js"
@@ -35,6 +35,8 @@
     "express-ws": "^3.0.0",
     "fbgraph": "^1.4.1",
     "github": "^9.2.0",
+    "gulp-typescript": "^4.0.2",
+    "inherits": "^2.0.3",
     "instagram-node": "^0.5.8",
     "jquery": "^3.3.1",
     "lusca": "^1.5.1",
@@ -59,6 +61,7 @@
     "pug": "^2.0.0-rc.3",
     "request": "^2.81.0",
     "twit": "^2.2.9",
+    "util": "^0.10.0",
     "validator": "^8.0.0",
     "ws": "^5.0.0"
   },

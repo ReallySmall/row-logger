@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  if user
+    article.row
+      h3.visually-hidden Dashboard
+      section.col.s12.m4
+        h4 Progress
+        include partials/progress
+      section.col.s12.m2.current-session
+        +icon('#rowing-machine')
+        include partials/currentSession
+      section.col.s12.m6
+        h4 Recent
+        include partials/statsTable
+        p
+          a.waves-effect.waves-light.btn(href='/sessions') View all sessions
+  else
+    div.col.s2
+      +icon('#arduino')
+    div.col.s2
+      +icon('#node.js')

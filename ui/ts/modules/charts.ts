@@ -14,7 +14,7 @@ export class RowingDistanceDoughnutChart {
 			data: {
 				datasets: [{
         			data: [progress, remaining],
-        			backgroundColor: ['#039be5', 'lightgray'];
+        			backgroundColor: ['#039be5', 'lightgray']
     			}],
 			    labels: [
 			        'Rowed so far',

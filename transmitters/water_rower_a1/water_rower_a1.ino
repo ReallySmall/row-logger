@@ -14,6 +14,7 @@ WebSocketClient webSocketClient;
 StaticJsonBuffer<200> jsonBuffer;
 
 
+char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 
 volatile long lastTriggered = 0; //the last time the interrupt pin was triggered
 
@@ -85,12 +86,13 @@ void ICACHE_RAM_ATTR rowingStrokesSwitchTriggered() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sendRowingData() {
 
-  Serial.print("Sending data to API");
+  Serial.print("Sending data to API: ");
 
+  StaticJsonBuffer<300> jsonBuffer;
   JsonObject& rowingDataJsonObj = jsonBuffer.createObject();
   JsonArray& data = rowingDataJsonObj.createNestedArray("data");
 
-  char jsonBuffer[300]; // create a data buffer large enough to hold the string which will be posted
+  char jsonBuffer1[300]; // create a data buffer large enough to hold the string which will be posted
 
   rowingDataJsonObj["key"] = apiKey;
   rowingDataJsonObj["machineId"] = machineId;
@@ -102,6 +104,8 @@ void sendRowingData() {
 
   for (int i = 0; i < dataArrayLength; i++) {
     if(dataArray[i] > 0){
+      Serial.print(dataArray[i]);
+      Serial.print(" ");
       data.add(dataArray[i]);
     }
     dataArray[i] = 0;
@@ -109,8 +113,10 @@ void sendRowingData() {
 
   attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING);
 
-  rowingDataJsonObj.printTo(jsonBuffer);
-  webSocketClient.sendData(jsonBuffer);
+  Serial.println("");
+
+  rowingDataJsonObj.printTo(jsonBuffer1);
+  webSocketClient.sendData(jsonBuffer1);
 
 }
 
@@ -226,8 +232,19 @@ void loop() {
       if (jsonData["base"]) { // if message is returning the base time
         const char* value = jsonData["base"]; // get the base time
         sprintf(baseTime, "%s", value); // and assign to the global variable
-        Serial.println(baseTime);
+        Serial.println("Base time: ");
+        Serial.print(baseTime);
+      } else if(jsonData["message"]){
+        const char* message = jsonData["message"];
+        Serial.println("Message: ");
+        Serial.print(message);
+      } else if(jsonData["error"]){
+        const char* error = jsonData["error"];
+        Serial.println("Error: ");
+        Serial.print(error);
       }
+
+      Serial.println("");
 
     }
 
@@ -238,6 +255,7 @@ void loop() {
 
     sendRowingData(); // send the rowing data to the API
     rowingStrokesDataUpdated = false; // reset flag
+    currentDataArrayIndex = 0;  // reset index
     lastPosted = millis(); // reset flag
 
   }

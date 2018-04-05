@@ -1,0 +1,13 @@
+div.stats-panel
+  article.card
+    div.card-content
+      form
+        table.striped.responsive-table
+          thead
+            tr
+              th Date
+              th Distance
+              th Duration
+          tbody
+            each element in userRowingSessionsData
+              include statsRow

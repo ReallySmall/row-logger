@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const distanceMilestoneSchema = new mongoose.Schema({
-  
+
   title: String,
   metres: Number
 

@@ -8,7 +8,7 @@ export class RowingDistanceDoughnutChart {
 		const ctx = selector.getContext('2d');
 
 		const remaining: number = total - progress;
-	
+
 		const lineChart = new Chart(ctx, {
 			type:'doughnut',
 			data: {
@@ -59,7 +59,7 @@ export class RowingStatLineChart {
 				chartStrokesData.push({
 					x: stroke,
 					y: (((index * 10) / 4.805) / ratio).toFixed(2)
-				})
+				});
 
 				timeAxisTicks.push(tick % 60 === 0 ? tick / 60 + ':00' : Math.floor(tick / 60) + ':' + tick % 60);
 
@@ -69,7 +69,7 @@ export class RowingStatLineChart {
 			}
 
 		});
-	
+
 		const lineChart = new Chart(ctx, {
 			type:'line',
 			data: {

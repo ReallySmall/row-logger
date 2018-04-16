@@ -29,14 +29,14 @@ export class RowingDataRecorder {
 
   		this.sessions[key] = {
 			timeOut: undefined,
-  		}
+  		};
 
 	  	this.sessions[key].data = {
 			user: user,
 			machineId: machineId,
 			damping: damping,
 			multi: multi,
-			times: times,	
+			times: times,
 	  	};
 
   	}
@@ -86,10 +86,10 @@ export class RowingDataRecorder {
 	      rowingData
 	        .save()
 	        .then(item => {
-	          console.log("data saved");
+	          console.log('data saved');
 	          //updateRowingTotals(rowingData.user, 10);
 	        })
-	        .catch(error => error && console.log("unable to save data:", error));
+	        .catch(error => error && console.log('unable to save data:', error));
 
 	    }, this.timeOutMillis);
 

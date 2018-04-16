@@ -58,9 +58,9 @@ var RowingDataRecorder = /** @class */ (function () {
                 rowingData
                     .save()
                     .then(function (item) {
-                    console.log("data saved");
+                    console.log('data saved');
                     //updateRowingTotals(rowingData.user, 10);
-                })["catch"](function (error) { return error && console.log("unable to save data:", error); });
+                })["catch"](function (error) { return error && console.log('unable to save data:', error); });
             }, this.timeOutMillis);
         }
     };

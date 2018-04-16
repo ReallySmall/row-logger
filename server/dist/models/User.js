@@ -1,5 +1,4 @@
 "use strict";
-var _this = this;
 exports.__esModule = true;
 var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
@@ -56,21 +55,8 @@ userSchema.pre('save', function save(next) {
  * Helper method for validating user's password.
  */
 userSchema.methods.comparePassword = function (candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, _this.password, function (error, isMatch) {
+    bcrypt.compare(candidatePassword, this.password, function (error, isMatch) {
         cb(error, isMatch);
     });
-};
-/**
- * Helper method for getting user's gravatar.
- */
-userSchema.methods.gravatar = function (size) {
-    if (!size) {
-        size = 200;
-    }
-    if (!_this.email) {
-        return "https://gravatar.com/avatar/?s=" + size + "&d=retro";
-    }
-    var md5 = crypto.createHash('md5').update(_this.email).digest('hex');
-    return "https://gravatar.com/avatar/" + md5 + "?s=" + size + "&d=retro";
 };
 exports.User = mongoose.model('User', userSchema);

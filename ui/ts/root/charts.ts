@@ -14,9 +14,9 @@ $(document).ready(() => {
         case 'rowingStatLineChart':
 
           const rowingStatLineChart = new RowingStatLineChart(
-                                        chart, 
-                                        parseInt($chart.data('constant'), 10), 
-                                        $chart.data('strokes'), 
+                                        chart,
+                                        parseInt($chart.data('constant'), 10),
+                                        $chart.data('strokes'),
                                         parseInt($chart.data('sample-point'), 10)
                                       );
 
@@ -25,15 +25,15 @@ $(document).ready(() => {
         case 'rowingDistanceDoughnutChart':
 
           const rowingDistanceDoughnutChart = new RowingDistanceDoughnutChart(
-                                                chart, 
-                                                parseInt($chart.data('progress'), 10), 
-                                                parseInt($chart.data('total'), 10) 
+                                                chart,
+                                                parseInt($chart.data('progress'), 10),
+                                                parseInt($chart.data('total'), 10)
                                               );
 
           break;
 
       }
-  		
+
   	});
 
   	$('.js-fade').each((index, fade) => {

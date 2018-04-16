@@ -4,19 +4,13 @@ var bluebird = require('bluebird');
 var crypto = bluebird.promisifyAll(require('crypto'));
 var nodemailer = require('nodemailer');
 var passport = require('passport');
+var dotenv = require('dotenv');
+var jwt = require('jsonwebtoken');
 var User_1 = require("../models/User");
 /**
- * GET /login
- * Login page.
+ * Load environment variables from .env file, where API keys and passwords are configured.
  */
-exports.getLogin = function (req, res) {
-    if (req.user) {
-        return res.redirect('/');
-    }
-    res.render('account/login', {
-        title: 'Login'
-    });
-};
+dotenv.config();
 /**
  * POST /login
  * Sign in using email and password.
@@ -25,27 +19,37 @@ exports.postLogin = function (req, res, next) {
     req.assert('email', 'Email is not valid').isEmail();
     req.assert('password', 'Password cannot be blank').notEmpty();
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-    var errors = req.validationErrors();
-    if (errors) {
-        req.flash('errors', errors);
-        return res.redirect('/login');
-    }
-    passport.authenticate('local', function (err, user, info) {
-        if (err) {
-            return next(err);
+    req.getValidationResult().then(function (result) {
+        if (!result.isEmpty()) {
+            var errors = result.array().map(function (elem) {
+                return elem.msg;
+            });
+            return res.status(401).json({ message: errors });
         }
-        if (!user) {
-            req.flash('errors', info);
-            return res.redirect('/login');
+        else {
+            passport.authenticate('local', function (error, user, info) {
+                if (error) {
+                    return next(error);
+                }
+                if (!user) {
+                    return res.status(401).json({ message: 'Authentication failed.' });
+                }
+                req.logIn(user, function (error) {
+                    if (error) {
+                        return next(error);
+                    }
+                    return res
+                        .status(200)
+                        .json({
+                        token: jwt.sign({
+                            user: user._id,
+                            role: ['admin']
+                        }, process.env.JWT_TOKEN_SECRET)
+                    });
+                });
+            })(req, res, next);
         }
-        req.logIn(user, function (err) {
-            if (err) {
-                return next(err);
-            }
-            req.flash('success', { msg: 'Success! You are logged in.' });
-            res.redirect(req.session.returnTo || '/');
-        });
-    })(req, res, next);
+    });
 };
 /**
  * GET /logout
@@ -53,19 +57,7 @@ exports.postLogin = function (req, res, next) {
  */
 exports.logout = function (req, res) {
     req.logout();
-    res.redirect('/');
-};
-/**
- * GET /signup
- * Signup page.
- */
-exports.getSignup = function (req, res) {
-    if (req.user) {
-        return res.redirect('/');
-    }
-    res.render('account/signup', {
-        title: 'Create Account'
-    });
+    res.status(200).json({ message: 'Logged out.' });
 };
 /**
  * POST /signup
@@ -76,43 +68,38 @@ exports.postSignup = function (req, res, next) {
     req.assert('password', 'Password must be at least 4 characters long').len(4);
     req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-    var errors = req.validationErrors();
-    if (errors) {
-        req.flash('errors', errors);
-        return res.redirect('/signup');
-    }
-    var user = new User_1.User({
-        email: req.body.email,
-        password: req.body.password
-    });
-    User_1.User.findOne({ email: req.body.email }, function (err, existingUser) {
-        if (err) {
-            return next(err);
-        }
-        if (existingUser) {
-            req.flash('errors', { msg: 'Account with that email address already exists.' });
-            return res.redirect('/signup');
-        }
-        user.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            req.logIn(user, function (err) {
-                if (err) {
-                    return next(err);
-                }
-                res.redirect('/');
+    req.getValidationResult().then(function (result) {
+        if (!result.isEmpty()) {
+            var errors = result.array().map(function (elem) {
+                return elem.msg;
             });
-        });
-    });
-};
-/**
- * GET /account
- * Profile page.
- */
-exports.getAccount = function (req, res) {
-    res.render('account/profile', {
-        title: 'Account Management'
+            return res.status(401).json({ message: errors });
+        }
+        else {
+            var user_1 = new User_1.User({
+                email: req.body.email,
+                password: req.body.password
+            });
+            User_1.User.findOne({ email: req.body.email }, function (error, existingUser) {
+                if (error) {
+                    return next(error);
+                }
+                if (existingUser) {
+                    return res.redirect('/signup');
+                }
+                user_1.save(function (error) {
+                    if (error) {
+                        return next(error);
+                    }
+                    req.logIn(user_1, function (error) {
+                        if (error) {
+                            return next(error);
+                        }
+                        res.redirect('/');
+                    });
+                });
+            });
+        }
     });
 };
 /**
@@ -124,7 +111,6 @@ exports.postUpdateProfile = function (req, res, next) {
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     var errors = req.validationErrors();
     if (errors) {
-        req.flash('errors', errors);
         return res.redirect('/account');
     }
     User_1.User.findById(req.user.id, function (err, user) {
@@ -140,12 +126,10 @@ exports.postUpdateProfile = function (req, res, next) {
         user.save(function (err) {
             if (err) {
                 if (err.code === 11000) {
-                    req.flash('errors', { msg: 'The email address you have entered is already associated with an account.' });
                     return res.redirect('/account');
                 }
                 return next(err);
             }
-            req.flash('success', { msg: 'Profile information has been updated.' });
             res.redirect('/account');
         });
     });
@@ -159,7 +143,6 @@ exports.postUpdatePassword = function (req, res, next) {
     req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
     var errors = req.validationErrors();
     if (errors) {
-        req.flash('errors', errors);
         return res.redirect('/account');
     }
     User_1.User.findById(req.user.id, function (err, user) {
@@ -171,7 +154,6 @@ exports.postUpdatePassword = function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            req.flash('success', { msg: 'Password has been changed.' });
             res.redirect('/account');
         });
     });
@@ -186,7 +168,6 @@ exports.postDeleteAccount = function (req, res, next) {
             return next(err);
         }
         req.logout();
-        req.flash('info', { msg: 'Your account has been deleted.' });
         res.redirect('/');
     });
 };
@@ -206,7 +187,6 @@ exports.getOauthUnlink = function (req, res, next) {
             if (err) {
                 return next(err);
             }
-            req.flash('info', { msg: provider + " account has been unlinked." });
             res.redirect('/account');
         });
     });
@@ -227,7 +207,6 @@ exports.getReset = function (req, res, next) {
             return next(err);
         }
         if (!user) {
-            req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
             return res.redirect('/forgot');
         }
         res.render('account/reset', {
@@ -244,7 +223,6 @@ exports.postReset = function (req, res, next) {
     req.assert('confirm', 'Passwords must match.').equals(req.body.password);
     var errors = req.validationErrors();
     if (errors) {
-        req.flash('errors', errors);
         return res.redirect('back');
     }
     var resetPassword = function () {
@@ -253,7 +231,6 @@ exports.postReset = function (req, res, next) {
             .where('passwordResetExpires').gt(Date.now())
             .then(function (user) {
             if (!user) {
-                req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
                 return res.redirect('back');
             }
             user.password = req.body.password;
@@ -288,7 +265,6 @@ exports.postReset = function (req, res, next) {
         };
         return transporter.sendMail(mailOptions)
             .then(function () {
-            req.flash('success', { msg: 'Success! Your password has been changed.' });
         });
     };
     resetPassword()
@@ -317,7 +293,6 @@ exports.postForgot = function (req, res, next) {
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     var errors = req.validationErrors();
     if (errors) {
-        req.flash('errors', errors);
         return res.redirect('/forgot');
     }
     var createRandomToken = crypto
@@ -328,7 +303,6 @@ exports.postForgot = function (req, res, next) {
             .findOne({ email: req.body.email })
             .then(function (user) {
             if (!user) {
-                req.flash('errors', { msg: 'Account with that email address does not exist.' });
             }
             else {
                 user.passwordResetToken = token;
@@ -358,7 +332,6 @@ exports.postForgot = function (req, res, next) {
         };
         return transporter.sendMail(mailOptions)
             .then(function () {
-            req.flash('info', { msg: "An e-mail has been sent to " + user.email + " with further instructions." });
         });
     };
     createRandomToken

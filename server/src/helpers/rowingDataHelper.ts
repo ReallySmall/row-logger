@@ -5,9 +5,9 @@ const mongoose = require('mongoose');
 
 export const metrestoKmString = (metres: number): string => {
 
-	return metres < 1000 ? Math.floor(metres) + ' m' : (metres / 1000).toFixed(3) + ' km'; 
+	return metres < 1000 ? Math.floor(metres) + ' m' : (metres / 1000).toFixed(3) + ' km';
 
-}
+};
 
 export const timesToMetres = (timesArrayArray: Array<Array<number>>, multi: any, ratioConstant: number): number => {
 
@@ -25,7 +25,7 @@ export const timesToMetres = (timesArrayArray: Array<Array<number>>, multi: any,
 	});
 
 	return Math.ceil(totalMetres);
-	
+
 };
 
 export const timesToTotalMillis = (timesArrayArray: Array<Array<number>>): number => {
@@ -54,7 +54,7 @@ export const timesToTotalMillis = (timesArrayArray: Array<Array<number>>): numbe
 export const updateRowingTotals = (userId: string, multi: number): void => {
 
   RowingData.find({ user: userId }, (err, rowingSessionData) => {
-  
+
     const timesArrayArray: Array<Array<number>> = rowingSessionData.map(datum => datum.times);
     const totalMetres: number = timesToMetres(timesArrayArray, multi, 4.805);
     const totalTime: number = timesToTotalMillis(timesArrayArray);
@@ -77,4 +77,4 @@ export const updateRowingTotals = (userId: string, multi: number): void => {
 
   });
 
-}
+};

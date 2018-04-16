@@ -14,24 +14,23 @@ var expressSanitizer = require('express-sanitizer');
 var lusca = require('lusca');
 var dotenv = require('dotenv');
 var MongoStore = require('connect-mongo')(session);
-var flash = require('express-flash');
 var path = require('path');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var expressValidator = require('express-validator');
-var multer = require('multer');
 var expressWs = require('express-ws');
+var jwt = require('jsonwebtoken');
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
-dotenv.load({ path: '.env.example' });
+dotenv.config();
 /**
  * Controllers (route handlers).
  */
-var homeController = require('./controllers/home');
-var sessionsController = require('./controllers/sessions');
-var userController = require('./controllers/user');
-var apiController = require("./controllers/api");
+var homeController = require("./controllers/home");
+var sessionsController = require("./controllers/sessions");
+var userController = require("./controllers/user");
+var wsController = require("./controllers/ws");
 /**
  * API keys and Passport configuration.
  */
@@ -58,6 +57,8 @@ app.set('host', process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0');
 app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set('trust proxy', 1);
+app.enable('trust proxy', 1);
 app.use(compression());
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -67,7 +68,7 @@ app.use(expressValidator());
 app.use(session({
     resave: true,
     saveUninitialized: true,
-    secret: process.env.SESSION_SECRET,
+    secret: 'test',
     store: new MongoStore({
         url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
         autoReconnect: true,
@@ -76,63 +77,41 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
+// app.use(lusca.csrf({ secret: 'test' }));
+// app.use(lusca.xframe('SAMEORIGIN'));
+// app.use(lusca.xssProtection(true));
 app.use(function (req, res, next) {
-    if (req.path === '/api/rowingData') {
-        next();
+    if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_TOKEN_SECRET, function (error, decode) {
+            req.user = error ? undefined : decode.user;
+            next();
+        });
     }
     else {
-        lusca.csrf()(req, res, next);
+        next();
     }
-});
-app.use(lusca.xframe('SAMEORIGIN'));
-app.use(lusca.xssProtection(true));
-app.use(function (req, res, next) {
-    res.locals.user = req.user;
-    next();
-});
-app.use(function (req, res, next) {
-    // After successful login, redirect back to the intended page
-    if (!req.user &&
-        req.path !== '/login' &&
-        req.path !== '/signup' &&
-        !req.path.match(/^\/auth/) &&
-        !req.path.match(/\./)) {
-        req.session.returnTo = req.path;
-    }
-    else if (req.user &&
-        req.path === '/account') {
-        req.session.returnTo = req.path;
-    }
-    next();
 });
 app.use(express.static(path.join(__dirname, '/../../public'), { maxAge: 31557600000 }));
 /**
- * Primary app routes.
- */
-app.get('/', homeController.index);
-app.get('/sessions', sessionsController.index);
-app.get('/sessions/:date', sessionsController.index);
-app.get('/sessions/:date/:time', sessionsController.session);
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
-/**
  * API routes.
  */
-app.ws('/', apiController.createRowingData);
-app.post('/api/rowingData/update', apiController.updateRowingData);
-app.post('/api/rowingData/delete', apiController.deleteRowingData);
+app.get('/api/sessions', sessionsController.getSessions);
+app.get('/api/sessions/totals', sessionsController.getSessionTotals);
+app.get('/api//session', sessionsController.getSession);
+app.post('/api/session/update', sessionsController.updateSession);
+app.post('/api/session/delete', sessionsController.deleteSession);
+app.post('/api/login', userController.postLogin);
+app.post('/api/forgot', userController.postForgot);
+app.post('/api/reset/:token', userController.postReset);
+app.post('/api/signup', userController.postSignup);
+app.post('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
+app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
+app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
+app.ws('/api/socket', wsController.recordSession);
+/**
+ * App route.
+ */
+app.get('*', homeController.index);
 /**
  * Error Handler.
  */

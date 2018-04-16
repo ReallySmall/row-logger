@@ -2,13 +2,13 @@ const moment = require('moment');
 
 export const formatDateHumanFriendly = (dateString: string) => {
 
-  return moment(dateString).format('MMMM Do YYYY, h:mm a');  
+  return moment(dateString).format('MMMM Do YYYY, h:mm a');
 
 };
 
 export const formatHoursMinutesSeconds = (dateString:string) => {
 
-  return moment.utc(dateString).format('h:mm:ss');  
+  return moment.utc(dateString).format('h:mm:ss');
 
 };
 
@@ -16,7 +16,7 @@ export const timeStampToUrlPath = (dateString: string) => {
 
   return moment(dateString).format('DD-MM-YYYY/HH-mm');
 
-}
+};
 
 export const urlPathToTimeStamp = (dateString: string, timeString: string) => {
 
@@ -25,14 +25,14 @@ export const urlPathToTimeStamp = (dateString: string, timeString: string) => {
 
 	const validDate = moment(reformattedDate, 'DD/MM/YYYY').isValid();
 	const validTime = moment(reformattedTime, 'hh:mm').isValid();
-	
-	const parsedDateTime = validDate && validTime 
+
+	const parsedDateTime = validDate && validTime
 		? moment(reformattedDate + ' ' + reformattedTime, 'DD/MM/YYYY hh:mm')
 		: null;
 
 	return parsedDateTime;
 
-}
+};
 
 export const timesToDuration = (timesArray: Array<any>) => {
 

@@ -2,50 +2,71 @@ const bluebird = require('bluebird');
 const crypto = bluebird.promisifyAll(require('crypto'));
 const nodemailer = require('nodemailer');
 const passport = require('passport');
+const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 
 import { User } from '../models/User';
 
 /**
- * GET /login
- * Login page.
+ * Load environment variables from .env file, where API keys and passwords are configured.
  */
-export const getLogin = (req, res) => {
-  if (req.user) {
-    return res.redirect('/');
-  }
-  res.render('account/login', {
-    title: 'Login'
-  });
-};
+dotenv.config();
 
 /**
  * POST /login
  * Sign in using email and password.
  */
 export const postLogin = (req, res, next) => {
+
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password cannot be blank').notEmpty();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
-  const errors = req.validationErrors();
+  req.getValidationResult().then((result: any) => {
 
-  if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/login');
-  }
+    if (!result.isEmpty()) {
 
-  passport.authenticate('local', (err, user, info) => {
-    if (err) { return next(err); }
-    if (!user) {
-      req.flash('errors', info);
-      return res.redirect('/login');
+        const errors = result.array().map((elem: any) => {
+            return elem.msg;
+        });
+
+        return res.status(401).json({ message: errors });
+
+    } else {
+
+      passport.authenticate('local', (error, user, info) => {
+
+          if (error) {
+            return next(error);
+          }
+
+          if (!user) {
+            return res.status(401).json({ message: 'Authentication failed.' });
+          }
+
+          req.logIn(user, (error) => {
+
+            if (error) {
+              return next(error);
+            }
+
+            return res
+                    .status(200)
+                    .json({
+                      token: jwt.sign({
+                        user: user._id,
+                        role: ['admin']
+                      }, process.env.JWT_TOKEN_SECRET)
+                    });
+
+          });
+
+        })(req, res, next);
+
     }
-    req.logIn(user, (err) => {
-      if (err) { return next(err); }
-      req.flash('success', { msg: 'Success! You are logged in.' });
-      res.redirect(req.session.returnTo || '/');
-    });
-  })(req, res, next);
+
+  });
+
 };
 
 /**
@@ -53,21 +74,10 @@ export const postLogin = (req, res, next) => {
  * Log out.
  */
 export const logout = (req, res) => {
-  req.logout();
-  res.redirect('/');
-};
 
-/**
- * GET /signup
- * Signup page.
- */
-export const getSignup = (req, res) => {
-  if (req.user) {
-    return res.redirect('/');
-  }
-  res.render('account/signup', {
-    title: 'Create Account'
-  });
+  req.logout();
+  res.status(200).json({ message: 'Logged out.' });
+
 };
 
 /**
@@ -75,49 +85,63 @@ export const getSignup = (req, res) => {
  * Create a new local account.
  */
 export const postSignup = (req, res, next) => {
+
   req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
-  const errors = req.validationErrors();
+  req.getValidationResult().then((result: any) => {
 
-  if (errors) {
-    req.flash('errors', errors);
-    return res.redirect('/signup');
-  }
+    if (!result.isEmpty()) {
 
-  const user = new User({
-    email: req.body.email,
-    password: req.body.password
-  });
+        const errors = result.array().map((elem: any) => {
+            return elem.msg;
+        });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
-    if (err) { return next(err); }
-    if (existingUser) {
-      req.flash('errors', { msg: 'Account with that email address already exists.' });
-      return res.redirect('/signup');
-    }
-    user.save((err) => {
-      if (err) { return next(err); }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        res.redirect('/');
+        return res.status(401).json({ message: errors });
+
+    } else {
+
+      const user: any = new User({
+        email: req.body.email,
+        password: req.body.password
       });
-    });
-  });
-};
 
-/**
- * GET /account
- * Profile page.
- */
-export const getAccount = (req, res) => {
-  res.render('account/profile', {
-    title: 'Account Management'
+      User.findOne({ email: req.body.email }, (error, existingUser) => {
+
+        if (error) {
+          return next(error);
+        }
+
+        if (existingUser) {
+          return res.redirect('/signup');
+        }
+
+        user.save((error) => {
+
+          if (error) {
+            return next(error);
+          }
+
+          req.logIn(user, (error) => {
+
+            if (error) {
+              return next(error);
+            }
+
+            res.redirect('/');
+
+          });
+
+        });
+
+      });
+
+    }
+
   });
+
 };
 
 /**
@@ -125,13 +149,13 @@ export const getAccount = (req, res) => {
  * Update profile information.
  */
 export const postUpdateProfile = (req, res, next) => {
+
   req.assert('email', 'Please enter a valid email address.').isEmail();
   req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
 
   const errors = req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
     return res.redirect('/account');
   }
 
@@ -146,12 +170,10 @@ export const postUpdateProfile = (req, res, next) => {
     user.save((err) => {
       if (err) {
         if (err.code === 11000) {
-          req.flash('errors', { msg: 'The email address you have entered is already associated with an account.' });
           return res.redirect('/account');
         }
         return next(err);
       }
-      req.flash('success', { msg: 'Profile information has been updated.' });
       res.redirect('/account');
     });
   });
@@ -168,7 +190,6 @@ export const postUpdatePassword = (req, res, next) => {
   const errors = req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
     return res.redirect('/account');
   }
 
@@ -177,7 +198,6 @@ export const postUpdatePassword = (req, res, next) => {
     user.password = req.body.password;
     user.save((err) => {
       if (err) { return next(err); }
-      req.flash('success', { msg: 'Password has been changed.' });
       res.redirect('/account');
     });
   });
@@ -191,7 +211,6 @@ export const postDeleteAccount = (req, res, next) => {
   User.remove({ _id: req.user.id }, (err) => {
     if (err) { return next(err); }
     req.logout();
-    req.flash('info', { msg: 'Your account has been deleted.' });
     res.redirect('/');
   });
 };
@@ -208,7 +227,6 @@ export const getOauthUnlink = (req, res, next) => {
     user.tokens = user.tokens.filter(token => token.kind !== provider);
     user.save((err) => {
       if (err) { return next(err); }
-      req.flash('info', { msg: `${provider} account has been unlinked.` });
       res.redirect('/account');
     });
   });
@@ -228,7 +246,6 @@ export const getReset = (req, res, next) => {
     .exec((err, user) => {
       if (err) { return next(err); }
       if (!user) {
-        req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
         return res.redirect('/forgot');
       }
       res.render('account/reset', {
@@ -248,7 +265,6 @@ export const postReset = (req, res, next) => {
   const errors = req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
     return res.redirect('back');
   }
 
@@ -258,7 +274,6 @@ export const postReset = (req, res, next) => {
       .where('passwordResetExpires').gt(Date.now())
       .then((user) => {
         if (!user) {
-          req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
           return res.redirect('back');
         }
         user.password = req.body.password;
@@ -289,7 +304,6 @@ export const postReset = (req, res, next) => {
     };
     return transporter.sendMail(mailOptions)
       .then(() => {
-        req.flash('success', { msg: 'Success! Your password has been changed.' });
       });
   };
 
@@ -323,7 +337,6 @@ export const postForgot = (req, res, next) => {
   const errors = req.validationErrors();
 
   if (errors) {
-    req.flash('errors', errors);
     return res.redirect('/forgot');
   }
 
@@ -336,7 +349,7 @@ export const postForgot = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          req.flash('errors', { msg: 'Account with that email address does not exist.' });
+
         } else {
           user.passwordResetToken = token;
           user.passwordResetExpires = Date.now() + 3600000; // 1 hour
@@ -366,7 +379,7 @@ export const postForgot = (req, res, next) => {
     };
     return transporter.sendMail(mailOptions)
       .then(() => {
-        req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
+
       });
   };
 

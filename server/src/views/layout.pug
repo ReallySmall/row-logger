@@ -13,19 +13,12 @@ html
     link(rel='stylesheet', href='/css/main.css')
 
   body
-    .svg-icon-source
-      include ./sprite.symbol.svg      
-    include partials/header
-
+    div.svg-icon-source
+      include icons.svg
+    #root
+    script(src='/app/main.js')
     .container
-      include partials/flash
       block content
-
-    include partials/footer
-
-    script(src='/js/lib/jquery-3.1.1.min.js')
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js')
-    script(src='/js/charts.js')
 
     // Google Analytics: change UA-XXXXX-X to be your site's ID
     script.

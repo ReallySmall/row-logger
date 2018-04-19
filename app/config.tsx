@@ -4,6 +4,7 @@ export const appConfig = {
     apis: {
         login: '/api/login',
         sessionTotals: '/api/sessions/totals',
+        session: '/api/session',
         sessions: '/api/sessions'
     },
     auth: {

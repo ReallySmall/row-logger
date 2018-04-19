@@ -14,7 +14,7 @@ import { RootState } from '../../reducers';
 import { utilsHelpers, routingHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
-class SessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
+class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
         super(props, context);
@@ -22,18 +22,14 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
     componentDidMount(){
 
-        const { sessionActions, processing, routing } = this.props;
-        const { sessionRequest } = sessionActions;
-
-        if(!processing){
-            sessionRequest(routing.pathname);
-        }
+        const { sessionActions, processing, sessions } = this.props;
+        const { sessionsRequest } = sessionActions;
 
     }
 
     render() {
 
-        const { processing, error, data } = this.props;
+        const { processing, error, totals, sessions } = this.props;
 
         return (
 
@@ -75,7 +71,7 @@ function mapStateToProps(state: RootState, props) {
     return {
         processing: state.loading['SESSION'],
         error: state.error['SESSION'],
-        data: state.session.data
+        sessions: state.sessions.sessions
     };
 }
 
@@ -87,4 +83,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 // Plug into the Redux application state by wrapping component with React-Redux Connect()
-export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(SessionContainer);
+export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(CurrentSessionContainer);

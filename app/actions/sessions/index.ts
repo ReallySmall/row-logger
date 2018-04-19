@@ -22,6 +22,20 @@ const sessionTotalsRequestError = (error: FetchError): ReduxAction => {
     };
 };
 
+const sessionRequestSuccess = (data: object): ReduxAction => {
+    return {
+        type: actions.SESSION_REQUEST_SUCCESS,
+        data: data
+    };
+};
+
+const sessionRequestError = (error: FetchError): ReduxAction => {
+    return {
+        type: actions.SESSION_REQUEST_ERROR,
+        data: fetchHelpers.getErrorMessageString(error)
+    };
+};
+
 const sessionsRequestSuccess = (data: object, isShowRecent: boolean = false): ReduxAction => {
     return {
         type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_SUCCESS : actions.SESSIONS_REQUEST_SUCCESS,
@@ -34,6 +48,55 @@ const sessionsRequestError = (error: FetchError, isShowRecent: boolean = false):
         type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_ERROR : actions.SESSIONS_REQUEST_ERROR,
         data: fetchHelpers.getErrorMessageString(error)
     };
+};
+
+export const sessionRequest = (timeStamp: string): Function => {
+
+    return (dispatch) => {
+
+        const sessionData: string = sessionStorage.getItem(appConfig.auth.sessionState);
+        const sessionApi: string = appConfig.apis.session;
+
+        if (!sessionData) {
+
+            dispatch(auth.logOutRequest(appConfig.auth.messages.notAuthenticated));
+
+        } else {
+
+            dispatch(<ReduxAction>{
+                type: actions.SESSION_REQUEST,
+                data: 'Requesting sessions'
+            });
+
+            fetch(`${sessionApi}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
+
+                if (!response.ok) {
+                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestError, auth.logOutRequest);
+                    return;
+                }
+
+                response.text().then(data => {
+
+                    try {
+
+                        const resultData: any = JSON.parse(data);
+
+                        dispatch(sessionRequestSuccess(resultData));
+
+                    } catch (error) {
+
+                        dispatch(sessionRequestError(error));
+
+                    }
+
+                });
+
+            }).catch(error => dispatch(sessionRequestError(error)));
+
+        }
+
+    };
+
 };
 
 export const sessionsRequest = (query: SessionsQuery): Function => {

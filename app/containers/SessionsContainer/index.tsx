@@ -49,32 +49,29 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <div>
-                {processing &&
-                    <Loading message="Getting sessions data" />
-                }
-                {!processing &&
-                    <article className="row">
-                        <aside className="col s12 m3">
-                            <h4>Filter</h4>
-                            <div className="card">
-                                <div className="card-content">
-                                    <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} />
-                                </div>
+                <article className="row">
+                    <aside className="col s12 m3">
+                        <h4>Filter</h4>
+                        <div className="card">
+                            <div className="card-content">
+                                {processing && <Loading message="Getting sessions data" />}
+                                {!processing && error && <p>{error}</p>}
+                                {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} />}
                             </div>
-                        </aside>
-                        <section className="col s12 m9">
-                            <h4>Sessions</h4>
-                            <div className="card">
-                                <div className="card-content">
-                                    {sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
-                                </div>
+                        </div>
+                    </aside>
+                    <section className="col s12 m9">
+                        <h4>Sessions</h4>
+                        <div className="card">
+                            <div className="card-content">
+                                {processing && <Loading message="Getting sessions data" />}
+                                {!processing && error && <p>{error}</p>}
+                                {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
                             </div>
-                            <button className="btn">Export as CSV</button>
-                        </section>
-                    </article>
-                }
-            </div>
+                        </div>
+                        <button className="btn">Export as CSV</button>
+                    </section>
+                </article>
 
         );
 
@@ -85,8 +82,8 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.sessions.processing,
-        error: state.sessions.error,
+        processing: state.loading['SESSIONS'],
+        error: state.error['SESSIONS'],
         sessions: state.sessions.sessions
     };
 }

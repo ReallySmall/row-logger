@@ -1,7 +1,5 @@
 declare interface SessionInterface {
-    readonly processing: string;
-    readonly data: object;
-    readonly error: string;
+    readonly data: any;
 }
 
 export default SessionInterface;

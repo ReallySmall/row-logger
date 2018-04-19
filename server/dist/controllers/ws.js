@@ -11,7 +11,6 @@ var rowingDataRecorder = new rowingDataRecorder_1.RowingDataRecorder();
  * handle creation of new rowing data.
  */
 exports.recordSession = function (ws, req) {
-    console.log(req.params);
     ws.on('message', function (msgString) {
         console.log('Recieved message: ', msgString);
         // if message is invalid JSON, respond with error and close connection
@@ -24,7 +23,7 @@ exports.recordSession = function (ws, req) {
         var _a = JSON.parse(msgString), key = _a.key, machineId = _a.machineId, damping = _a.damping, multi = _a.multi, base = _a.base, data = _a.data;
         // if data array exists
         // create new array with each time added to base time to get full timestamps
-        var times = data && data.length ? data.map(function (datum) { return parseInt(base) + parseInt(datum); }) : [];
+        var times = data && data.length ? data.map(function (datum) { return parseInt(base, 10) + parseInt(datum, 10); }) : [];
         // if message contains no valid API key, respond with error and close connection
         if (!key || typeof key !== 'string') {
             ws.send(wsHelpers.createWsJson('Invalid API key, terminating', 'error'), function (error) { return wsHelpers.handleWsError(error); });

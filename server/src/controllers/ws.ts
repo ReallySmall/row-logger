@@ -15,8 +15,6 @@ const rowingDataRecorder = new RowingDataRecorder();
  */
 export const recordSession = (ws, req) => {
 
-  console.log(req.params);
-
   ws.on('message', msgString => {
 
     console.log('Recieved message: ', msgString);
@@ -33,7 +31,7 @@ export const recordSession = (ws, req) => {
 
     // if data array exists
     // create new array with each time added to base time to get full timestamps
-    const times = data && data.length ? data.map(datum => parseInt(base) + parseInt(datum)) : [];
+    const times = data && data.length ? data.map(datum => parseInt(base, 10) + parseInt(datum, 10)) : [];
 
     // if message contains no valid API key, respond with error and close connection
     if(!key || typeof key !== 'string'){

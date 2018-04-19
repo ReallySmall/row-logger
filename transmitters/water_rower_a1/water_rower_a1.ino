@@ -12,6 +12,7 @@ WiFiClient client;
 WebSocketClient webSocketClient;
 
 StaticJsonBuffer<200> jsonBuffer;
+
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 
 volatile long lastTriggered = 0; //the last time the interrupt pin was triggered

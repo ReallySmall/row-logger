@@ -11,6 +11,8 @@ import sessions from './sessions/';
 import DashboardSessionsInterface from './sessions/interfaces';
 import session from './session/';
 import SessionInterface from './session/interfaces';
+import loading from './loading/';
+import error from './error/';
 import { appConfig } from '../config';
 
 export interface RootState {
@@ -20,6 +22,8 @@ export interface RootState {
     dashboard: DashboardInterface;
     session: SessionInterface;
     form: any;
+    loading: any;
+    error: any;
 }
 
 // reducers to pass an action through to update state
@@ -29,7 +33,9 @@ const appReducer = combineReducers<RootState>({
     sessions,
     auth,
     session,
-    form: formReducer
+    form: formReducer,
+    loading,
+    error
 });
 
 export const rootReducer = (state, action) => {

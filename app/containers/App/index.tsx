@@ -7,7 +7,7 @@ import { RootState } from '../../reducers';
 import { routes } from '../../routes';
 import { appConfig } from '../../config';
 import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom';
-import { PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, LoginContainer, LogoutContainer, IdleContainer } from '../../containers';
+import { PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, CurrentSessionContainer, LoginContainer, IdleContainer } from '../../containers';
 import { Header, ErrorPage, StickyWrapper } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
 import { getSessionDataViaLocalStorage } from '../../helpers/storage';
@@ -77,6 +77,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                     <Switch>
                         <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />
                         <Route exact path={routes.sessions.pathname} render={() => <SessionsContainer routing={location} />} />
+                        <Route exact path={routes.currentSession.pathname} render={() => <CurrentSessionContainer routing={location} />} />
                         <Route exact path={routes.session.pathname} render={() => <SessionContainer routing={location} />} />
                         <Route exact path={routes.login.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <LoginContainer />} />
                         <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />

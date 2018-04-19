@@ -13,22 +13,9 @@ export default (state = initialState, action) => {
 
     switch (action.type) {
 
-        case actions.LOGIN_REQUEST:
-
-            return Object.assign({}, state, <AuthInterface> {
-                processing: action.data
-            });
-
-        case actions.LOGIN_WITH_JWT_REQUEST:
-
-            return Object.assign({}, state, <AuthInterface> {
-                processing: action.data
-            });
-
         case actions.LOGIN_REQUEST_SUCCESS:
 
             return Object.assign({}, state, <AuthInterface>{
-                processing: initialState.processing,
                 isLoggedIn: true,
                 roles: action.data
             });
@@ -36,7 +23,6 @@ export default (state = initialState, action) => {
         case actions.LOGIN_WITH_JWT_REQUEST_SUCCESS:
 
             return Object.assign({}, state, <AuthInterface>{
-                processing: initialState.processing,
                 isLoggedIn: true,
                 roles: action.data
             });
@@ -44,7 +30,6 @@ export default (state = initialState, action) => {
         case actions.LOGIN_WITH_JWT_REQUEST_FAILURE:
 
             return Object.assign({}, state, <AuthInterface>{
-                processing: initialState.processing,
                 isLoggedIn: false,
                 roles: []
             });
@@ -52,7 +37,6 @@ export default (state = initialState, action) => {
         case actions.LOGIN_REQUEST_ERROR:
 
             return Object.assign({}, state, <AuthInterface>{
-                processing: initialState.processing,
                 isLoggedIn: false,
                 roles: initialState.roles,
                 error: action.data

@@ -44,35 +44,34 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
         return (
 
             <div>
-                {processing &&
-                    <Loading />
-                }
-                {!processing &&
-                    <article className="row">
-                        <section className="col s12 m4">
-                            <h4>Overview</h4>
-                            <div className="card">
-                                <div className="card-content">
-                                    {processing && <Loading />}
-                                    {totals && <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />}
-                                    <ChartOverview />
-                                </div>
+                <article className="row">
+                    <section className="col s12 m4">
+                        <h4>Overview</h4>
+                        <div className="card">
+                            <div className="card-content">
+                                {processing && <Loading />}
+                                {!processing &&
+                                    <div>
+                                        {totals && <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />}
+                                        <ChartOverview total={112000} progress={46000} />
+                                    </div>
+                                }
                             </div>
-                        </section>
-                        <section className="col s12 m8">
-                            <h4>Recent</h4>
-                            <div className="card">
-                                <div className="card-content">
-                                    {recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
-                                </div>
+                        </div>
+                    </section>
+                    <section className="col s12 m8">
+                        <h4>Recent</h4>
+                        <div className="card">
+                            <div className="card-content">
+                                {processing && <Loading />}
+                                {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
                             </div>
-                            <p>
-                                <NavLink to="/sessions" className="waves-effect waves-light btn">View all sessions</NavLink>
-                            </p>
-                        </section>
-                    </article>
-                }
-
+                        </div>
+                        <p>
+                            <NavLink to="/sessions" className="waves-effect waves-light btn">View all sessions</NavLink>
+                        </p>
+                    </section>
+                </article>
             </div>
 
         );
@@ -85,8 +84,8 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 function mapStateToProps(state: RootState, props) {
     return {
         roles: state.auth.roles,
-        processing: state.overview.processing,
-        error: state.overview.error,
+        processing: state.loading['SESSION_TOTALS'],
+        error: state.error['SESSION_TOTALS'],
         totals: state.overview.totals,
         recentSessions: state.overview.recentSessions
     };

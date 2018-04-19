@@ -15,7 +15,7 @@ export class DoughnutChart extends React.Component<Interfaces.Props, Interfaces.
 
         return (
 
-            <Doughnut data={...} />
+            <Doughnut />
 
         );
     }

@@ -109,7 +109,7 @@ app.use(express.static(path.join(__dirname, '/../../public'), { maxAge: 31557600
  */
 app.get('/api/sessions', sessionsController.getSessions);
 app.get('/api/sessions/totals', sessionsController.getSessionTotals);
-app.get('/api//session', sessionsController.getSession);
+app.get('/api/session', sessionsController.getSession);
 app.post('/api/session/update', sessionsController.updateSession);
 app.post('/api/session/delete', sessionsController.deleteSession);
 app.post('/api/login', userController.postLogin);

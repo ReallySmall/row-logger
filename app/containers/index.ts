@@ -1,6 +1,5 @@
 import App from './App';
 import LoginContainer from './LoginContainer';
-import LogoutContainer from './LogoutContainer';
 import FormContainer from './FormContainer';
 import ExportRecordsContainer from './ExportRecordsContainer';
 import ExportSingleRecordContainer from './ExportSingleRecordContainer';
@@ -11,12 +10,12 @@ import IdleContainer from './IdleContainer';
 import OverviewContainer from './OverviewContainer';
 import SessionsContainer from './SessionsContainer';
 import SessionContainer from './SessionContainer';
+import CurrentSessionContainer from './CurrentSessionContainer';
 import PublicContainer from './PublicContainer';
 
 export {
     App,
     LoginContainer,
-    LogoutContainer,
     FormContainer,
     ExportRecordsContainer,
     ExportSingleRecordContainer,
@@ -27,5 +26,6 @@ export {
     OverviewContainer,
     SessionsContainer,
     SessionContainer,
+    CurrentSessionContainer,
     PublicContainer
 };

@@ -24,8 +24,8 @@ const paths = {
 		dist: './public/css'
 	},
 	svg: {
-		src:'./ui/img/**/*.svg',
-		dist: './server/dist/views'
+		src:'./ui/img/svg/**/*.svg',
+		dist: './server/src/views'
 	}
 }
 

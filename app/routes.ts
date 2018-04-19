@@ -12,6 +12,6 @@ export const routes = {
         pathname: '/sessions/current'
     },
     session: {
-        pathname: '/sessions/:session'
+        pathname: '/sessions/:date/:time'
     }
 };

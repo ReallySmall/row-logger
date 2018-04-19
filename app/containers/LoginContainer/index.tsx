@@ -45,8 +45,8 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState) {
     return {
-        processing: state.auth.processing,
-        error: state.auth.error
+        processing: state.loading['LOGIN'],
+        error: state.error['LOGIN']
     };
 }
 

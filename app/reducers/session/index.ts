@@ -8,12 +8,6 @@ export default <SessionStoreState>(state = initialState, action) => {
 
     switch (action.type) {
 
-        case actions.SESSION_REQUEST:
-
-            return Object.assign({}, state, <SessionInterface> {
-                processing: action.data
-            });
-
         case actions.SESSION_REQUEST_SUCCESS:
 
             const newSession = clone(state);
@@ -23,16 +17,7 @@ export default <SessionStoreState>(state = initialState, action) => {
             }
 
             return Object.assign({}, state, <SessionInterface>{
-                processing: initialState.processing,
-                data: newSession.data,
-                error: initialState.error
-            });
-
-        case actions.SESSION_REQUEST_ERROR:
-
-            return Object.assign({}, state, <SessionInterface>{
-                processing: initialState.processing,
-                error: action.data,
+                data: newSession.data
             });
 
         default:

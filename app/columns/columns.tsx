@@ -7,14 +7,16 @@ import { appConfig } from '../config';
 
 export const columns: Array<Column> = [
     {
-        columnId: 'createdAt',
+        columnId: 'date',
         name: 'Date',
         width: '180px',
         sortable: true,
         sortDirection: null,
-        renderer: (label: string) => {
-            const formatted = moment(label).format(appConfig.dateFormats.dateTime);
-            return <NavLink to="/sessions/url">{formatted}</NavLink>;
+        renderer: (value: string) => {
+            console.log(value);
+            const path: string = `/sessions/${dateTimeHelpers.timeStampToUrlPath(value)}`;
+            const label: string = moment(value).format(appConfig.dateFormats.dateTime);
+            return <NavLink to={path}>{label}</NavLink>;
         },
         renderTemplate: null
     },
@@ -24,9 +26,9 @@ export const columns: Array<Column> = [
         width: '100%',
         sortable: true,
         sortDirection: null,
-        renderer: (label: number) => {
-            const formatted = rowingHelpers.metrestoKmString(label);
-            return <span>{formatted}</span>;
+        renderer: (value: number) => {
+            const label: string = rowingHelpers.metrestoKmString(value);
+            return <span>{label}</span>;
         },
         renderTemplate: null
     },
@@ -36,9 +38,9 @@ export const columns: Array<Column> = [
         width: '100%',
         sortable: true,
         sortDirection: null,
-        renderer: (label: number) => {
-            const formatted = dateTimeHelpers.millisToDuration(label);
-            return <span>{formatted}</span>;
+        renderer: (value: number) => {
+            const label: string = dateTimeHelpers.millisToDuration(value);
+            return <span>{label}</span>;
         },
         renderTemplate: null
     }

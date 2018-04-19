@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridHeaderContainer, GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
-import { ChartOverview, Loading } from '../../components';
+import { Loading, Icon } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
@@ -27,14 +27,19 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
         return (
 
             <div>
-                {processing &&
-                    <Loading message="Getting session data" />
-                }
-                {!processing &&
-                    <article className="row">
-                      Home
-                    </article>
-                }
+                <article className="row">
+                    <section className="col s12 m12">
+                        <div className="col s12 m4">
+                            <Icon name="rowing-machine" />
+                        </div>
+                        <div className="col s12 m4">
+                            <Icon name="arduino" />
+                        </div>
+                        <div className="col s12 m4">
+                            <Icon name="node" />
+                        </div>
+                    </section>
+                </article>
             </div>
 
         );

@@ -6,6 +6,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <WebSocketClient.h>
+#include <Secret.h>
 
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient client;
@@ -13,14 +14,13 @@ WebSocketClient webSocketClient;
 
 StaticJsonBuffer<200> jsonBuffer;
 
-const char* wifiAP = "PLUSNET-98HF"; // WIFI Access Point name
-const char* wifiSSID = "a769b594ad"; // WIFI SSID password
-
-const char apiKey[] = "_my15charapikey"; // key to send to API
+const char* wifiAP = WIFIAP; // WIFI Access Point name
+const char* wifiSSID = WIFISSID; // WIFI SSID password
+const char apiKey[] = "_my15charapikey"; // key to send to API (DEFUNCT)
 const char machineId[] = "water_rower_a1"; // the type of rower
 const char damping[] = "2000"; // ml - however full your water tank is
 
-char postRowingDataSocket[] = "192.168.1.64"; // socket for logging rowing data
+char postRowingDataSocket[] = SOCKETIP; // socket for logging rowing data
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 
 volatile long lastTriggered = 0; //the last time the interrupt pin was triggered

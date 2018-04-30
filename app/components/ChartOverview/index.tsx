@@ -16,9 +16,9 @@ export class ChartOverview extends React.Component<Interfaces.Props, Interfaces.
         const data = {
             labels: ['Completed', 'Remaining'],
             datasets: [{
-                data: [total - progress, progress],
-                backgroundColor: ['#FF6384', '#36A2EB'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB']
+                data: [progress, total - progress],
+                backgroundColor: ['#36A2EB', '#FF6384'],
+                hoverBackgroundColor: ['#36A2EB', '#FF6384']
             }]
         };
 
@@ -29,7 +29,7 @@ export class ChartOverview extends React.Component<Interfaces.Props, Interfaces.
         return (
 
             <div>
-                <p>Next target: River Aire (112 km)</p>
+                <p className="th">Next target: River Aire (112 km)</p>
                 <Doughnut data={data} options={options} />
             </div>
 

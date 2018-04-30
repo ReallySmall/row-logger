@@ -1,8 +1,6 @@
 import App from './App';
 import LoginContainer from './LoginContainer';
 import FormContainer from './FormContainer';
-import ExportRecordsContainer from './ExportRecordsContainer';
-import ExportSingleRecordContainer from './ExportSingleRecordContainer';
 import GridHeaderContainer from './GridHeaderContainer';
 import GridBodyContainer from './GridBodyContainer';
 import PaginationContainer from './PaginationContainer';
@@ -12,13 +10,13 @@ import SessionsContainer from './SessionsContainer';
 import SessionContainer from './SessionContainer';
 import CurrentSessionContainer from './CurrentSessionContainer';
 import PublicContainer from './PublicContainer';
+import RegisterContainer from './RegisterContainer';
+import AccountContainer from './AccountContainer';
 
 export {
     App,
     LoginContainer,
     FormContainer,
-    ExportRecordsContainer,
-    ExportSingleRecordContainer,
     GridHeaderContainer,
     GridBodyContainer,
     PaginationContainer,
@@ -27,5 +25,7 @@ export {
     SessionsContainer,
     SessionContainer,
     CurrentSessionContainer,
-    PublicContainer
+    PublicContainer,
+    RegisterContainer,
+    AccountContainer
 };

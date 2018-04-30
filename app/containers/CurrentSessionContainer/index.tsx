@@ -20,42 +20,19 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         super(props, context);
     }
 
-    componentDidMount(){
-
-        const { sessionActions, processing, sessions } = this.props;
-        const { sessionsRequest } = sessionActions;
-
-    }
-
     render() {
 
-        const { processing, error, totals, sessions } = this.props;
+        const { appConnected, loggerConnected } = this.props;
 
         return (
 
-            <div>
-                {processing &&
-                    <Loading message="Getting session data" />
+            <div className="container">
+                {(!loggerConnected || !appConnected) &&
+                    <Loading message="Awaiting connection" />
                 }
-                {!processing &&
+                {loggerConnected && appConnected &&
                     <article className="row">
-                        <aside className="col s12 m3">
-                            <h4>Data</h4>
-                            <div className="card">
-                                <div className="card-content">
 
-                                </div>
-                            </div>
-                        </aside>
-                        <section className="col s12 m9">
-                            <h4>Chart</h4>
-                            <div className="card">
-                                <div className="card-content">
-
-                                </div>
-                            </div>
-                            <button className="btn">Export as CSV</button>
-                        </section>
                     </article>
                 }
             </div>
@@ -69,9 +46,8 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.loading['SESSION'],
-        error: state.error['SESSION'],
-        sessions: state.sessions.sessions
+        appConnected: state.active.appConnected,
+        loggerConnected: state.active.loggerConnected
     };
 }
 

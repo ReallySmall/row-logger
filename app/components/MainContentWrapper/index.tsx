@@ -15,9 +15,9 @@ export class MainContentWrapper extends React.Component<Interfaces.Props, Interf
 
         return (
             <div>
-                <div className="grid-container main-container" id="content">
+                <div className="container">
                     {sideBarContent && <SideBar sideBarContent={sideBarContent} />}
-                    <div className="main-content full-width">
+                    <div>
                         {children}
                     </div>
                 </div>

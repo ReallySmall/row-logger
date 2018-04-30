@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connecting, open, closed, message } from './actions';
 import { createWebsocket } from './websocket';
 import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND } from '../../constants/actions';
+import { appConfig } from '../../config';
 
 const partial = require('lodash/fp/partial');
 const partialRight = require('lodash/fp/partialRight');
@@ -20,10 +21,17 @@ const createMiddleware = () => {
 
     // Function will dispatch actions returned from action creators.
     const dispatchAction = partial(compose, [dispatch]);
+    const loginData: string = sessionStorage.getItem(appConfig.auth.sessionState); // look for a JWT in session storage
 
-    // Setup handlers to be called like this:
-    // dispatch(open(event));
-    websocket.onopen = dispatchAction(open);
+    websocket.onopen = () => {
+      dispatchAction(open);
+      if (websocket) {
+        websocket.send(loginData);
+      } else {
+        console.warn('WebSocket is closed, ignoring.');
+      }
+    };
+
     websocket.onclose = dispatchAction(closed);
     websocket.onmessage = dispatchAction(message);
 
@@ -52,7 +60,7 @@ const createMiddleware = () => {
 
     switch (action.type) {
       // User request to connect
-      case 'WEBSOCKET_CONNECT':
+      case WEBSOCKET_CONNECT:
         close();
         initialize(store, action.payload);
         next(action);

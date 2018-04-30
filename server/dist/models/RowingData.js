@@ -14,7 +14,7 @@ var rowingDataSchema = new mongoose.Schema({
     damping: String,
     multi: String,
     times: Array,
-    refDistance: String
+    note: String
 }, {
     timestamps: true,
     toJSON: { virtuals: true }

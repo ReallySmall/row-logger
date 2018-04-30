@@ -3,21 +3,14 @@ import { appConfig } from '../config';
 // generic handler for fetch errors
 export const handleFetchResponseError = (response: any, dispatch: Function, errorAction: Function, logOutAction: Function): void => {
 
-    response.text()
+    response
+        .json()
         .then(data => {
 
-            try {
+            dispatch(errorAction(data)); // dispatch the error action
 
-                const parsedData: any = JSON.parse(data);
-
-                dispatch(errorAction(parsedData)); // dispatch the error action
-
-                if (response.status === 401) { // if accessing while unauthorised (JWT probably expired), force logout
-                    dispatch(logOutAction(appConfig.auth.messages.idleTimeout));
-                }
-
-            } catch (error) {
-                dispatch(errorAction(error)); // dispatch the error action
+            if (response.status === 401) { // if accessing while unauthorised (JWT probably expired), force logout
+                dispatch(logOutAction(appConfig.auth.messages.idleTimeout));
             }
 
         });

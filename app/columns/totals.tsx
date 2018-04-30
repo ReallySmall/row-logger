@@ -15,8 +15,7 @@ export const totalsColumns: Array<Column> = [
         renderer: (label: number) => {
             const formatted = rowingHelpers.metrestoKmString(label);
             return <span>{formatted}</span>;
-        },
-        renderTemplate: null
+        }
     },
     {
         columnId: 'time',
@@ -27,8 +26,7 @@ export const totalsColumns: Array<Column> = [
         renderer: (label: number) => {
             const formatted = dateTimeHelpers.millisToDuration(label);
             return <span>{formatted}</span>;
-        },
-        renderTemplate: null
+        }
     }
 ];
 

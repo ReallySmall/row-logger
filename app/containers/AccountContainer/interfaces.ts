@@ -1,12 +1,11 @@
 export namespace Interfaces {
 
     export interface Props {
-        exportActions?: any;
-        detailId?: string;
-        fileName: string;
-        processing?: boolean;
+        processing?: string;
         error?: string;
-        fieldData?: any;
+        sessionsAction?: any;
+        totals: GridData;
+        recentSessions: GridData;
     }
 
     export interface State {

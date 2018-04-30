@@ -20,6 +20,8 @@ var passport = require('passport');
 var expressValidator = require('express-validator');
 var expressWs = require('express-ws');
 var jwt = require('jsonwebtoken');
+//const https = require('https');
+//const fs = require('fs');
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
@@ -38,8 +40,13 @@ var passportConfig = require('./config/passport');
 /**
  * Create Express server.
  */
+var sslOptions = {
+    key: '',
+    cert: ''
+};
 var app = express();
-var wsHandler = expressWs(app);
+//const server = https.createServer(sslOptions, app);
+var wsInstance = expressWs(app);
 /**
  * Connect to MongoDB.
  */
@@ -91,6 +98,10 @@ app.use(function (req, res, next) {
         next();
     }
 });
+app.use(function (req, res, next) {
+    req.wsInstance = wsInstance;
+    next();
+});
 app.use(express.static(path.join(__dirname, '/../../public'), { maxAge: 31557600000 }));
 /**
  * API routes.
@@ -107,7 +118,7 @@ app.post('/api/signup', userController.postSignup);
 app.post('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
-app.ws('/api/socket', wsController.recordSession);
+app.ws('/api', wsController.recordSession);
 /**
  * App route.
  */

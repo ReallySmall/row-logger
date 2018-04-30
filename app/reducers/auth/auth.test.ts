@@ -18,8 +18,7 @@ describe('Auth reducer', () => {
         ];
 
         const expectedObject = {
-            isLoggedIn: false,
-            error: undefined
+            isLoggedIn: false
         };
 
         actionTypes.forEach(actionType => {
@@ -27,7 +26,6 @@ describe('Auth reducer', () => {
             const returnedState = auth(undefined, actionType);
 
             expect(returnedState).toMatchObject(expectedObject);
-            expect(typeof returnedState['processing']).toBe('string');
 
         });
 
@@ -36,14 +34,12 @@ describe('Auth reducer', () => {
     it('Should log in a successfully authenticated user', () => {
 
         const actionTypes: Array<any> = [
-            { type: actions.LOGIN_REQUEST_SUCCESS, data: ['Admins'] },
-            { type: actions.LOGIN_WITH_JWT_REQUEST_SUCCESS, data: ['Admins'] }
+            { type: actions.LOGIN_REQUEST_COMPLETE, data: ['Admins'] },
+            { type: actions.LOGIN_WITH_JWT_REQUEST_COMPLETE, data: ['Admins'] }
         ];
 
         const expectedObject = {
-            processing: undefined,
-            isLoggedIn: true,
-            error: undefined
+            isLoggedIn: true
         };
 
         actionTypes.forEach(actionType => {
@@ -58,9 +54,8 @@ describe('Auth reducer', () => {
 
     it('Should recieve an error message on login error', () => {
 
-        const returnedState = auth(undefined, { type: actions.LOGIN_REQUEST_ERROR, data: 'error' });
+        const returnedState = auth(undefined, { type: actions.LOGIN_REQUEST_COMPLETE, error: true });
         const expectedObject: Object = {
-            processing: undefined,
             isLoggedIn: false
         };
 

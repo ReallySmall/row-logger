@@ -4,28 +4,6 @@
 // they are passed into UI components via props and normally called by a user interaction
 
 import * as actions from '../../constants/actions';
-import { queryRequest } from '../../actions/query';
-
-export const changeRecordsPerPage = (requestedpageSize: number): Function => {
-
-    return (dispatch, getState) => {
-
-        // the latest data query, to modify and run again if the requested page is not yet in state
-        // and the current page size in the store
-        const { currentQuery, pageSize } = getState().dashboard;
-
-        // modify the last query to fetch results with updated page size
-        currentQuery.pageSize = requestedpageSize;
-        currentQuery.pageNumber = 1;
-
-        // then re-run the query
-        dispatch(queryRequest(currentQuery, { reset: true }));
-        // and update store with new page size
-        dispatch(<ReduxAction>{ type: actions.PAGING_CHANGE_ITEMS_PER_PAGE, data: requestedpageSize });
-
-    };
-
-};
 
 export const changePage = (requestedPageIndex: number): Function => {
 
@@ -53,7 +31,7 @@ export const changePage = (requestedPageIndex: number): Function => {
         // and then re-run the query to get it
         // not passing true into second parameter
         // as we want to keep the existing page data in our state and add to it
-        dispatch(queryRequest(updatedQuery, { reset: false }));
+        //dispatch(queryRequest(updatedQuery, { reset: false }));
 
     };
 

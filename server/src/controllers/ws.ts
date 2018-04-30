@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 import { RowingData } from '../models/RowingData';
 import { User } from '../models/User';
@@ -15,77 +16,88 @@ const rowingDataRecorder = new RowingDataRecorder();
  */
 export const recordSession = (ws, req) => {
 
+  setTimeout(() => { // client gets n seconds to send a valid authentication message before being disconnected
+    if(!req.user) ws.terminate();
+  }, 5000);
+
   ws.on('message', msgString => {
 
-    console.log('Recieved message: ', msgString);
+    if(!req.user){ // first client message must be a valid JWT
 
-    // if message is invalid JSON, respond with error and close connection
-    if(wsHelpers.isInvalidJson(msgString)){
-      ws.send(wsHelpers.createWsJson('Invalid request, terminating', 'error'), error => wsHelpers.handleWsError(error));
-      ws.terminate();
-      return;
-    }
+      jwt.verify(msgString, process.env.JWT_TOKEN_SECRET, (error, token) => {
 
-    // attempt to extract variables from message
-    const { key, machineId, damping, multi, base, data } = JSON.parse(msgString);
-
-    // if data array exists
-    // create new array with each time added to base time to get full timestamps
-    const times = data && data.length ? data.map(datum => parseInt(base, 10) + parseInt(datum, 10)) : [];
-
-    // if message contains no valid API key, respond with error and close connection
-    if(!key || typeof key !== 'string'){
-      ws.send(wsHelpers.createWsJson('Invalid API key, terminating', 'error'), error => wsHelpers.handleWsError(error));
-      ws.terminate();
-      return;
-    }
-
-    // clear existing timeout
-    rowingDataRecorder.cancelSaveTimeOut(key);
-
-    // if an active rowing session doesn't exist yet for this API key
-    if(!rowingDataRecorder.sessionExists(key)){
-
-      // look for a user with matching API key
-      User.findOne({ rowingDataApiKey: key }, (error, existingUser) => {
-
-        if(error || !existingUser){
-
-          ws.send(wsHelpers.createWsJson('Invalid API key, terminating', 'error'), error => wsHelpers.handleWsError(error));
-          ws.terminate();
+        if(error){ // if JWT auth fails
+          console.log(error);
+          ws.terminate(); // close the socket
           return;
-
         }
 
-        // if no base time was supplied
-        // assume the client needs it
-        if(!base){
-
-          ws.send(wsHelpers.createWsJson(Date.now().toString(), 'base'), error => wsHelpers.handleWsError(error));
-          return;
-
-        }
-
-        // if all required params exist
-        if(machineId && damping && multi && base){
-
-          rowingDataRecorder.createSession(key, existingUser._id, machineId, damping, multi, times);
-          rowingDataRecorder.timeOutThenSave(key);
-
-        }
+        req.user = token.user; // otherwise flag the socket as authenticated
+        ws.send(wsHelpers.createWsJson('Authenticated', 'authenticated'), error => wsHelpers.handleWsError(error));
 
       });
 
-    // if an active rowing session already exists for this API key
     } else {
 
-      // append new times to existing times
-      rowingDataRecorder.addDataToSession(key, times);
-      rowingDataRecorder.timeOutThenSave(key);
+      // if message is invalid JSON, respond with error
+      if(wsHelpers.isInvalidJson(msgString)){
+        console.log('Invalid JSON in recieved message: ', msgString);
+        ws.send(wsHelpers.createWsJson('Invalid request format', 'error'), error => wsHelpers.handleWsError(error));
+        return;
+      }
 
-      const currentDistance = rowingDataHelpers.timesToMetres([rowingDataRecorder.getSessionTimes(key)], multi, 4.805).toString() + 'm';
+      console.log('Recieved message: ', msgString);
 
-      ws.send(wsHelpers.createWsJson(currentDistance, 'message'), error => wsHelpers.handleWsError(error));
+      // attempt to extract variables from message
+      const { machineId, damping, multi, base, data } = JSON.parse(msgString);
+
+      // if data array exists
+      // create new array with each time added to base time to get full timestamps
+      const times = data && data.length ? data.map(datum => parseInt(base, 10) + parseInt(datum, 10)) : [];
+
+      // clear any existing timeout
+      rowingDataRecorder.cancelSaveTimeOut(req.user);
+
+      // if an active rowing session doesn't exist yet for this API key
+      if(!rowingDataRecorder.sessionExists(req.user)){
+
+        console.log(req.user);
+
+        // look for a user with matching API key
+        User.findById(req.user, (error, user) => {
+
+          if(error || !user){
+
+            ws.send(wsHelpers.createWsJson('Invalid user, terminating', 'error'), error => wsHelpers.handleWsError(error));
+            ws.terminate();
+            return;
+
+          }
+
+          // if all required params exist
+          if(machineId && damping && multi && base){
+
+            rowingDataRecorder.createSession(req.user, user._id, machineId, damping, multi, times);
+            rowingDataRecorder.timeOutThenSave(req.user);
+
+          }
+
+        });
+
+      // if an active rowing session already exists for this user
+      } else {
+
+        // append new times to existing times
+        rowingDataRecorder.addDataToSession(req.user, times);
+        rowingDataRecorder.timeOutThenSave(req.user);
+
+        const currentDistance = rowingDataHelpers.timesToMetres([rowingDataRecorder.getSessionTimes(req.user)], multi, 4.805).toString() + 'm';
+
+        ws.send(wsHelpers.createWsJson(currentDistance, 'message'), error => wsHelpers.handleWsError(error));
+
+      }
+
+      req.wsInstance.getWss().clients.forEach(client => client.send(req.user));
 
     }
 

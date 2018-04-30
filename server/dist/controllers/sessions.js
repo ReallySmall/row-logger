@@ -3,7 +3,6 @@ exports.__esModule = true;
 var moment = require('moment');
 var User_1 = require("../models/User");
 var RowingData_1 = require("../models/RowingData");
-var dateTimeHelpers = require("../helpers/dateTimeHelper");
 var rowingDataHelpers = require("../helpers/rowingDataHelper");
 var resHelpers = require("../helpers/resHelper");
 /**
@@ -11,13 +10,11 @@ var resHelpers = require("../helpers/resHelper");
  * Rowing session totals.
  */
 exports.getSessionTotals = function (req, res) {
-    if (!req.user) {
+    if (!req.user)
         return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-    }
     User_1.User.findById(req.user, function (error, user) {
-        if (error) {
+        if (error)
             return res.status(500).json(resHelpers.jsonErrorMessage);
-        }
         res.status(200).json({
             date: user.createdAt,
             distance: user.rowingTotalMetres,
@@ -31,21 +28,20 @@ exports.getSessionTotals = function (req, res) {
  */
 exports.getSessions = function (req, res) {
     var limit = req.query.limit ? parseInt(req.query.limit, 10) : 100;
-    if (!req.user) {
+    if (!req.user)
         return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-    }
     RowingData_1.RowingData
         .find({ user: req.user })
-        .select('-_id -id -user')
+        .select('-id -user')
         .sort('-createdAt')
         .limit(limit)
         .lean({ virtuals: true })
         .exec(function (error, data) {
-        if (error) {
+        if (error)
             return res.status(500).json(resHelpers.jsonErrorMessage);
-        }
         var sanitisedData = data.map(function (datum) {
             return {
+                id: datum.id,
                 date: datum.createdAt,
                 distance: datum.distance,
                 time: datum.time
@@ -59,29 +55,14 @@ exports.getSessions = function (req, res) {
  * Single rowing session.
  */
 exports.getSession = function (req, res) {
-    if (!req.user) {
+    if (!req.user)
         return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-    }
-    var _a = req.params, date = _a.date, time = _a.time;
-    var userId = req.user._id;
-    var parsedDateTime = new Date(dateTimeHelpers.urlPathToTimeStamp(date, time));
-    var parsedDateTimePlusOneMinute = new Date(parsedDateTime.getTime() + (1000 * 60));
-    if (!parsedDateTime) {
-        return res.status(404).json(resHelpers.jsonNotFoundMessage);
-    }
     RowingData_1.RowingData
-        .findOne({
-        user: userId,
-        createdAt: {
-            $gte: parsedDateTime.toISOString(),
-            $lt: parsedDateTimePlusOneMinute.toISOString()
-        }
-    })
+        .findById(req.query.id)
         .exec(function (err, data) {
-        if (err) {
+        if (err)
             return res.status(500).json(resHelpers.jsonErrorMessage);
-        }
-        if (!data) {
+        if (!data || !data.user || data.user.toString() !== req.user) {
             return res.status(404).json(resHelpers.jsonNotFoundMessage);
         }
         res.status(200).json(data);
@@ -93,13 +74,19 @@ exports.getSession = function (req, res) {
  */
 exports.deleteSession = function (req, res, next) {
     if (req.user) {
-        var sessionId = req.body.sessionId;
-        RowingData_1.RowingData.findByIdAndRemove(sessionId, req.body, function (error, data) {
-            if (error) {
+        var sessionId_1 = req.body.sessionId;
+        RowingData_1.RowingData.findById(sessionId_1, req.body, function (error, data) {
+            if (error)
                 return res.status(500).json(resHelpers.jsonErrorMessage);
+            if (data.user === req.user) {
+                RowingData_1.RowingData.findByIdAndRemove(sessionId_1, req.body, function (error, data) {
+                    if (error)
+                        return res.status(500).json(resHelpers.jsonErrorMessage);
+                    rowingDataHelpers.updateRowingTotals(req.user._id, 10);
+                    return res.status(200);
+                });
             }
-            rowingDataHelpers.updateRowingTotals(req.user._id, 10);
-            return res.status(200);
+            return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
         });
     }
 };
@@ -109,11 +96,13 @@ exports.deleteSession = function (req, res, next) {
  */
 exports.updateSession = function (req, res, next) {
     var sessionId = req.body.sessionId;
-    var refDistance = req.body.refDistance;
-    RowingData_1.RowingData.findByIdAndUpdate(sessionId, { $set: { refDistance: refDistance } }, function (error, data) {
-        if (error) {
+    var note = req.body.note;
+    // TODO need to verify user owns session before updating it!
+    RowingData_1.RowingData.findByIdAndUpdate(sessionId, { $set: { note: note } }, function (error, data) {
+        if (error)
             return res.status(500).json(resHelpers.jsonErrorMessage);
-        }
+        if (data.user !== req.user)
+            return res.status(401).json(resHelpers.jsonErrorMessage);
         return res.status(200);
     });
 };

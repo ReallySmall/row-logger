@@ -13,40 +13,23 @@ export default (state = initialState, action) => {
 
     switch (action.type) {
 
-        case actions.LOGIN_REQUEST_SUCCESS:
+        case actions.LOGIN_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <AuthInterface>{
-                isLoggedIn: true,
-                roles: action.data
+                isLoggedIn: action.error ? false : true,
+                roles: action.error ? initialState.roles : action.payload
             });
 
-        case actions.LOGIN_WITH_JWT_REQUEST_SUCCESS:
+        case actions.LOGIN_WITH_JWT_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <AuthInterface>{
-                isLoggedIn: true,
-                roles: action.data
-            });
-
-        case actions.LOGIN_WITH_JWT_REQUEST_FAILURE:
-
-            return Object.assign({}, state, <AuthInterface>{
-                isLoggedIn: false,
-                roles: []
-            });
-
-        case actions.LOGIN_REQUEST_ERROR:
-
-            return Object.assign({}, state, <AuthInterface>{
-                isLoggedIn: false,
-                roles: initialState.roles,
-                error: action.data
+                isLoggedIn: action.error ? false : true,
+                roles: action.error ? state.roles : action.payload
             });
 
         case actions.LOGOUT_REQUEST:
 
-            return Object.assign({}, state, <AuthInterface> {
-                error: action.data
-            });
+            return state;
 
         default:
             return <AuthInterface> state;

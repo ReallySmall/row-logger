@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema({
   steam: String,
   tokens: Array,
 
-  rowingDataApiKey: String,
   rowingLoggingTimeout: Number,
   shareRowingData: Boolean,
   rowingTotalMetres: Number,
@@ -27,9 +26,6 @@ const userSchema = new mongoose.Schema({
 
   profile: {
     name: String,
-    gender: String,
-    location: String,
-    website: String,
     picture: String
   }
 

@@ -8,18 +8,16 @@ export default <DetailsStoreState>(state = initialState, action) => {
 
     switch (action.type) {
 
-        case actions.SESSION_TOTALS_REQUEST_SUCCESS:
+        case actions.SESSION_TOTALS_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <DashboardOverviewInterface>{
-                totals: action.data,
-                error: initialState.error
+                totals: action.error ? state.totals : action.payload
             });
 
-        case actions.SESSIONS_RECENT_REQUEST_SUCCESS:
+        case actions.SESSIONS_RECENT_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <DashboardOverviewInterface>{
-                recentSessions: action.data,
-                error: initialState.error
+                recentSessions: action.error ? state.totals : action.payload
             });
 
         default:

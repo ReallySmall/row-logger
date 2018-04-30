@@ -26,7 +26,7 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 
         return (
 
-            <div>
+            <div className="container">
                 <article className="row">
                     <section className="col s12 m12">
                         <div className="col s12 m4">

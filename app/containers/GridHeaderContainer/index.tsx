@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as gridActions from '../../actions/grid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { GridTableHeader, GridCheckBox } from '../../components';
@@ -11,17 +10,8 @@ class GridHeaderContainer extends React.Component<Interfaces.Props, Interfaces.S
 
     render() {
 
-        const { gridActions, items, ids, columns, processing } = this.props;
+        const { items, ids, columns, processing } = this.props;
         const rows: Array<any> = ids;
-
-        let allRowsAreSelected: boolean = ids.length > 0 ? true : false;
-
-        for (const item in items) {
-            if (items.hasOwnProperty(item) && items[item].selected === false) {
-                allRowsAreSelected = false;
-                break;
-            }
-        }
 
         return (
 
@@ -41,7 +31,6 @@ class GridHeaderContainer extends React.Component<Interfaces.Props, Interfaces.S
                                         name={name}
                                         sortable={sortable}
                                         sortDirection={sortDirection}
-                                        sortAction={gridActions.gridSortByColumn}
                                         width={width} />
                                 );
 
@@ -66,10 +55,10 @@ function mapStateToProps(state: RootState) {
 }
 
 // React-Redux function which injects actions into this container as props
-function mapDispatchToProps(dispatch) {
-    return {
-        gridActions: bindActionCreators(gridActions as any, dispatch)
-    };
-}
+// function mapDispatchToProps(dispatch) {
+//     return {
+//         gridActions: bindActionCreators(gridActions as any, dispatch)
+//     };
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(GridHeaderContainer);
+export default connect(mapStateToProps, null, utilsHelpers.mergePropsForConnect)(GridHeaderContainer);

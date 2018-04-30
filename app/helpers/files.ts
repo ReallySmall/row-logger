@@ -41,12 +41,3 @@ export const downloadFileStream = (data: any, filename: string, mime?: string): 
 
     }
 };
-
-// set a file asset url correctly for the current environment
-export const setFilePath = (fileName: string): string => {
-
-    const pathPrefix = __ISDEVENV__ ? '/img/' : '/dist/img/';
-
-    return pathPrefix + fileName;
-
-};

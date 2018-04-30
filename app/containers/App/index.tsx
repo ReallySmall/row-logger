@@ -7,7 +7,7 @@ import { RootState } from '../../reducers';
 import { routes } from '../../routes';
 import { appConfig } from '../../config';
 import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom';
-import { PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, CurrentSessionContainer, LoginContainer, IdleContainer } from '../../containers';
+import { RegisterContainer, AccountContainer, PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, CurrentSessionContainer, LoginContainer, IdleContainer } from '../../containers';
 import { Header, ErrorPage, StickyWrapper } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
 import { getSessionDataViaLocalStorage } from '../../helpers/storage';
@@ -51,7 +51,8 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
     // the render method of App builds the main page layout and renders content based on routing and current user permissions
     render() {
 
-        const { location, isLoggedIn, authActions } = this.props;
+        const { location, isLoggedIn, appConnected, authActions } = this.props;
+        const socketActiveClass: string = appConnected ? '' : 'disabled';
 
         return (
 
@@ -62,24 +63,26 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                         <StickyWrapper>
                             <div className="nav-content container">
                                 <ul className="tabs tabs-transparent">
-                                    <li className="tab"><NavLink to="/">Overview</NavLink></li>
-                                    <li className="tab"><NavLink to="/sessions">Sessions</NavLink></li>
-                                    <li className="tab"><NavLink to="/sessions/current">Current session</NavLink></li>
+                                    <li className="tab"><NavLink to={routes.base.pathname}>Overview</NavLink></li>
+                                    <li className="tab"><NavLink to={routes.sessions.pathname}>Sessions</NavLink></li>
+                                    <li className="tab"><NavLink to={routes.activeSession.pathname} className={socketActiveClass}>Active session</NavLink></li>
                                 </ul>
                             </div>
                         </StickyWrapper>
                     }
                 </Header>
-                <main className="container">
-                    {!isLoggedIn && location.pathname !== routes.base.pathname && location.pathname !== routes.login.pathname &&
+                <main>
+                    {!isLoggedIn && location.pathname !== routes.base.pathname && location.pathname !== routes.login.pathname && location.pathname !== routes.register.pathname &&
                         <Redirect to={routes.base.pathname} />
                     }
                     <Switch>
                         <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />
                         <Route exact path={routes.sessions.pathname} render={() => <SessionsContainer routing={location} />} />
-                        <Route exact path={routes.currentSession.pathname} render={() => <CurrentSessionContainer routing={location} />} />
+                        <Route exact path={routes.activeSession.pathname} render={() => <CurrentSessionContainer routing={location} />} />
                         <Route exact path={routes.session.pathname} render={() => <SessionContainer routing={location} />} />
                         <Route exact path={routes.login.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <LoginContainer />} />
+                        <Route exact path={routes.register.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <RegisterContainer />} />
+                        <Route exact path={routes.account.pathname} render={() => !isLoggedIn ? <Redirect to={routes.base.pathname} /> : <AccountContainer />} />
                         <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />
                     </Switch>
                 </main>
@@ -94,7 +97,8 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        isLoggedIn: state.auth.isLoggedIn
+        isLoggedIn: state.auth.isLoggedIn,
+        appConnected: state.active.appConnected
     };
 }
 

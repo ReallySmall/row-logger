@@ -7,12 +7,10 @@ export default (state = initialState, action) => {
     const actionType: string = action.type;
 
     const requestSuffix: string = '_REQUEST';
-    const requestSuccessSuffix: string = '_REQUEST_SUCCESS';
-    const requestErrorSuffix: string = '_REQUEST_ERROR';
+    const requestSuccessSuffix: string = '_REQUEST_COMPLETE';
 
     const isLoading: boolean = (new RegExp(requestSuffix + '$')).test(actionType);
-    const isLoadingSuccess: boolean = (new RegExp(requestSuccessSuffix + '$')).test(actionType);
-    const isLoadingError: boolean = (new RegExp(requestErrorSuffix + '$')).test(actionType);
+    const isLoadingComplete: boolean = (new RegExp(requestSuccessSuffix + '$')).test(actionType);
 
     let actionTypeBase: string = '';
 
@@ -25,18 +23,9 @@ export default (state = initialState, action) => {
             [actionTypeBase]: true
         };
 
-    } else if(isLoadingSuccess){
+    } else if(isLoadingComplete){
 
         actionTypeBase = actionType.substring(0, actionType.lastIndexOf(requestSuccessSuffix));
-
-        return {
-            ...state,
-            [actionTypeBase]: false
-        };
-
-    } else if(isLoadingError){
-
-        actionTypeBase = actionType.substring(0, actionType.lastIndexOf(requestErrorSuffix));
 
         return {
             ...state,

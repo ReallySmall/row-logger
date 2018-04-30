@@ -8,49 +8,31 @@ import * as auth from './../auth';
 import { appConfig } from '../../config';
 import { fetchHelpers } from '../../helpers';
 
-const sessionTotalsRequestSuccess = (data: object): ReduxAction => {
+const sessionTotalsRequestComplete = (data: object, error: Error): ReduxAction => {
     return {
-        type: actions.SESSION_TOTALS_REQUEST_SUCCESS,
-        data: data
+        type: actions.SESSION_TOTALS_REQUEST_COMPLETE,
+        payload: error ? error : data,
+        error: error ? true : false
     };
 };
 
-const sessionTotalsRequestError = (error: FetchError): ReduxAction => {
+const sessionRequestComplete = (data: object, error: Error): ReduxAction => {
     return {
-        type: actions.SESSION_TOTALS_REQUEST_ERROR,
-        data: fetchHelpers.getErrorMessageString(error)
+        type: actions.SESSION_REQUEST_COMPLETE,
+        payload: error ? error : data,
+        error: error ? true : false
     };
 };
 
-const sessionRequestSuccess = (data: object): ReduxAction => {
+const sessionsRequestComplete = (data: object, isShowRecent: boolean = false, error: Error): ReduxAction => {
     return {
-        type: actions.SESSION_REQUEST_SUCCESS,
-        data: data
+        type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_COMPLETE : actions.SESSIONS_REQUEST_COMPLETE,
+        payload: error ? error : data,
+        error: error ? true : false
     };
 };
 
-const sessionRequestError = (error: FetchError): ReduxAction => {
-    return {
-        type: actions.SESSION_REQUEST_ERROR,
-        data: fetchHelpers.getErrorMessageString(error)
-    };
-};
-
-const sessionsRequestSuccess = (data: object, isShowRecent: boolean = false): ReduxAction => {
-    return {
-        type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_SUCCESS : actions.SESSIONS_REQUEST_SUCCESS,
-        data: data
-    };
-};
-
-const sessionsRequestError = (error: FetchError, isShowRecent: boolean = false): ReduxAction => {
-    return {
-        type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_ERROR : actions.SESSIONS_REQUEST_ERROR,
-        data: fetchHelpers.getErrorMessageString(error)
-    };
-};
-
-export const sessionRequest = (timeStamp: string): Function => {
+export const sessionRequest = (id: string): Function => {
 
     return (dispatch) => {
 
@@ -65,33 +47,19 @@ export const sessionRequest = (timeStamp: string): Function => {
 
             dispatch(<ReduxAction>{
                 type: actions.SESSION_REQUEST,
-                data: 'Requesting sessions'
+                data: 'Requesting session'
             });
 
-            fetch(`${sessionApi}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
+            fetch(`${sessionApi}?id=${id}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
                 if (!response.ok) {
                     fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestError, auth.logOutRequest);
                     return;
                 }
 
-                response.text().then(data => {
+                response.json().then(data => dispatch(sessionRequestComplete(data)));
 
-                    try {
-
-                        const resultData: any = JSON.parse(data);
-
-                        dispatch(sessionRequestSuccess(resultData));
-
-                    } catch (error) {
-
-                        dispatch(sessionRequestError(error));
-
-                    }
-
-                });
-
-            }).catch(error => dispatch(sessionRequestError(error)));
+            }).catch(error => dispatch(sessionRequestComplete(null, error)));
 
         }
 
@@ -116,7 +84,7 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
 
             dispatch(<ReduxAction>{
                 type: showRecent ? actions.SESSIONS_RECENT_REQUEST : actions.SESSIONS_REQUEST,
-                data: 'Requesting sessions'
+                payload: 'Requesting sessions'
             });
 
             fetch(`${sessionsApi}?limit=${limit}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
@@ -126,33 +94,23 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
                     return;
                 }
 
-                response.text().then(data => {
+                response.json().then(data => {
 
-                    try {
+                    const gridData: GridData = {
+                        items: {},
+                        ids: []
+                    };
 
-                        const resultData: any = JSON.parse(data);
+                    data.map((datum, index) => {
+                        gridData.items[datum.id] = datum;
+                        gridData.ids.push(datum.id);
+                    });
 
-                        const gridData: GridData = {
-                            items: {},
-                            ids: []
-                        };
-
-                        resultData.map((datum, index) => {
-                            gridData.items[datum.date] = datum;
-                            gridData.ids.push(datum.date);
-                        });
-
-                        dispatch(sessionsRequestSuccess(gridData, showRecent));
-
-                    } catch (error) {
-
-                        dispatch(sessionsRequestError(error, showRecent));
-
-                    }
+                    dispatch(sessionsRequestComplete(gridData, showRecent));
 
                 });
 
-            }).catch(error => dispatch(sessionsRequestError(error)));
+            }).catch(error => dispatch(sessionsRequestComplete(null, showRecent, error));
 
         }
 
@@ -185,30 +143,20 @@ export const sessionTotalsRequest = (): Function => {
                     return;
                 }
 
-                response.text().then(data => {
+                response.json().then(data => {
 
-                    try {
+                    const gridData: GridData = {
+                        items: {
+                            [data.date]: data
+                        },
+                        ids: [data.date]
+                    };
 
-                        const resultData: any = JSON.parse(data);
-
-                        const gridData: GridData = {
-                            items: {
-                                [resultData.date]: resultData
-                            },
-                            ids: [resultData.date]
-                        };
-
-                        dispatch(sessionTotalsRequestSuccess(gridData));
-
-                    } catch (error) {
-
-                        dispatch(sessionTotalsRequestError(error));
-
-                    }
+                    dispatch(sessionTotalsRequestComplete(gridData));
 
                 });
 
-            }).catch(error => dispatch(sessionTotalsRequestError(error)));
+            }).catch(error => dispatch(sessionTotalsRequestComplete(null, error)));
 
         }
 

@@ -17,16 +17,12 @@ var userSchema = new mongoose.Schema({
     linkedin: String,
     steam: String,
     tokens: Array,
-    rowingDataApiKey: String,
     rowingLoggingTimeout: Number,
     shareRowingData: Boolean,
     rowingTotalMetres: Number,
     rowingTotalTime: Number,
     profile: {
         name: String,
-        gender: String,
-        location: String,
-        website: String,
         picture: String
     }
 }, { timestamps: true });

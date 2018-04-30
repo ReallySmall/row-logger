@@ -16,6 +16,6 @@ export { GridCheckBox } from './GridCheckBox';
 export { GridTableHeader } from './GridTableHeader';
 export { ScrollWrapper } from './ScrollWrapper';
 export { StickyWrapper } from './StickyWrapper';
-//export { DoughnutChart } from './DoughnutChart';
+export { LineChart } from './LineChart';
 export { GridOverview } from './GridOverview';
 export { ChartOverview } from './ChartOverview';

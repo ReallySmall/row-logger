@@ -1,17 +1,13 @@
 import * as React from 'react';
 import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
-import * as tabActions from '../../actions/tabs';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridHeaderContainer, GridBodyContainer } from '../../containers';
-import { FormContainer } from '../..//containers/FormContainer';
-import { ChartOverview, Loading } from '../../components';
-import { columns } from '../../columns/columns';
-import { sessionFilters } from '../../forms';
+import { FormContainer } from '../../containers/FormContainer';
+import { Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers } from '../../helpers';
+import { utilsHelpers, routingHelpers, dateTimeHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class SessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -22,45 +18,88 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
     componentDidMount(){
 
-        const { sessionActions, processing, routing } = this.props;
+        const { session, sessionActions, processing, routing } = this.props;
         const { sessionRequest } = sessionActions;
+        const id: string = routing.pathname.replace('/sessions/', '');
 
-        if(!processing){
-            sessionRequest(routing.pathname);
+        if(!processing && !session){
+            sessionRequest(id);
         }
 
     }
 
     render() {
 
-        const { processing, error, data } = this.props;
+        const { processing, error, session } = this.props;
 
         return (
 
             <div>
-                {processing &&
+                {error &&
+                    <ErrorPage title="Not found" description="This session does not exist" />
+                }
+                {!error && processing &&
                     <Loading message="Getting session data" />
                 }
-                {!processing &&
-                    <article className="row">
-                        <aside className="col s12 m3">
-                            <h4>Data</h4>
-                            <div className="card">
-                                <div className="card-content">
-
-                                </div>
-                            </div>
-                        </aside>
-                        <section className="col s12 m9">
-                            <h4>Chart</h4>
-                            <div className="card">
-                                <div className="card-content">
-
-                                </div>
-                            </div>
-                            <button className="btn">Export as CSV</button>
-                        </section>
-                    </article>
+                {!error && !processing && session &&
+                    <div>
+                        <PageHeader title={dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}></PageHeader>
+                            <MainContentWrapper sideBarContent={[]}>
+                                <article className="row">
+                                    <aside className="col s12 m3">
+                                        <h4>Data</h4>
+                                        <div className="card">
+                                        <p>
+                                            <a className="btn-floating halfway-fab waves-effect waves-light">
+                                                <Icon name="edit" />
+                                            </a>
+                                        </p>
+                                        <div className="card-content">
+                                            <ul className="plain">
+                                                {session.distance &&
+                                                    <li>
+                                                        <p><strong>Distance</strong></p>
+                                                        <p>{session.distance}</p>
+                                                    </li>
+                                                }
+                                                {session.time &&
+                                                    <li>
+                                                        <p><strong>Time</strong></p>
+                                                        <p>{session.time}</p>
+                                                    </li>
+                                                }
+                                                <li>
+                                                    <p><strong>Average speed</strong></p>
+                                                    <p></p>
+                                                </li>
+                                                {session.machineId &&
+                                                    <li>
+                                                        <p><strong>Rower type</strong></p>
+                                                        <p>{session.machineId}</p>
+                                                    </li>
+                                                }
+                                                {session.damping &&
+                                                    <li>
+                                                        <p><strong>Damping level</strong></p>
+                                                        <p>{session.damping}</p>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </aside>
+                                <section className="col s12 m9">
+                                    <h4>Chart</h4>
+                                    <div className="card">
+                                        <div className="card-content">
+                                            <LineChart data={session.data} />
+                                        </div>
+                                    </div>
+                                    <button className="btn">Export as CSV</button>
+                                </section>
+                            </article>
+                        </MainContentWrapper>
+                    </div>
                 }
             </div>
 
@@ -72,11 +111,16 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
+
+    const {routing} = props;
+    const id: string = routing.pathname.replace('/sessions/', '');
+
     return {
         processing: state.loading['SESSION'],
         error: state.error['SESSION'],
-        data: state.session.data
+        session: state.session.data[id]
     };
+
 }
 
 // React-Redux function which injects actions into this container as props

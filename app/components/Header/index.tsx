@@ -35,14 +35,18 @@ export class Header extends React.Component<Interfaces.Props, Interfaces.State> 
                             <span>Row</span>
                             <span className="italic">logger</span>
                         </NavLink>
-                        <ul className="right hide-on-med-and-down">
-                            {isLoggedIn &&
+                        {isLoggedIn &&
+                            <ul className="right hide-on-med-and-down">
+                                <li><NavLink to="/account" className="button button-primary">Account</NavLink></li>
                                 <li><a href="#" className="button button-primary" onClick={this.logOut}>Log out</a></li>
-                            }
-                            {!isLoggedIn &&
+                            </ul>
+                        }
+                        {!isLoggedIn &&
+                            <ul className="right hide-on-med-and-down">
+                                <li><NavLink to="/register" className="button button-primary">Register</NavLink></li>
                                 <li><NavLink to="/login" className="button button-primary">Log in</NavLink></li>
-                            }
-                        </ul>
+                            </ul>
+                        }
                     </div>
                     {children}
                 </nav>

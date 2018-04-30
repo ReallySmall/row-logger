@@ -12,15 +12,11 @@ import * as resHelpers from '../helpers/resHelper';
  */
 export const getSessionTotals = (req, res) => {
 
-	if(!req.user){
-	    return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-	}
+	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
 
 	User.findById(req.user, (error, user) => {
 
-    	if (error) {
-    		return res.status(500).json(resHelpers.jsonErrorMessage);
-      	}
+    	if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
 
 		res.status(200).json({
   			date: user.createdAt,
@@ -40,24 +36,21 @@ export const getSessions = (req, res) => {
 
 	const limit: number = req.query.limit ? parseInt(req.query.limit, 10) : 100;
 
-	if(!req.user){
-	    return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-	}
+	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
 
 	RowingData
 		.find({ user: req.user })
-		.select('-_id -id -user')
+		.select('-id -user')
 		.sort('-createdAt')
 		.limit(limit)
 		.lean({ virtuals: true })
 		.exec((error, data) => {
 
-	    	if (error) {
-	    		return res.status(500).json(resHelpers.jsonErrorMessage);
-	      	}
+	    	if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
 
 	      	const sanitisedData: any = data.map((datum: any)=> {
 	      		return {
+	      			id: datum.id,
 	      			date: datum.createdAt,
 	      			distance: datum.distance,
 	      			time: datum.time
@@ -76,34 +69,15 @@ export const getSessions = (req, res) => {
  */
 export const getSession = (req, res) => {
 
-	if(!req.user){
-	    return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
-	}
-
-	const { date, time } = req.params;
-	const userId: string = req.user._id;
-	const parsedDateTime: Date = new Date(dateTimeHelpers.urlPathToTimeStamp(date, time));
-	const parsedDateTimePlusOneMinute: Date = new Date(parsedDateTime.getTime() + (1000 * 60));
-
-	if(!parsedDateTime){
-	    return res.status(404).json(resHelpers.jsonNotFoundMessage);
-	}
+	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
 
 	RowingData
-		.findOne({
-			user: userId,
-			createdAt: {
-				$gte: parsedDateTime.toISOString(),
-        		$lt: parsedDateTimePlusOneMinute.toISOString()
-			}
-		})
+		.findById(req.query.id)
 		.exec((err, data) => {
 
-	    	if (err) {
-	    		return res.status(500).json(resHelpers.jsonErrorMessage);
-	      	}
+	    	if (err) return res.status(500).json(resHelpers.jsonErrorMessage);
 
-	      	if(!data){
+	      	if(!data || !data.user || data.user.toString() !== req.user){
 	    		return res.status(404).json(resHelpers.jsonNotFoundMessage);
   			}
 
@@ -121,17 +95,27 @@ export const deleteSession = (req, res, next) => {
 
 	if(req.user){
 
-		const sessionId = req.body.sessionId;
+		const sessionId: string = req.body.sessionId;
 
-		RowingData.findByIdAndRemove(sessionId, req.body, (error, data) => {
+		RowingData.findById(sessionId, req.body, (error, data) => {
 
-			if (error) {
-				return res.status(500).json(resHelpers.jsonErrorMessage);
+			if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
+
+			if (data.user === req.user){
+
+				RowingData.findByIdAndRemove(sessionId, req.body, (error, data) => {
+
+					if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
+
+					rowingDataHelpers.updateRowingTotals(req.user._id, 10);
+
+					return res.status(200);
+
+				});
+
 			}
 
-			rowingDataHelpers.updateRowingTotals(req.user._id, 10);
-
-			return res.status(200);
+			return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
 
 		});
 
@@ -145,14 +129,14 @@ export const deleteSession = (req, res, next) => {
  */
 export const updateSession = (req, res, next) => {
 
-	const sessionId = req.body.sessionId;
-	const refDistance = req.body.refDistance;
+	const sessionId: string = req.body.sessionId;
+	const note: string = req.body.note;
 
-	RowingData.findByIdAndUpdate(sessionId, {$set: { refDistance: refDistance }}, (error, data) => {
+	// TODO need to verify user owns session before updating it!
+	RowingData.findByIdAndUpdate(sessionId, {$set: { note: note }}, (error, data) => {
 
-		if (error) {
-			return res.status(500).json(resHelpers.jsonErrorMessage);
-		}
+		if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
+		if (data.user !== req.user) return res.status(401).json(resHelpers.jsonErrorMessage);
 
 		return res.status(200);
 

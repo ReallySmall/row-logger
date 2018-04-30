@@ -2,22 +2,22 @@ import initialState from './initialState';
 import * as clone from 'clone';
 import * as actions from '../../constants/actions';
 import { appConfig } from '../../config';
-import SesionInterface from './interfaces';
+import SessionInterface from './interfaces';
 
 export default <SessionStoreState>(state = initialState, action) => {
 
     switch (action.type) {
 
-        case actions.SESSION_REQUEST_SUCCESS:
+        case actions.SESSION_REQUEST_COMPLETE:
 
-            const newSession = clone(state);
+            const data = clone(state.data);
 
-            if (action.data[appConfig.data.keyField]) {
-                newSession.data[action.data[appConfig.data.keyField]] = action.data;
+            if (action.payload[appConfig.data.keyField]) {
+                data[action.payload[appConfig.data.keyField]] = action.payload;
             }
 
             return Object.assign({}, state, <SessionInterface>{
-                data: newSession.data
+                data: data
             });
 
         default:

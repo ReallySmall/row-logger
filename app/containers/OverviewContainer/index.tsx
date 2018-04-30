@@ -40,20 +40,21 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
     render() {
 
         const { processing, error, totals, recentSessions } = this.props;
+        const progress: number = totals ? totals.items[totals.ids[0]].distance : 0;
 
         return (
 
-            <div>
+            <div className="container">
                 <article className="row">
                     <section className="col s12 m4">
-                        <h4>Overview</h4>
+                        <h4>Totals</h4>
                         <div className="card">
                             <div className="card-content">
                                 {processing && <Loading />}
-                                {!processing &&
+                                {!processing && totals &&
                                     <div>
-                                        {totals && <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />}
-                                        <ChartOverview total={112000} progress={46000} />
+                                        <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />
+                                        <ChartOverview total={112000} progress={progress} />
                                     </div>
                                 }
                             </div>

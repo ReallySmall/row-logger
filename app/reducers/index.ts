@@ -3,36 +3,38 @@ import { combineReducers, Reducer } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import auth from './auth/';
 import AuthInterface from './auth/interfaces';
-import dashboard from './dashboard/';
-import DashboardInterface from './dashboard/interfaces';
 import overview from './overview/';
-import DashboardOverviewInterface from './overview/interfaces';
+import OverviewInterface from './overview/interfaces';
 import sessions from './sessions/';
-import DashboardSessionsInterface from './sessions/interfaces';
+import SessionsInterface from './sessions/interfaces';
 import session from './session/';
 import SessionInterface from './session/interfaces';
+import active from './active/';
+import ActiveInterface from './active/interfaces';
 import loading from './loading/';
+import LoadingInterface from './loading/interfaces';
 import error from './error/';
+import ErrorInterface from './error/interfaces';
 import { appConfig } from '../config';
 
 export interface RootState {
     auth: AuthInterface;
-    overview: DashboardOverviewInterface;
-    sessions: DashboardSessionsInterface;
-    dashboard: DashboardInterface;
+    overview: OverviewInterface;
+    sessions: SessionsInterface;
     session: SessionInterface;
+    active: ActiveInterface;
+    loading: LoadingInterface;
+    error: ErrorInterface;
     form: any;
-    loading: any;
-    error: any;
 }
 
 // reducers to pass an action through to update state
 const appReducer = combineReducers<RootState>({
-    dashboard,
     overview,
     sessions,
     auth,
     session,
+    active,
     form: formReducer,
     loading,
     error

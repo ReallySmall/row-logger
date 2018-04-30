@@ -22,7 +22,7 @@ export const appConfig = {
         desktop: 960
     },
     data: {
-        keyField: 'submissionId' // the data field used as a key
+        keyField: 'id' // the data field used as a key
     },
     dateFormats: {
         date: 'DD/MM/YYYY',

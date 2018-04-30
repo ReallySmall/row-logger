@@ -1,5 +1,18 @@
+.page-header {
+  background-color: white;
+  margin: 0 0 20px 0;
+  .container {
+    overflow: hidden;
+    padding-top: 20px;
+  }
+}
+
 .brand-logo {
 
+}
+
+main > .container {
+  margin-top: 20px;
 }
 
 .navbar-fixed {
@@ -55,7 +68,6 @@
 }
 
 .tabs {
-	margin: 0 0 20px 0;
 	.tab {
 		&.active {
 			a {
@@ -71,6 +83,11 @@
 
 table {
 	table-layout: fixed;
+}
+
+.th {
+  padding: 15px 5px;
+  font-weight: bold;
 }
 
 fieldset {

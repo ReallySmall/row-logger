@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PageHeader, MainContentWrapper, BackButton } from '../../components';
+import { PageHeader, MainContentWrapper } from '../../components';
 import { Interfaces } from './interfaces';
 
 export class ErrorPage extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -16,12 +16,7 @@ export class ErrorPage extends React.Component<Interfaces.Props, Interfaces.Stat
 
             <div className="two-col-page wide submission-detail">
                 <PageHeader pageTitle={title}></PageHeader>
-                <MainContentWrapper
-                    sideBarContent={
-                        <div className="submission-detail__sidebar">
-                            <BackButton path="/" label="Back" />
-                        </div>
-                    }>
+                <MainContentWrapper sideBarContent={[]}>
                     {description}
                 </MainContentWrapper>
             </div>

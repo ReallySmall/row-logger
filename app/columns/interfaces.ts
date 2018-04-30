@@ -7,7 +7,6 @@ export namespace Interfaces {
         sortable: boolean;
         sortDirection: string;
         renderer: Function;
-        renderTemplate: string;
     }
 
 }

@@ -12,13 +12,11 @@ export const columns: Array<Column> = [
         width: '180px',
         sortable: true,
         sortDirection: null,
-        renderer: (value: string) => {
-            console.log(value);
-            const path: string = `/sessions/${dateTimeHelpers.timeStampToUrlPath(value)}`;
+        renderer: (value: string, id: string) => {
+            const path: string = `/sessions/${id}`;
             const label: string = moment(value).format(appConfig.dateFormats.dateTime);
             return <NavLink to={path}>{label}</NavLink>;
-        },
-        renderTemplate: null
+        }
     },
     {
         columnId: 'distance',
@@ -29,8 +27,7 @@ export const columns: Array<Column> = [
         renderer: (value: number) => {
             const label: string = rowingHelpers.metrestoKmString(value);
             return <span>{label}</span>;
-        },
-        renderTemplate: null
+        }
     },
     {
         columnId: 'time',
@@ -41,8 +38,7 @@ export const columns: Array<Column> = [
         renderer: (value: number) => {
             const label: string = dateTimeHelpers.millisToDuration(value);
             return <span>{label}</span>;
-        },
-        renderTemplate: null
+        }
     }
 ];
 

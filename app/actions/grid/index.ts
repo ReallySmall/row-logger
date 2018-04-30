@@ -4,24 +4,7 @@
 // they are passed into UI components via props and normally called by a user interaction
 
 import * as actions from '../../constants/actions';
-import { queryRequest } from '../../actions/query';
 import { pagingHelpers } from '../../helpers';
-
-// select a single record in the grid
-export const gridSelectRecord = (data: string): ReduxAction => {
-    return {
-        type: actions.GRID_SELECT_RECORD,
-        data: data
-    };
-};
-
-// deselect a single record in the grid
-export const gridDeSelectRecord = (data: string): ReduxAction => {
-    return {
-        type: actions.GRID_DESELECT_RECORD,
-        data: data
-    };
-};
 
 // sort the grid by a column
 export const gridSortByColumn = (sortColumn: string, sortDirection: string): Function => {

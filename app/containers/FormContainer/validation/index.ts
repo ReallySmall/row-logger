@@ -1,6 +1,7 @@
 import { required } from './required';
 import { date } from './date';
 import { dateRange } from './dateRange';
+import { email } from './email';
 import { maxNumber } from './maxNumber';
 import { minNumber } from './minNumber';
 import { maxLength } from './maxLength';
@@ -11,6 +12,7 @@ const validationMethods = {
     required, // does the field need a value?
     date, // does the field contain a valid date?
     dateRange, // is date valid as part of a date range?
+    email, // looks like an email address?
     maxNumber, // is the number less than or equal to the max?
     minNumber, // is the number greater than or equal to the min?
     maxLength, // is the length of the text string longer than the max?

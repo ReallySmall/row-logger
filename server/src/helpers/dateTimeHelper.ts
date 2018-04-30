@@ -20,7 +20,7 @@ export const timeStampToUrlPath = (dateString: string) => {
 
 export const urlPathToTimeStamp = (dateString: string, timeString: string) => {
 
-  	const reformattedDate = dateString.replace(/-/g, '/');
+  const reformattedDate = dateString.replace(/-/g, '/');
 	const reformattedTime = timeString.replace(/-/g, ':');
 
 	const validDate = moment(reformattedDate, 'DD/MM/YYYY').isValid();

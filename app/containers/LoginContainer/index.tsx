@@ -4,7 +4,8 @@ import login from '../../forms/login';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
-import { Login } from '../../components';
+import { FormContainer } from '../../containers/FormContainer';
+import { PageHeader, MainContentWrapper, Loading } from '../../components';
 import { appConfig } from '../../config';
 import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -30,12 +31,17 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 
         return (
 
-            <Login
-                submit={this.submit}
-                processing={processing}
-                formName={appConfig.formNames.login}
-                fields={login}
-                error={error} />
+            <div>
+                <PageHeader title="Login"></PageHeader>
+                <MainContentWrapper sideBarContent={[]}>
+                    <section>
+                        <h2 className="visually-hidden">Form</h2>
+                        {processing && <Loading message={processing} />}
+                        {!processing && <FormContainer form="login" onSubmit={this.submit} fieldData={login} />}
+                        {!processing && error && <p>{error}</p>}
+                    </section>
+                </MainContentWrapper>
+            </div>
 
         );
 

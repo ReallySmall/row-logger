@@ -5,13 +5,19 @@ export const routes = {
     login: {
         pathname: '/login'
     },
+    register: {
+        pathname: '/register'
+    },
+    account: {
+        pathname: '/account'
+    },
     sessions: {
         pathname: '/sessions'
     },
-    currentSession: {
-        pathname: '/sessions/current'
-    },
     session: {
-        pathname: '/sessions/:date/:time'
+        pathname: '/sessions/:id'
+    },
+    activeSession: {
+        pathname: '/active'
     }
 };

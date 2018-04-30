@@ -49,6 +49,7 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
+            <div className="container">
                 <article className="row">
                     <aside className="col s12 m3">
                         <h4>Filter</h4>
@@ -72,6 +73,7 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                         <button className="btn">Export as CSV</button>
                     </section>
                 </article>
+            </div>
 
         );
 

@@ -16,7 +16,7 @@ tmp
 #Build
 public/css/main.css
 
-transmitters/water_rower_a1/water_rower_a1.ino
+transmitters/water_rower_a1/secret.h
 
 # API keys and secrets
 .env

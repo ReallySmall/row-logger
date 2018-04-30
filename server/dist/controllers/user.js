@@ -21,23 +21,18 @@ exports.postLogin = function (req, res, next) {
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     req.getValidationResult().then(function (result) {
         if (!result.isEmpty()) {
-            var errors = result.array().map(function (elem) {
-                return elem.msg;
-            });
+            var errors = result.array().map(function (elem) { return elem.msg; });
             return res.status(401).json({ message: errors });
         }
         else {
             passport.authenticate('local', function (error, user, info) {
-                if (error) {
+                if (error)
                     return next(error);
-                }
-                if (!user) {
+                if (!user)
                     return res.status(401).json({ message: 'Authentication failed.' });
-                }
                 req.logIn(user, function (error) {
-                    if (error) {
+                    if (error)
                         return next(error);
-                    }
                     return res
                         .status(200)
                         .json({
@@ -70,9 +65,7 @@ exports.postSignup = function (req, res, next) {
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     req.getValidationResult().then(function (result) {
         if (!result.isEmpty()) {
-            var errors = result.array().map(function (elem) {
-                return elem.msg;
-            });
+            var errors = result.array().map(function (elem) { return elem.msg; });
             return res.status(401).json({ message: errors });
         }
         else {
@@ -81,21 +74,17 @@ exports.postSignup = function (req, res, next) {
                 password: req.body.password
             });
             User_1.User.findOne({ email: req.body.email }, function (error, existingUser) {
-                if (error) {
+                if (error)
                     return next(error);
-                }
-                if (existingUser) {
+                if (existingUser)
                     return res.redirect('/signup');
-                }
                 user_1.save(function (error) {
-                    if (error) {
+                    if (error)
                         return next(error);
-                    }
                     req.logIn(user_1, function (error) {
-                        if (error) {
+                        if (error)
                             return next(error);
-                        }
-                        res.redirect('/');
+                        res.status(200).json({ message: 'Sign up successful' });
                     });
                 });
             });
@@ -110,25 +99,19 @@ exports.postUpdateProfile = function (req, res, next) {
     req.assert('email', 'Please enter a valid email address.').isEmail();
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     var errors = req.validationErrors();
-    if (errors) {
-        return res.redirect('/account');
-    }
-    User_1.User.findById(req.user.id, function (err, user) {
-        if (err) {
-            return next(err);
-        }
+    if (errors)
+        return res.status(400).json({ message: errors });
+    User_1.User.findById(req.user.id, function (error, user) {
+        if (error)
+            return next(error);
         user.email = req.body.email || '';
         user.profile.name = req.body.name || '';
-        user.profile.gender = req.body.gender || '';
-        user.profile.location = req.body.location || '';
-        user.profile.website = req.body.website || '';
         user.rowingDataApiKey = req.body.rowingDataApiKey || '';
-        user.save(function (err) {
-            if (err) {
-                if (err.code === 11000) {
+        user.save(function (error) {
+            if (error) {
+                if (error.code === 11000)
                     return res.redirect('/account');
-                }
-                return next(err);
+                return next(error);
             }
             res.redirect('/account');
         });
@@ -142,18 +125,15 @@ exports.postUpdatePassword = function (req, res, next) {
     req.assert('password', 'Password must be at least 4 characters long').len(4);
     req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
     var errors = req.validationErrors();
-    if (errors) {
+    if (errors)
         return res.redirect('/account');
-    }
-    User_1.User.findById(req.user.id, function (err, user) {
-        if (err) {
-            return next(err);
-        }
+    User_1.User.findById(req.user.id, function (error, user) {
+        if (error)
+            return next(error);
         user.password = req.body.password;
-        user.save(function (err) {
-            if (err) {
-                return next(err);
-            }
+        user.save(function (error) {
+            if (error)
+                return next(error);
             res.redirect('/account');
         });
     });
@@ -163,32 +143,11 @@ exports.postUpdatePassword = function (req, res, next) {
  * Delete user account.
  */
 exports.postDeleteAccount = function (req, res, next) {
-    User_1.User.remove({ _id: req.user.id }, function (err) {
-        if (err) {
-            return next(err);
-        }
+    User_1.User.remove({ _id: req.user.id }, function (error) {
+        if (error)
+            return next(error);
         req.logout();
         res.redirect('/');
-    });
-};
-/**
- * GET /account/unlink/:provider
- * Unlink OAuth provider.
- */
-exports.getOauthUnlink = function (req, res, next) {
-    var provider = req.params.provider;
-    User_1.User.findById(req.user.id, function (err, user) {
-        if (err) {
-            return next(err);
-        }
-        user[provider] = undefined;
-        user.tokens = user.tokens.filter(function (token) { return token.kind !== provider; });
-        user.save(function (err) {
-            if (err) {
-                return next(err);
-            }
-            res.redirect('/account');
-        });
     });
 };
 /**
@@ -196,19 +155,16 @@ exports.getOauthUnlink = function (req, res, next) {
  * Reset Password page.
  */
 exports.getReset = function (req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated())
         return res.redirect('/');
-    }
     User_1.User
         .findOne({ passwordResetToken: req.params.token })
         .where('passwordResetExpires').gt(Date.now())
-        .exec(function (err, user) {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
+        .exec(function (error, user) {
+        if (error)
+            return next(error);
+        if (!user)
             return res.redirect('/forgot');
-        }
         res.render('account/reset', {
             title: 'Password Reset'
         });
@@ -222,34 +178,30 @@ exports.postReset = function (req, res, next) {
     req.assert('password', 'Password must be at least 4 characters long.').len(4);
     req.assert('confirm', 'Passwords must match.').equals(req.body.password);
     var errors = req.validationErrors();
-    if (errors) {
+    if (errors)
         return res.redirect('back');
-    }
     var resetPassword = function () {
         return User_1.User
             .findOne({ passwordResetToken: req.params.token })
             .where('passwordResetExpires').gt(Date.now())
             .then(function (user) {
-            if (!user) {
+            if (!user)
                 return res.redirect('back');
-            }
             user.password = req.body.password;
             user.passwordResetToken = undefined;
             user.passwordResetExpires = undefined;
             return user.save().then(function () { return new Promise(function (resolve, reject) {
                 req.logIn(user, function (err) {
-                    if (err) {
+                    if (err)
                         return reject(err);
-                    }
                     resolve(user);
                 });
             }); });
         });
     };
     var sendResetPasswordEmail = function (user) {
-        if (!user) {
+        if (!user)
             return;
-        }
         var transporter = nodemailer.createTransport({
             service: 'SendGrid',
             auth: {
@@ -263,23 +215,22 @@ exports.postReset = function (req, res, next) {
             subject: 'Your Hackathon Starter password has been changed',
             text: "Hello,\n\nThis is a confirmation that the password for your account " + user.email + " has just been changed.\n"
         };
-        return transporter.sendMail(mailOptions)
-            .then(function () {
-        });
+        return transporter
+            .sendMail(mailOptions)
+            .then(function () { });
     };
     resetPassword()
         .then(sendResetPasswordEmail)
         .then(function () { if (!res.finished)
-        res.redirect('/'); })["catch"](function (err) { return next(err); });
+        res.redirect('/'); })["catch"](function (error) { return next(error); });
 };
 /**
  * GET /forgot
  * Forgot Password page.
  */
 exports.getForgot = function (req, res) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated())
         return res.redirect('/');
-    }
     res.render('account/forgot', {
         title: 'Forgot Password'
     });
@@ -292,9 +243,8 @@ exports.postForgot = function (req, res, next) {
     req.assert('email', 'Please enter a valid email address.').isEmail();
     req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
     var errors = req.validationErrors();
-    if (errors) {
+    if (errors)
         return res.redirect('/forgot');
-    }
     var createRandomToken = crypto
         .randomBytesAsync(16)
         .then(function (buf) { return buf.toString('hex'); });

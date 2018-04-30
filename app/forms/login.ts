@@ -7,7 +7,7 @@ const login: AppForm = {
         typeSpecific: {},
         label: 'User name',
         value: '',
-        placeholder: 'Your MET email address',
+        placeholder: 'Your email address',
         conditionalParent: undefined,
         required: true,
         validators: ['required']

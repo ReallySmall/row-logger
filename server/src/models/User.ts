@@ -10,24 +10,10 @@ const userSchema = new mongoose.Schema({
   passwordResetToken: String,
   passwordResetExpires: Date,
 
-  facebook: String,
-  twitter: String,
-  google: String,
-  github: String,
-  instagram: String,
-  linkedin: String,
-  steam: String,
-  tokens: Array,
-
   rowingLoggingTimeout: Number,
   shareRowingData: Boolean,
   rowingTotalMetres: Number,
-  rowingTotalTime: Number,
-
-  profile: {
-    name: String,
-    picture: String
-  }
+  rowingTotalTime: Number
 
 }, { timestamps: true });
 

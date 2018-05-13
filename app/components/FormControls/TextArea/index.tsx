@@ -15,7 +15,7 @@ export class TextAreaFormControl extends React.Component<Interfaces.Props, Inter
         const { touched, error } = meta;
         const { maxLength } = typeSpecific || 0;
 
-        const textClass: string = classNames('form-control', 'form-row', 'form-textarea', { 'ValidationRequired': required });
+        const textClass: string = classNames({ 'required': required });
 
         return (
             <div className={textClass}>

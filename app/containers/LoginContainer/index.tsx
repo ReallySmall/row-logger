@@ -36,9 +36,13 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
                 <MainContentWrapper sideBarContent={[]}>
                     <section>
                         <h2 className="visually-hidden">Form</h2>
-                        {processing && <Loading message={processing} />}
-                        {!processing && <FormContainer form="login" onSubmit={this.submit} fieldData={login} />}
+                        {processing && <Loading message="Logging in" />}
                         {!processing && error && <p>{error}</p>}
+                        {!processing &&
+                            <div className="card">
+                                <FormContainer form="login" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={login} />
+                            </div>
+                        }
                     </section>
                 </MainContentWrapper>
             </div>

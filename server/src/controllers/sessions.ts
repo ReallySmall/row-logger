@@ -20,8 +20,8 @@ export const getSessionTotals = (req, res) => {
 
 		res.status(200).json({
   			date: user.createdAt,
-  			distance: user.rowingTotalMetres,
-  			time: user.rowingTotalTime
+  			distance: user.rowingTotalMetres || 0,
+  			time: user.rowingTotalTime || 0
       	});
 
     });

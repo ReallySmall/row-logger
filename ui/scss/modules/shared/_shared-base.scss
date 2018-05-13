@@ -1,0 +1,87 @@
+main > .container {
+  margin-top: 20px;
+}
+
+.centre-wrapper {
+	text-align: center;
+	.centre-child {
+		margin: 0px auto;
+	}
+}
+
+.page-background {
+	position: fixed;
+	bottom: 0;
+}
+
+.progress {
+	margin: 0;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.plain {
+	margin: 0;
+}
+
+.visually-hidden {
+	position: absolute; 
+  	overflow: hidden; 
+  	clip: rect(0 0 0 0); 
+  	height: 1px; width: 1px; 
+  	margin: -1px; padding: 0; border: 0;
+}
+
+.current-session {
+	.svg-icon {
+		margin-top: 28px;
+		fill: lightgray;
+	}
+}
+
+.btn-floating {
+	.svg-icon {
+		height: 50%;
+	    width: 50%;
+	    margin-top: 25%;
+	    margin-left: 25%;
+	    fill: white;
+	}
+}
+
+.tabs {
+	.tab {
+		&.active {
+			a {
+				border-bottom: 4px solid black !important;
+			}
+		}
+	}
+}
+
+.loading-container {
+	text-align: center;
+}
+
+table {
+	table-layout: fixed;
+}
+
+.th {
+  padding: 15px 5px;
+  font-weight: bold;
+}
+
+fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.grid-body {
+	table {
+		margin-bottom: 20px;
+	}
+}

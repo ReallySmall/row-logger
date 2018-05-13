@@ -33,7 +33,7 @@ export class DateTimeFormControl extends React.Component<Interfaces.Props, Inter
             autoComplete: 'off'
         };
 
-        const dateTimeClass: string = classNames('form-control', 'form-row', 'form-textbox', 'form-date-time', { 'ValidationRequired': required });
+        const dateTimeClass: string = classNames({ 'required': required });
         const inputClass: string = '';
 
         return (

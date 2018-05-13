@@ -1,0 +1,4 @@
+"use strict";
+exports.__esModule = true;
+exports.WEBSOCKET_AUTHENTICATED = 'WEBSOCKET:AUTHENTICATED';
+exports.WEBSOCKET_MESSAGE = 'WEBSOCKET:MESSAGE';

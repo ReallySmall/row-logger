@@ -51,19 +51,25 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
     // the render method of App builds the main page layout and renders content based on routing and current user permissions
     render() {
 
-        const { location, isLoggedIn, appConnected, authActions } = this.props;
+        const { location, isLoggedIn, userName, appConnected, authActions } = this.props;
         const socketActiveClass: string = appConnected ? '' : 'disabled';
+
+        console.log(userName);
 
         return (
 
             <div>
+                <svg className="page-background" viewBox="0 0 100 25">
+                  <path fill="#1f88e6" opacity="0.5" d="M0 30 V15 Q30 3 60 15 V30z" />
+                  <path fill="#1e387e" d="M0 30 V12 Q30 17 55 12 T100 11 V30z" />
+                </svg>
                 <h1 className="visually-hidden">RowLogger</h1>
-                <Header heading="RowLogger" isLoggedIn={isLoggedIn} authActions={authActions}>
+                <Header heading="RowLogger" isLoggedIn={isLoggedIn} userName={userName} authActions={authActions}>
                     {isLoggedIn &&
-                        <StickyWrapper>
+                        <StickyWrapper className="nav-sub">
                             <div className="nav-content container">
                                 <ul className="tabs tabs-transparent">
-                                    <li className="tab"><NavLink to={routes.base.pathname}>Overview</NavLink></li>
+                                    <li className="tab"><NavLink exact to={routes.base.pathname}>Overview</NavLink></li>
                                     <li className="tab"><NavLink to={routes.sessions.pathname}>Sessions</NavLink></li>
                                     <li className="tab"><NavLink to={routes.activeSession.pathname} className={socketActiveClass}>Active session</NavLink></li>
                                 </ul>
@@ -72,14 +78,11 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                     }
                 </Header>
                 <main>
-                    {!isLoggedIn && location.pathname !== routes.base.pathname && location.pathname !== routes.login.pathname && location.pathname !== routes.register.pathname &&
-                        <Redirect to={routes.base.pathname} />
-                    }
                     <Switch>
                         <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />
-                        <Route exact path={routes.sessions.pathname} render={() => <SessionsContainer routing={location} />} />
-                        <Route exact path={routes.activeSession.pathname} render={() => <CurrentSessionContainer routing={location} />} />
-                        <Route exact path={routes.session.pathname} render={() => <SessionContainer routing={location} />} />
+                        <Route exact path={routes.sessions.pathname} render={() => isLoggedIn ? <SessionsContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
+                        <Route exact path={routes.activeSession.pathname} render={() => isLoggedIn ? <CurrentSessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
+                        <Route exact path={routes.session.pathname} render={() => isLoggedIn ? <SessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
                         <Route exact path={routes.login.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <LoginContainer />} />
                         <Route exact path={routes.register.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <RegisterContainer />} />
                         <Route exact path={routes.account.pathname} render={() => !isLoggedIn ? <Redirect to={routes.base.pathname} /> : <AccountContainer />} />
@@ -98,6 +101,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 function mapStateToProps(state: RootState, props) {
     return {
         isLoggedIn: state.auth.isLoggedIn,
+        userName: state.auth.userName,
         appConnected: state.active.appConnected
     };
 }

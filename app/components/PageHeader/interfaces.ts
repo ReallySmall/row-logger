@@ -1,7 +1,7 @@
 export namespace Interfaces {
 
     export interface Props {
-        pageTitle: string;
+        title: string;
     }
 
     export interface State {

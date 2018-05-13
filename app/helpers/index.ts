@@ -5,6 +5,7 @@ import * as pagingHelpers from './paging';
 import * as storageHelpers from './storage';
 import * as utilsHelpers from './utils';
 import * as dateTimeHelpers from './dateTime';
+import * as rowingHelpers from './rowing';
 
 export {
     fetchHelpers,
@@ -13,5 +14,6 @@ export {
     pagingHelpers,
     storageHelpers,
     utilsHelpers,
-    dateTimeHelpers
+    dateTimeHelpers,
+    rowingHelpers
 };

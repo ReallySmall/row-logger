@@ -1,6 +1,6 @@
 declare interface AuthInterface {
     readonly isLoggedIn: boolean;
-    readonly roles: Array<string>;
+    readonly userName: string;
 }
 
 export default AuthInterface;

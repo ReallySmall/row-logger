@@ -7,7 +7,7 @@ import { FormContainer } from '../../containers/FormContainer';
 import { Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers, dateTimeHelpers } from '../../helpers';
+import { utilsHelpers, routingHelpers, dateTimeHelpers, rowingHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class SessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -47,7 +47,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                             <MainContentWrapper sideBarContent={[]}>
                                 <article className="row">
                                     <aside className="col s12 m3">
-                                        <h4>Data</h4>
+                                        <h4 className="visually-hidden">Data</h4>
                                         <div className="card">
                                         <p>
                                             <a className="btn-floating halfway-fab waves-effect waves-light">
@@ -59,18 +59,18 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                                                 {session.distance &&
                                                     <li>
                                                         <p><strong>Distance</strong></p>
-                                                        <p>{session.distance}</p>
+                                                        <p>{rowingHelpers.metrestoKmString(session.distance)}</p>
                                                     </li>
                                                 }
                                                 {session.time &&
                                                     <li>
                                                         <p><strong>Time</strong></p>
-                                                        <p>{session.time}</p>
+                                                        <p>{dateTimeHelpers.millisToDuration(session.time)}</p>
                                                     </li>
                                                 }
                                                 <li>
                                                     <p><strong>Average speed</strong></p>
-                                                    <p></p>
+                                                    <p>{rowingHelpers.metresSecondstoAverageSpeedString(session.distance, session.time)}</p>
                                                 </li>
                                                 {session.machineId &&
                                                     <li>
@@ -89,7 +89,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                                     </div>
                                 </aside>
                                 <section className="col s12 m9">
-                                    <h4>Chart</h4>
+                                    <h4 className="visually-hidden">Chart</h4>
                                     <div className="card">
                                         <div className="card-content">
                                             <LineChart data={session.data} />

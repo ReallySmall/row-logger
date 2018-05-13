@@ -9,10 +9,10 @@ import { appConfig } from '../../config';
 import { fetchHelpers, storageHelpers } from '../../helpers';
 
 // notify of successful login
-const wsConnect = (): ReduxAction => {
+const wsConnect = (connect: boolean): ReduxAction => {
 
     return {
-        type: actions.WEBSOCKET_CONNECT,
+        type: connect ? actions.WEBSOCKET_CONNECT: actions.WEBSOCKET_DISCONNECT,
         payload: {
             url: 'ws://localhost:8080/api'
         },
@@ -21,13 +21,83 @@ const wsConnect = (): ReduxAction => {
 
 };
 
+// notify of successful registration
+const registerRequestComplete = (userName: string, error: Error): ReduxAction => {
+
+    return {
+        type: actions.REGISTER_REQUEST_COMPLETE,
+        payload: error ? error : userName,
+        error: error ? true : false
+    };
+
+};
+
 // notify of successful login
-const logInRequestComplete = (data: UserDataRoleArray, error: Error): ReduxAction => {
+const logInRequestComplete = (userName: string, error: Error): ReduxAction => {
 
     return {
         type: actions.LOGIN_REQUEST_COMPLETE,
-        payload: error ? fetchHelpers.getErrorMessageString(error) : data,
+        payload: error ? error : userName,
         error: error ? true : false
+    };
+
+};
+
+// attempt to login
+export const registerRequest = (data: AppFormValues): Function => {
+
+    return (dispatch) => {
+
+        const { userName, email, password, confirmPassword } = data;
+        const registerApi: string = appConfig.apis.register;
+        const csrf: string = window[appConfig.windowGlobalAppConfig][appConfig.csrf];
+
+        const fetchOpts: FetchOptions = {
+            method: 'POST',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': csrf
+            }),
+            body: `userName=${userName}&email=${email}&password=${password}&confirmPassword=${confirmPassword}&_csrf=${csrf}`
+        };
+
+        dispatch(<ReduxAction>{ // notify store of login request
+            type: actions.REGISTER_REQUEST,
+            payload: appConfig.auth.messages.loginMessage
+        });
+
+        fetch(registerApi, fetchOpts).then(response => {
+
+            // handle any response errors
+            if (!response.ok) {
+                throw new Error(response.statusText || 'Error registering. Please try again.');
+            }
+
+            response.json().then(registerData => {
+
+                const decodedRegisterData: JwtTokenDecoded = registerData ? jwtDecode(registerData.token) : null; // decode it if it exists
+                const userName: string = decodedRegisterData.userName; // decode the JWT and get the user's roles
+
+                if (decodedRegisterData && userName) {
+
+                    // save the JWT to session storage so app state can rehydrate after a page reload
+                    sessionStorage.setItem(appConfig.auth.sessionState, registerData.token);
+
+                    // notify store of successful login, with user details
+                    dispatch(registerRequestComplete(userName, null));
+                    dispatch(wsConnect(true));
+
+                } else {
+
+                    throw new Error('Error registering. Please try again.');
+
+                }
+
+            });
+
+        }).catch(error => dispatch(registerRequestComplete(null, error)));
+
     };
 
 };
@@ -60,33 +130,32 @@ export const logInRequest = (data: AppFormValues): Function => {
 
             // handle any response errors
             if (!response.ok) {
-                response.json().then(data => dispatch(logInRequestError(data)));
-                return;
+                throw new Error(response.statusText || 'Error logging in. Please try again.');
             }
 
             response.json().then(loginData => {
 
                 const decodedLoginData: JwtTokenDecoded = loginData ? jwtDecode(loginData.token) : null; // decode it if it exists
-                const userRoles: UserDataRoleArray = ['admin']; // decode the JWT and get the user's roles
+                const userName: string = decodedLoginData.userName; // decode the JWT and get the user's name
 
-                if (decodedLoginData && userRoles.length) {
+                if (decodedLoginData && userName) {
 
                     // save the JWT to session storage so app state can rehydrate after a page reload
                     sessionStorage.setItem(appConfig.auth.sessionState, loginData.token);
 
                     // notify store of successful login, with user details
-                    dispatch(logInRequestComplete(userRoles));
-                    dispatch(wsConnect());
+                    dispatch(logInRequestComplete(userName, null));
+                    dispatch(wsConnect(true));
 
                 } else {
 
-                    dispatch(logInRequestComplete(null, 'Error logging in. Please try again.'));
+                    throw new Error('Error logging in. Please try again.');
 
                 }
 
-            }).catch(error => dispatch(logInRequestComplete(null, 'Error logging in. Please try again.')));
+            });
 
-        }).catch(error => dispatch(logInRequestComplete(null, 'Error logging in. Please try again.')));
+        }).catch(error => dispatch(logInRequestComplete(null, error)));
 
     };
 
@@ -102,7 +171,7 @@ export const logInRequestWithJWT = (): Function => {
         const decodedLoginData: JwtTokenDecoded = loginData ? jwtDecode(loginData) : null; // and decode it if it exists
         const now: Date = new Date(); // get the current date and time
 
-        let userRoles: UserDataRoleArray = []; // array to hold user roles
+        let userName: string = undefined; // user name
         let jwtExpiryDate: Date = undefined; // date to hold expiry date and time of JWT
 
         dispatch(<ReduxAction>{ // notify store of login request
@@ -111,19 +180,19 @@ export const logInRequestWithJWT = (): Function => {
         });
 
         if (decodedLoginData) { // if a JWT exists
-            userRoles = decodedLoginData.role; // get the user's roles
+            userName = decodedLoginData.userName; // get the user's roles
             //jwtExpiryDate = new Date(decodedLoginData.exp * 1000); // get the expiry date and time of the JWT
         }
 
         // if the JWT holds at least one user role and has not expired
-        if (userRoles.length) {
+        if (userName) {
 
             dispatch(<ReduxAction>{ // notify store of successful JWT login
                 type: actions.LOGIN_WITH_JWT_REQUEST_COMPLETE,
-                payload: userRoles
+                payload: userName
             });
 
-            dispatch(wsConnect());
+            dispatch(wsConnect(true));
 
         // otherwise JWT either doesn't exist, has expired, or doesn't contain the requisite information
         } else {
@@ -132,7 +201,7 @@ export const logInRequestWithJWT = (): Function => {
 
             dispatch(<ReduxAction>{ // notify store that JWT automatic login attempt failed
                 type: actions.LOGIN_WITH_JWT_REQUEST_COMPLETE,
-                payload: 'JWT auto-login failed'
+                payload: 'JWT auto-login failed',
                 error: true
             });
 
@@ -142,7 +211,7 @@ export const logInRequestWithJWT = (): Function => {
 
 };
 
-// attempt to logout
+// logout
 export const logOutRequest = (data?: string): Function => {
 
     return (dispatch) => dispatch({

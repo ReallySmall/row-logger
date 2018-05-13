@@ -33,13 +33,15 @@ exports.postLogin = function (req, res, next) {
                 req.logIn(user, function (error) {
                     if (error)
                         return next(error);
+                    console.log(user);
                     return res
                         .status(200)
                         .json({
                         token: jwt.sign({
                             user: user._id,
-                            role: ['admin']
-                        }, process.env.JWT_TOKEN_SECRET)
+                            userName: user.userName
+                        }, process.env.JWT_TOKEN_SECRET),
+                        timestamp: new Date().getTime()
                     });
                 });
             })(req, res, next);
@@ -71,20 +73,29 @@ exports.postSignup = function (req, res, next) {
         else {
             var user_1 = new User_1.User({
                 email: req.body.email,
+                userName: req.body.userName,
                 password: req.body.password
             });
             User_1.User.findOne({ email: req.body.email }, function (error, existingUser) {
                 if (error)
                     return next(error);
                 if (existingUser)
-                    return res.redirect('/signup');
+                    return res.status(200).json({ message: 'A user with this email already exists' });
                 user_1.save(function (error) {
                     if (error)
                         return next(error);
                     req.logIn(user_1, function (error) {
                         if (error)
                             return next(error);
-                        res.status(200).json({ message: 'Sign up successful' });
+                        return res
+                            .status(200)
+                            .json({
+                            token: jwt.sign({
+                                user: user_1._id,
+                                userName: user_1.userName
+                            }, process.env.JWT_TOKEN_SECRET),
+                            timestamp: new Date().getTime()
+                        });
                     });
                 });
             });

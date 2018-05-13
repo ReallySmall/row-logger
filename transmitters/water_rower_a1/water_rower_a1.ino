@@ -5,28 +5,31 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
+#include <ESP8266HTTPClient.h>
 #include <WebSocketClient.h>
-#include <Secret.h>
+#include "secret.h" // personal connection data stored seperately to exclude from version control
 
 ESP8266WiFiMulti WiFiMulti;
 WiFiClient client;
+HTTPClient http;
 WebSocketClient webSocketClient;
-
-StaticJsonBuffer<200> jsonBuffer;
 
 const char* wifiAP = WIFIAP; // WIFI Access Point name
 const char* wifiSSID = WIFISSID; // WIFI SSID password
-const char apiKey[] = "_my15charapikey"; // key to send to API (DEFUNCT)
+const char* postRowingDataSocket = SOCKETIP; // socket for logging rowing data
+const char* email = APPUSEREMAIL;
+const char* password = APPPASSWORD;
+
 const char machineId[] = "water_rower_a1"; // the type of rower
 const char damping[] = "2000"; // ml - however full your water tank is
 
-char postRowingDataSocket[] = SOCKETIP; // socket for logging rowing data
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
+char jwt[200]; // the jwt which will be obtained from api
 
 volatile long lastTriggered = 0; //the last time the interrupt pin was triggered
 
 unsigned long lastPosted = millis(); // reference point for time elapsed since last post to API
-unsigned long dataArray[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // array for holding rower pulse time values
+unsigned long dataArray[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // array for holding rower pulse time values
 
 const int timeOut = 4000; // millis to wait between posts to API
 
@@ -101,7 +104,6 @@ void sendRowingData() {
 
   char jsonBuffer1[300]; // create a data buffer large enough to hold the string which will be posted
 
-  rowingDataJsonObj["key"] = apiKey;
   rowingDataJsonObj["machineId"] = machineId;
   rowingDataJsonObj["damping"] = damping;
   rowingDataJsonObj["multi"] = multiplier;
@@ -110,7 +112,7 @@ void sendRowingData() {
   detachInterrupt(rowingStrokesSwitch);
 
   for (int i = 0; i < dataArrayLength; i++) {
-    if(dataArray[i] > 0){
+    if (dataArray[i] > 0) {
       Serial.print(dataArray[i]);
       Serial.print(" ");
       data.add(dataArray[i]);
@@ -143,22 +145,51 @@ void halt(const char* message) {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// REQUEST THE CURRENT TIME FROM EPOCH FROM SERVER
-// builds a json object
-// and sends it through websocket connection
-// to request the current time
+// AUTHENTICATE WITH THE SERVER
+// sends email and password
+// and gets JWT for authenticating on websocket
+// and current server timestamp
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void getServerTime() {
+void authenticate() {
 
-  Serial.println("Getting time from API");
-  JsonObject& jsonReqObject = jsonBuffer.createObject();
+  char loginData[60]; // create a data buffer large enough to hold the string which will be posted
+  StaticJsonBuffer<300> jsonBuffer;
 
-  jsonReqObject["key"] = apiKey;
+  sprintf(loginData, "email=%s&password=%s", email, password);
 
-  char baseTimeRequest[30]; // create a data buffer large enough to hold the string which will be posted
+  Serial.println("Getting JWT and timestamp from API");
 
-  jsonReqObject.printTo(baseTimeRequest);
-  webSocketClient.sendData(baseTimeRequest);
+  http.begin("http://192.168.1.64:8080/api/login");
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  http.addHeader("Accept", "application/json");
+
+  int httpCode = http.POST(loginData);
+
+  if (httpCode > 0 && httpCode == HTTP_CODE_OK) {
+
+    Serial.println(http.getString());
+    JsonObject& jsonData = jsonBuffer.parseObject(http.getString()); // parse the JSON message
+
+    if (!jsonData.success()) { // if parsing the JSON failed
+
+      Serial.println("parseObject() failed");
+
+    } else { // otherwise handle it
+
+      if (jsonData["timestamp"]) { // set the base time
+        const char* timeStamp = jsonData["timestamp"]; // get the base time
+        sprintf(baseTime, "%s", timeStamp); // and assign to the global variable
+      }
+      
+    }
+
+  } else if (httpCode < 0 || httpCode != HTTP_CODE_OK) {
+
+    Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+
+  }
+
+  http.end();
 
 }
 
@@ -182,16 +213,18 @@ void setup() {
   // once WIFI connected
   if (WiFi.status() == WL_CONNECTED) {
 
-    // first connect to server
+    authenticate(); // first authenticate
+
+    // then connect to websocket
     if (client.connect(postRowingDataSocket, 8080)) {
-      Serial.println("Connected");
+      Serial.println("Connected to websocket endpoint. Attempting upgrade handshake...");
     } else {
       halt("Connection failed");
     }
 
     // then set options for websocket upgrade handshake
-    webSocketClient.path = "/";
-    webSocketClient.host = postRowingDataSocket;
+    webSocketClient.path = "/api";
+    webSocketClient.host = (char*)postRowingDataSocket;
 
     // then upgrade connection to websocket
     if (webSocketClient.handshake(client)) {
@@ -200,16 +233,14 @@ void setup() {
       halt("Websocket handshake failed");
     }
 
-    getServerTime(); // get the current time from the server
-
     attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
     pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
     digitalWrite(rowingStrokesSwitch, HIGH); // and set high
 
   } else {
-    
+
     Serial.print("Error connecting");
-    
+
   }
 
 }
@@ -228,24 +259,20 @@ void loop() {
 
   if (data.length() > 0) { // if a message exists, read it
 
+    StaticJsonBuffer<300> jsonBuffer;
     JsonObject& jsonData = jsonBuffer.parseObject(data); // parse the JSON message
 
     if (!jsonData.success()) { // if parsing the JSON failed
-      
+
       Serial.println("parseObject() failed");
-    
+
     } else { // otherwise handle it
 
-      if (jsonData["base"]) { // if message is returning the base time
-        const char* value = jsonData["base"]; // get the base time
-        sprintf(baseTime, "%s", value); // and assign to the global variable
-        Serial.println("Base time: ");
-        Serial.print(baseTime);
-      } else if(jsonData["message"]){
+      if (jsonData["message"]) {
         const char* message = jsonData["message"];
         Serial.println("Message: ");
         Serial.print(message);
-      } else if(jsonData["error"]){
+      } else if (jsonData["error"]) {
         const char* error = jsonData["error"];
         Serial.println("Error: ");
         Serial.print(error);

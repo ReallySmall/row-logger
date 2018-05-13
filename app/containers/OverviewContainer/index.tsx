@@ -41,6 +41,7 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         const { processing, error, totals, recentSessions } = this.props;
         const progress: number = totals ? totals.items[totals.ids[0]].distance : 0;
+        const hasSessions: boolean = recentSessions && recentSessions.ids && recentSessions.ids.length;
 
         return (
 
@@ -68,9 +69,10 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                                 {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
                             </div>
                         </div>
-                        <p>
-                            <NavLink to="/sessions" className="waves-effect waves-light btn">View all sessions</NavLink>
-                        </p>
+                        {hasSessions
+                            ? <p><NavLink to="/sessions" className="waves-effect waves-light btn">View all sessions</NavLink></p>
+                            : null
+                        }
                     </section>
                 </article>
             </div>

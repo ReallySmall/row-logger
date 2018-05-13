@@ -7,6 +7,7 @@ import { RowingDataRecorder } from '../helpers/rowingDataRecorder';
 import * as dateTimeHelpers from '../helpers/dateTimeHelper';
 import * as rowingDataHelpers from '../helpers/rowingDataHelper';
 import * as wsHelpers from '../helpers/wsHelper';
+import * as actions from '../constants/actions';
 
 const rowingDataRecorder = new RowingDataRecorder();
 
@@ -16,40 +17,47 @@ const rowingDataRecorder = new RowingDataRecorder();
  */
 export const recordSession = (ws, req) => {
 
-  setTimeout(() => { // client gets n seconds to send a valid authentication message before being disconnected
-    if(!req.user) ws.terminate();
+  // client gets n milliseconds to send a valid authentication message before being disconnected
+  const authenticationWindow = setTimeout(() => {
+    if(req && !req.user && ws) ws.terminate();
   }, 5000);
 
-  ws.on('message', msgString => {
+  ws.on('close', () => {
+    clearTimeout(authenticationWindow);
+  });
+
+  ws.on('message', messageJSON => {
+
+    // attempt to parse JSON into valid ws message object
+    const message: any = wsHelpers.parseWsMessage(messageJSON);
+
+    if(!message){
+      ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'Invalid JSON or incorrect structure in message', true), error => wsHelpers.handleWsError(error));
+      ws.terminate(); // close the socket
+      return;
+    }
 
     if(!req.user){ // first client message must be a valid JWT
 
-      jwt.verify(msgString, process.env.JWT_TOKEN_SECRET, (error, token) => {
+      jwt.verify(message.payload, process.env.JWT_TOKEN_SECRET, (error, token) => {
 
         if(error){ // if JWT auth fails
-          console.log(error);
+          ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'Invalid token', true), error => wsHelpers.handleWsError(error));
           ws.terminate(); // close the socket
           return;
         }
 
         req.user = token.user; // otherwise flag the socket as authenticated
-        ws.send(wsHelpers.createWsJson('Authenticated', 'authenticated'), error => wsHelpers.handleWsError(error));
+        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'Authenticated', false), error => wsHelpers.handleWsError(error));
 
       });
 
     } else {
 
-      // if message is invalid JSON, respond with error
-      if(wsHelpers.isInvalidJson(msgString)){
-        console.log('Invalid JSON in recieved message: ', msgString);
-        ws.send(wsHelpers.createWsJson('Invalid request format', 'error'), error => wsHelpers.handleWsError(error));
-        return;
-      }
-
-      console.log('Recieved message: ', msgString);
+      console.log('Recieved message: ', message);
 
       // attempt to extract variables from message
-      const { machineId, damping, multi, base, data } = JSON.parse(msgString);
+      const { machineId, damping, multi, base, data } = JSON.parse(message.payload);
 
       // if data array exists
       // create new array with each time added to base time to get full timestamps
@@ -58,7 +66,7 @@ export const recordSession = (ws, req) => {
       // clear any existing timeout
       rowingDataRecorder.cancelSaveTimeOut(req.user);
 
-      // if an active rowing session doesn't exist yet for this API key
+      // if an active rowing session doesn't exist yet for this user
       if(!rowingDataRecorder.sessionExists(req.user)){
 
         console.log(req.user);
@@ -68,7 +76,7 @@ export const recordSession = (ws, req) => {
 
           if(error || !user){
 
-            ws.send(wsHelpers.createWsJson('Invalid user, terminating', 'error'), error => wsHelpers.handleWsError(error));
+            ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'Unexpected error, terminating', true), error => wsHelpers.handleWsError(error));
             ws.terminate();
             return;
 
@@ -93,11 +101,14 @@ export const recordSession = (ws, req) => {
 
         const currentDistance = rowingDataHelpers.timesToMetres([rowingDataRecorder.getSessionTimes(req.user)], multi, 4.805).toString() + 'm';
 
-        ws.send(wsHelpers.createWsJson(currentDistance, 'message'), error => wsHelpers.handleWsError(error));
+        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, currentDistance, false), error => wsHelpers.handleWsError(error));
 
       }
 
-      req.wsInstance.getWss().clients.forEach(client => client.send(req.user));
+      req.wsInstance.getWss().clients.forEach(client => {
+        console.log(req.user);
+        client.send(req.user);
+      });
 
     }
 

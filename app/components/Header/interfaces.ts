@@ -4,6 +4,7 @@ export namespace Interfaces {
         heading: string;
         authActions: any;
         isLoggedIn: boolean;
+        userName: string;
     }
 
     export interface State {

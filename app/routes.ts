@@ -1,23 +1,30 @@
 export const routes = {
     base: {
-        pathname: '/'
+        pathname: '/',
+        public: true
     },
     login: {
-        pathname: '/login'
+        pathname: '/login',
+        public: true
     },
     register: {
-        pathname: '/register'
+        pathname: '/register',
+        public: true
     },
     account: {
-        pathname: '/account'
+        pathname: '/account',
+        public: false
     },
     sessions: {
-        pathname: '/sessions'
+        pathname: '/sessions',
+        public: false
     },
     session: {
-        pathname: '/sessions/:id'
+        pathname: '/sessions/:id',
+        public: false
     },
     activeSession: {
-        pathname: '/active'
+        pathname: '/active',
+        public: false
     }
 };

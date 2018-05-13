@@ -13,11 +13,11 @@ export class StickyWrapper extends React.Component<Interfaces.Props, Interfaces.
 
     render() {
 
-        const { children } = this.props;
+        const { children, className } = this.props;
 
         return (
 
-            <Sticky>{children}</Sticky>
+            <Sticky className={className}>{children}</Sticky>
 
         );
 

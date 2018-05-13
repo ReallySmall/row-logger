@@ -50,6 +50,26 @@ const account: AppForm = {
         conditionalParent: undefined,
         required: true,
         validators: ['required']
+    },
+    rowerType: {
+        name: 'rowerType',
+        display: true,
+        renderer: 'select',
+        type: 'select',
+        typeSpecific: {
+            options: [
+                {
+                    value: 'waterRowerA1',
+                    label: 'Water Rower A1'
+                }
+            ]
+        },
+        label: 'Rower type',
+        value: '',
+        placeholder: 'Select',
+        conditionalParent: undefined,
+        required: true,
+        validators: ['required']
     }
 };
 

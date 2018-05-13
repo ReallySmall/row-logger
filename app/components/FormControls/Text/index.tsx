@@ -15,15 +15,13 @@ export class TextFormControl extends React.Component<Interfaces.Props, Interface
         const { touched, error } = meta;
         const { maxLength } = typeSpecific || 0;
 
-        const textClass: string = classNames('form-group', 'form-textbox', { 'ValidationRequired': required });
+        const textClass: string = classNames({ 'required': required });
 
         return (
             <div className={textClass}>
-                <label htmlFor={id} className="label col-sm-3 control-label">{label}</label>
-                <div className="col-sm-7">
-                    <input {...input} id={id} type={type} placeholder={placeholder} disabled={disabled} autoComplete="off" maxLength={maxLength} />
-                    {touched && error && <p className="plain validation-error-message">{error}</p>}
-                </div>
+                <label htmlFor={id}>{label}</label>
+                <input {...input} id={id} type={type} placeholder={placeholder} disabled={disabled} autoComplete="off" maxLength={maxLength} />
+                {touched && error && <p className="helper-text">{error}</p>}
             </div>
         );
 

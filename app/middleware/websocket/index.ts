@@ -21,15 +21,26 @@ const createMiddleware = () => {
 
     // Function will dispatch actions returned from action creators.
     const dispatchAction = partial(compose, [dispatch]);
-    const loginData: string = sessionStorage.getItem(appConfig.auth.sessionState); // look for a JWT in session storage
+    const jwt: string = sessionStorage.getItem(appConfig.auth.sessionState); // look for a JWT in session storage
 
     websocket.onopen = () => {
+
       dispatchAction(open);
-      if (websocket) {
-        websocket.send(loginData);
+
+      if (websocket && jwt) {
+
+        websocket.send(JSON.stringify({
+          type: 'auth',
+          payload: jwt,
+          error: false
+        }));
+
       } else {
-        console.warn('WebSocket is closed, ignoring.');
+
+        console.warn('WebSocket is closed or no JWT, ignoring.');
+
       }
+
     };
 
     websocket.onclose = dispatchAction(closed);

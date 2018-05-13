@@ -17,8 +17,8 @@ exports.getSessionTotals = function (req, res) {
             return res.status(500).json(resHelpers.jsonErrorMessage);
         res.status(200).json({
             date: user.createdAt,
-            distance: user.rowingTotalMetres,
-            time: user.rowingTotalTime
+            distance: user.rowingTotalMetres || 0,
+            time: user.rowingTotalTime || 0
         });
     });
 };

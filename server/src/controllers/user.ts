@@ -41,13 +41,16 @@ export const postLogin = (req, res, next) => {
 
           if (error) return next(error);
 
+                      console.log(user);
+
           return res
                   .status(200)
                   .json({
                     token: jwt.sign({
                       user: user._id,
-                      role: ['admin']
-                    }, process.env.JWT_TOKEN_SECRET)
+                      userName: user.userName
+                    }, process.env.JWT_TOKEN_SECRET),
+                    timestamp: new Date().getTime()
                   });
 
         });
@@ -94,13 +97,14 @@ export const postSignup = (req, res, next) => {
 
       const user: any = new User({
         email: req.body.email,
+        userName: req.body.userName,
         password: req.body.password
       });
 
       User.findOne({ email: req.body.email }, (error, existingUser) => {
 
         if (error) return next(error);
-        if (existingUser) return res.redirect('/signup');
+        if (existingUser) return res.status(200).json({ message: 'A user with this email already exists'});
 
         user.save((error) => {
 
@@ -110,7 +114,15 @@ export const postSignup = (req, res, next) => {
 
             if (error) return next(error);
 
-            res.status(200).json({ message: 'Sign up successful'});
+            return res
+                    .status(200)
+                    .json({
+                      token: jwt.sign({
+                        user: user._id,
+                        userName: user.userName
+                      }, process.env.JWT_TOKEN_SECRET),
+                      timestamp: new Date().getTime()
+                    });
 
           });
 

@@ -22,7 +22,7 @@ export class SingleCheckBoxFormControl extends React.Component<Interfaces.Props,
         const checkboxClass: string = classNames('input-style-proxy', 'icon', { 'icon-tick': input.checked });
 
         return (
-            <div className="form-control form-row form-checkbox form-wide-tablet">
+            <div>
                 <input id={id} checked={this.props.input.value} onChange={this.onCheck} className="single-checkbox" type={type} disabled={disabled} />
                 <label htmlFor={id}><span className={checkboxClass}></span>{label}</label>
                 {touched && error && <p className="plain validation-error-message">{error}</p>}

@@ -15,7 +15,7 @@ export class NumberFormControl extends React.Component<Interfaces.Props, Interfa
         const { touched, error } = meta;
         const { min, max } = typeSpecific || 0;
 
-        const textClass: string = classNames('form-control', 'form-row', 'form-textbox', { 'ValidationRequired': required });
+        const textClass: string = classNames({ 'required': required });
 
         return (
             <div className={textClass}>

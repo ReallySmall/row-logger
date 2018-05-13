@@ -1,9 +1,3 @@
-//import * as constants from '../../constants';
-//export constants;
-
-export const REGISTER_REQUEST: string = 'REGISTER_REQUEST';
-export const REGISTER_REQUEST_COMPLETE: string = 'REGISTER_REQUEST_COMPLETE';
-
 export const LOGIN_REQUEST: string = 'LOGIN_REQUEST';
 export const LOGIN_REQUEST_COMPLETE: string = 'LOGIN_REQUEST_COMPLETE';
 

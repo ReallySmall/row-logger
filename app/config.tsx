@@ -2,6 +2,7 @@ export const appConfig = {
     windowGlobalAppConfig: 'rowLogger', // set against window object in index.tsx
     csrf: '', // set against window object in index.tsx
     apis: {
+        register: '/api/register',
         login: '/api/login',
         sessionTotals: '/api/sessions/totals',
         session: '/api/session',

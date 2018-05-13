@@ -1,28 +1,34 @@
 /**
- * Check if JSON is valid.
+ * Check if ws message is valid JSON and is compatible structure.
  */
-export const isInvalidJson = (input: string): boolean => {
+export const parseWsMessage = (messageJSON: string): any => {
 
    try {
-      JSON.parse(input);
+      const parsedObject = JSON.parse(messageJSON);
    } catch(error) {
-      return error.message; // Is invalid
+      return undefined;
    }
 
-   return false; // Is valid
+   if(!parsedObject.hasOwnProperty('type') || !parsedObject.hasOwnProperty('payload') || !parsedObject.hasOwnProperty('error')){
+     return undefined;
+   }
+
+   return parsedObject;
 
 };
 
 /**
  * Create JSON string for ws message.
  */
-export const createWsJson = (message: WebsocketMessage, type: WebsocketMessageType): string => {
+export const createWsMessage = (type: WebsocketMessageType, payload: WebsocketMessage, error: boolean): string => {
 
-  const object = {};
+  const message = {};
 
-  object[type] = message;
+  message['type'] = type;
+  message['payload'] = payload;
+  message['error'] = error;
 
-  return JSON.stringify(object);
+  return JSON.stringify(message);
 
 };
 

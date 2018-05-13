@@ -32,8 +32,10 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                     <section>
                         <h2 className="visually-hidden">Form</h2>
                         {processing && <Loading message={processing} />}
-                        {!processing && <FormContainer form="account" onSubmit={this.submit} fieldData={account} />}
                         {!processing && error && <p>{error}</p>}
+                        <div className="card">
+                            <FormContainer form="account" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={account} />
+                        </div>
                     </section>
                 </MainContentWrapper>
             </div>

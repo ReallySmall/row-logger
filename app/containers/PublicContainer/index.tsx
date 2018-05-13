@@ -30,9 +30,6 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
                 <article className="row">
                     <section className="col s12 m12">
                         <div className="col s12 m4">
-                            <Icon name="rowing-machine" />
-                        </div>
-                        <div className="col s12 m4">
                             <Icon name="arduino" />
                         </div>
                         <div className="col s12 m4">

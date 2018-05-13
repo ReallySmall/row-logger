@@ -22,7 +22,7 @@ export const handleFetchResponseError = (response: any, dispatch: Function, erro
 // get an error message string from a passed in error object
 export const getErrorMessageString = (error: any): string => {
 
-    let message: string = error.error_description || error.message || error || 'Unexpected error.';
+    let message: string = error.message || 'Unexpected error.';
 
     message = message === 'Failed to fetch' ? 'Server error or couldn\'t connect.' : message;
 
@@ -31,32 +31,38 @@ export const getErrorMessageString = (error: any): string => {
 };
 
 // returns a default options object to use for GET requests
-export const setGetFetchOpts = (sessionData: string): FetchOptions => {
+export const setGetFetchOpts = (jwt?: string): FetchOptions => {
 
     const fetchOpts: FetchOptions = {
         method: 'GET',
         headers: new Headers({
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + sessionData
+            'Content-Type': 'application/json'
         })
     };
+
+    if(jwt){
+        fetchOpts.headers.append('Authorization', 'Bearer ' + jwt);
+    }
 
     return fetchOpts;
 
 };
 
 // returns a default options object to use for POST requests
-export const setPostFetchOpts = (sessionData: string): FetchOptions => {
+export const setPostFetchOpts = (jwt?: string): FetchOptions => {
 
     const fetchOpts: FetchOptions = {
         method: 'POST',
         headers: new Headers({
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + sessionData
+            'Content-Type': 'application/json'
         })
     };
+
+    if(jwt){
+        fetchOpts.headers.append('Authorization', 'Bearer ' + jwt);
+    }
 
     return fetchOpts;
 

@@ -19,7 +19,7 @@ class GridBodyContainer extends React.Component<Interfaces.Props, Interfaces.Sta
         const { columns, ids, items, showHeader, sortable } = this.props;
 
         const rowCount: number = ids ? ids.length : 0;
-        const noDataMessage: string = 'Please submit a new query';
+        const noDataMessage: string = 'No data to show';
 
         return (
 
@@ -80,13 +80,11 @@ class GridBodyContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                             );
 
                         })}
-                        {!rowCount &&
-                            <tr className="no-data">
-                                <td>{noDataMessage}</td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
+                {!rowCount &&
+                    <p>{noDataMessage}</p>
+                }
             </div>
 
         );

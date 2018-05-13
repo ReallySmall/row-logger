@@ -46,6 +46,7 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
     render() {
 
         const { processing, error, totals, sessions } = this.props;
+        const hasSessions: boolean = sessions && sessions.ids && sessions.ids.length;
 
         return (
 
@@ -57,7 +58,7 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                             <div className="card-content">
                                 {processing && <Loading message="Getting sessions data" />}
                                 {!processing && error && <p>{error}</p>}
-                                {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} />}
+                                {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />}
                             </div>
                         </div>
                     </aside>
@@ -70,7 +71,10 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                                 {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
                             </div>
                         </div>
-                        <button className="btn">Export as CSV</button>
+                        {hasSessions
+                            ? <button className="btn">Export as CSV</button>
+                            : null
+                        }
                     </section>
                 </article>
             </div>

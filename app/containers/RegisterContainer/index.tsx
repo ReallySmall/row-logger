@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
+import * as AuthActions from '../../actions/auth';
 import { register } from '../../forms';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -16,7 +16,11 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
         this.submit = this.submit.bind(this);
     }
 
-    submit(){
+    submit = (registerDetails: AppFormValues) => {
+
+        const { registerRequest } = this.props.actions;
+
+        registerRequest(registerDetails);
 
     }
 
@@ -32,8 +36,12 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                     <section>
                         <h2 className="visually-hidden">Form</h2>
                         {processing && <Loading message={processing} />}
-                        {!processing && <FormContainer form="register" onSubmit={this.submit} fieldData={register} />}
                         {!processing && error && <p>{error}</p>}
+                        {!processing &&
+                            <div className="card">
+                                <FormContainer form="register" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={register} />
+                            </div>
+                        }
                     </section>
                 </MainContentWrapper>
             </div>
@@ -47,17 +55,17 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.sessions.processing,
-        error: state.sessions.error
+        processing: state.loading['REGISTER'],
+        error: state.error['REGISTER']
     };
 }
 
 // React-Redux function which injects actions into this container as props
-// function mapDispatchToProps(dispatch) {
-//     return {
-//         sessionActions: bindActionCreators(sessionActions as any, dispatch)
-//     };
-// }
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(AuthActions as any, dispatch)
+    };
+}
 
 // Plug into the Redux application state by wrapping component with React-Redux Connect()
-export default connect(mapStateToProps, null, utilsHelpers.mergePropsForConnect)(RegisterContainer);
+export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(RegisterContainer);

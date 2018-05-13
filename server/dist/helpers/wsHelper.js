@@ -1,24 +1,29 @@
 "use strict";
 exports.__esModule = true;
 /**
- * Check if JSON is valid.
+ * Check if ws message is valid JSON and is compatible structure.
  */
-exports.isInvalidJson = function (input) {
+exports.parseWsMessage = function (messageJSON) {
     try {
-        JSON.parse(input);
+        var parsedObject = JSON.parse(messageJSON);
     }
     catch (error) {
-        return error.message; // Is invalid
+        return undefined;
     }
-    return false; // Is valid
+    if (!parsedObject.hasOwnProperty('type') || !parsedObject.hasOwnProperty('payload') || !parsedObject.hasOwnProperty('error')) {
+        return undefined;
+    }
+    return parsedObject;
 };
 /**
  * Create JSON string for ws message.
  */
-exports.createWsJson = function (message, type) {
-    var object = {};
-    object[type] = message;
-    return JSON.stringify(object);
+exports.createWsMessage = function (type, payload, error) {
+    var message = {};
+    message['type'] = type;
+    message['payload'] = payload;
+    message['error'] = error;
+    return JSON.stringify(message);
 };
 /**
  * Handle ws message error

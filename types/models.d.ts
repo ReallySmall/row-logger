@@ -1,7 +1,5 @@
 declare type QueryItemIdArray = Array<string>;
 
-declare type UserDataRoleArray = Array<string>;
-
 declare type QueryFileIdArray = Array<string>;
 
 declare type FetchError = string | object;
@@ -60,22 +58,6 @@ declare interface AppFormValues {
     [key: string]: any;
 }
 
-declare interface QueryParams {
-    status: string;
-    fromDate: any;
-    toDate: any;
-    pageSize: number;
-    pageNumber: number;
-    sortColumn: string;
-    sortDirection: string;
-    formType: string;
-    formSearch: string;
-    openingCode: string;
-    submitNumber: number;
-    submitYear: number;
-    closingCode: string;
-}
-
 declare interface QueryOptions {
     reset?: boolean;
     stayOnCurrentPage?: boolean;
@@ -96,9 +78,8 @@ declare interface QueryPagingSorting {
 
 declare interface ReduxAction {
     type: string;
-    data?: any;
-    message?: any;
     payload?: any;
+    error?: boolean;
 }
 
 declare interface FetchOptions {
@@ -115,7 +96,7 @@ declare interface JwtToken {
 
 declare interface JwtTokenDecoded {
     exp: number;
-    role: UserDataRoleArray;
+    userName: string;
 }
 
 declare interface GridData {

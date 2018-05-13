@@ -2,8 +2,6 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import { NavLink } from 'react-router-dom';
 import { Icon } from '../../components';
-import * as style from './style.css';
-import { filesHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 export class Header extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -24,7 +22,7 @@ export class Header extends React.Component<Interfaces.Props, Interfaces.State> 
 
     render() {
 
-        const { heading, isLoggedIn, children } = this.props;
+        const { heading, isLoggedIn, userName, children } = this.props;
 
         return (
 
@@ -34,10 +32,11 @@ export class Header extends React.Component<Interfaces.Props, Interfaces.State> 
                         <NavLink to="/" className="brand-logo">
                             <span>Row</span>
                             <span className="italic">logger</span>
+                            <Icon name="rowing-machine" />
                         </NavLink>
                         {isLoggedIn &&
                             <ul className="right hide-on-med-and-down">
-                                <li><NavLink to="/account" className="button button-primary">Account</NavLink></li>
+                                <li><NavLink to="/account" className="button button-primary">{userName}</NavLink></li>
                                 <li><a href="#" className="button button-primary" onClick={this.logOut}>Log out</a></li>
                             </ul>
                         }

@@ -16,7 +16,7 @@ export class SelectFormControl extends React.Component<Interfaces.Props, Interfa
         const { touched, error } = meta;
 
         const defaultValue: string = placeholder || '';
-        const selectClass: string = classNames('form-control', 'form-row', 'form-selectbox', { 'ValidationRequired': required });
+        const selectClass: string = classNames({ 'required': required });
 
         return (
             <div className={selectClass}>
@@ -24,6 +24,7 @@ export class SelectFormControl extends React.Component<Interfaces.Props, Interfa
                 <select
                     {...input}
                     id={id}
+                    className="browser-default"
                     disabled={disabled}>
                     {placeholder && <option value="" disabled hidden>{placeholder}</option>}
                     {options && options.length && options.map(function (option, index) {

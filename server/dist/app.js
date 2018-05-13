@@ -114,7 +114,7 @@ app.post('/api/session/delete', sessionsController.deleteSession);
 app.post('/api/login', userController.postLogin);
 app.post('/api/forgot', userController.postForgot);
 app.post('/api/reset/:token', userController.postReset);
-app.post('/api/signup', userController.postSignup);
+app.post('/api/register', userController.postSignup);
 app.post('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);

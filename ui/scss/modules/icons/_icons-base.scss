@@ -1,0 +1,26 @@
+.svg-icon-source {
+	svg {
+		display: none;
+	}
+}
+
+.svg-icon {
+	height: 100%;
+	width: 100%;
+	display: inline-block;
+}
+
+body {
+	background: whitesmoke;
+}
+
+.plain {
+	margin: 0;
+	padding: 0;
+}
+
+ul, ol {
+	&.plain {
+		list-style-type: none;
+	}	
+}

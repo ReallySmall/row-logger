@@ -1,0 +1,54 @@
+extends ../layout
+
+block content
+
+  h3 My account
+  form.card(action='/account/profile', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .card-content
+      h4 Profile
+      .input-field
+        label(for='email') Email
+        input(type='email', name='email', id='email', value=user.email)
+      .input-field
+        label(for='name') Name
+        input(type='text', name='name', id='name', value=user.profile.name)
+      div
+        p
+          input(type='radio', checked=user.profile.gender=='male', name='gender', value='male', id='profileGenderOptionMale')
+          label(for='profileGenderOptionMale') Male
+        p
+          input(type='radio', checked=user.profile.gender=='female', name='gender', value='female', id='profileGenderOptionFemale')
+          label(for='profileGenderOptionFemale') Female
+        p
+          input(type='radio', checked=user.profile.gender=='other', name='gender', value='other', id='profileGenderOptionOther')
+          label(for='profileGenderOptionOther') Other
+      .input-field
+        label(for='location') Location
+        input(type='text', name='location', id='location', value=user.profile.location)
+    .card-content
+      h4 Logging
+      .input-field
+        label(for='name') API key
+        input(type='text', name='rowingDataApiKey', id='rowingDataApiKey', value=user.rowingDataApiKey)
+      .input-field
+        button.btn(type='submit') Update Profile
+
+  form.card(action='/account/password', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .card-content
+      h4 Change Password
+      .input-field
+        label(for='password') New Password
+        input(type='password', name='password', id='password')
+      .input-field
+        label(for='confirmPassword') Confirm Password
+        input(type='password', name='confirmPassword', id='confirmPassword')
+      .input-field
+        button.btn(type='submit') Change Password
+
+  form.card(action='/account/delete', method='POST')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .card-content
+      h4 Delete Account
+      button.btn(type='submit') Delete my account

@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "transform-object-assign",
+    "transform-remove-strict-mode"
+  ],
+  "presets": [
+    "react",
+    "es2015"
+  ]
+}

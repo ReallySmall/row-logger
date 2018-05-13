@@ -1,0 +1,33 @@
+.page-header {
+  margin: 0 0 20px 0;
+  h1, h2, h3, h4, h5 {
+  	margin: 0;
+  }
+  .container {
+    overflow: hidden;
+    padding-top: 20px;
+  }
+}
+
+.brand-logo {
+	.svg-icon {
+		height: 31px;
+		width: 50px;
+		margin-left: 10px;
+		margin-top: -5px;
+		fill: currentColor;
+		vertical-align: middle;
+	}
+}
+
+.navbar-fixed {
+	margin: 0;
+}
+
+.nav-sub {
+	@extend .blue, .darken-1;
+	z-index: 2;
+	.active {
+		@extend .blue, .darken-2;
+	}
+}

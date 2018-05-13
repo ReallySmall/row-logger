@@ -1,0 +1,42 @@
+/* eslint-env browser */
+// @flow
+import { WEBSOCKET_CONNECTING, WEBSOCKET_OPEN, WEBSOCKET_CLOSED, WEBSOCKET_MESSAGE } from '../../constants/actions';
+
+// These actions are more concerned with connection state
+// and are trigged async by the WebSocketMiddleware
+
+export const connecting = (event: Event, websocket: ?WebSocket): ReduxAction => ({
+  type: WEBSOCKET_CONNECTING,
+  payload: {
+    timestamp: new Date(),
+    event,
+    websocket
+  }
+});
+
+export const open = (event: Event): ReduxAction => ({
+  type: WEBSOCKET_OPEN,
+  payload: {
+    timestamp: new Date(),
+    event
+  }
+});
+
+export const closed = (event: Event): ReduxAction => ({
+  type: WEBSOCKET_CLOSED,
+  payload: {
+    timestamp: new Date(),
+    event
+  }
+});
+
+export const message = (event: MessageEvent): ReduxAction => ({
+  type: WEBSOCKET_MESSAGE,
+  payload: {
+    timestamp: new Date(),
+    data: event.data,
+    event
+  }
+});
+
+export default {};

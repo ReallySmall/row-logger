@@ -1,0 +1,183 @@
+{
+    "env": {
+        "browser": 1,
+        "node": 1
+    },
+    ecmaFeatures: {
+        jsx: 1
+    },
+    "globals": {
+        "$": 1,
+        "jQuery": 1
+    },
+    "plugins": [
+    ],
+    "rules": {
+
+        // Possible Errors
+        "comma-dangle": [2, "never"], // prevent errors in IE7 and higher versions running in compatibility mode
+        "no-cond-assign": 2, // catches examples of "=" which were meant to be "==="
+        "no-console": 1, // warn about any console.log statements
+        "no-constant-condition": 2, // comparing a literal expression in a condition is usually a typo or development trigger for a specific behavior
+        "no-control-regex": 2, // ensure regular expressions don't use control characters
+        "no-debugger": 2, // eliminate debugger references
+        "no-dupe-keys": 2, // no duplicated keys in objects
+        "no-duplicate-case": 2, // no duplicated cases in switch statements
+        "no-empty": 2, // no empty block statements
+        "no-empty-character-class": 1, // warn of empty character classes in regular expressions which will not match anything
+        "no-ex-assign": 2, // prevent overwriting of error reference in try/ catch blocks
+        "no-extra-boolean-cast": 2, // eliminate the use of Boolean casts in an already Boolean context
+        "no-extra-parens": 0, // don't warn on un-necessary parens
+        "no-extra-semi": 2, // no extra semicolons
+        "no-func-assign": 2, // prevent overwriting a function
+        "no-inner-declarations": 1, // warn on decalring functions within blocks (ok in ES6)
+        "no-invalid-regexp": 2, // no invalid regexp expressions
+        "no-irregular-whitespace": 2, // no invalid whitespace chars which could cause parsing errors
+        "no-negated-in-lhs": 2, // no negated left hand operands
+        "no-obj-calls": 2, // prevent the accidental calling of global objects as functions
+        "no-regex-spaces": 2, // eliminate errors due to multiple spaces inside of a regular expression
+        "no-sparse-arrays": 1, // warn on sparce arrays
+        "no-unreachable": 2, // no unreachable code
+        "use-isnan": 2, // enforce isNaN(foo)
+        "valid-jsdoc": 1, // warn on invalid jsdoc
+        "valid-typeof": 2, // ensure results of typeof are compared against a valid string
+
+        // Best Practices
+        "block-scoped-var": 0, // don't warn when variables are used outside of the block in which they were defined
+        "complexity": 0, // cap the amount of cyclomatic complexity allowed
+        "consistent-return": 2, // ensure all return statements specify a value
+        "curly": 2, // require Following Curly Brace Conventions
+        "default-case": 2, // require a default case in switch statements
+        "dot-notation": 0, // no unnecessary use of square-bracket notation
+        "eqeqeq": [2, "smart"], // enforce the use of type-safe equality operators
+        "guard-for-in": 2, // enforce hasOwnProperty in for in loops
+        "no-alert": 1, // warn on alert(), prompt() and confirm()
+        "no-caller": 2, // disallow deprecated .caller and .callee
+        "no-div-regex": 2, // require regex literals to escape division operators
+        "no-else-return": 1, // warn on unnecessary block of code following an if containing a return statement
+        "no-eq-null": 2, // ensure that comparisons to null only match null
+        "no-eval": 2, // disallow the use of the eval() function
+        "no-extend-native": 0, // disallow directly modifying the prototype of builtin objects
+        "no-extra-bind": 1, // warn when an immediately-invoked function expression is using bind() and doesn't have an appropriate this value
+        "no-fallthrough": 1, // warn when fallthrough in switch statement is not marked with a comment indicating it is deliberate
+        "no-floating-decimal": 1, // warn whenever a numeric value has a decimal point but is missing a number either before or after it
+        "no-implied-eval": 1, // flag shorter notations for type conversion and suggest a more self-explanatory notation
+        "no-iterator": 2, // disallow obsolete SpiderMonkey extension
+        "no-labels": 1, // warn on use of confusing label statements
+        "no-lone-blocks": 1, // warn on pointless lone code blocks
+        "no-loop-func": 2, // disallow functions in Loops
+        "no-multi-spaces": 2, // disallow multiple spaces
+        "no-multi-str": 1, // warn on using backslashes to create multi-line strings
+        "no-native-reassign": 2, // disallow reassigning native objects
+        "no-new": 2, // disallow constructor calls using the new keyword that do not assign the resulting object to a variable
+        "no-new-func": 2, // disallow new Function()
+        "no-new-wrappers": 2, // disallow the use of String, Number, and Boolean with the new operator
+        "no-octal": 2, // disallow confusing octal literals
+        "no-octal-escape": 2, // disallow deprecated octal escapes
+        "no-process-env": 0, // discourage use of process.env in Node.js to avoid global dependencies
+        "no-proto": 2, // disallow Use of __proto__
+        "no-redeclare": 2, // disallow redeclaration of the same variable in the same scope
+        "no-return-assign": 1, // warn on confusing assignments in return statements
+        "no-script-url": 2, // disallow script URLs e.g. location.href = "javascript:void(0)";
+        "no-self-compare": 2, // disallow comparing a variable to itself
+        "no-sequences": 0, // disallow the use of the comma operator
+        "no-unused-expressions": 2, // disallow unused expressions
+        "no-void": 0, // disallow use of the void operator
+        "no-warning-comments": [0, { "terms": ["todo", "issue"], "location": "anywhere" }], // warn on comments implying code is not complete
+        "no-with": 2, // disallow with statements
+        "radix": 2, // enforce use of radix parameter in parseInt()
+        "vars-on-top": 0, // warn when variable declarations are not at the top of the function scope
+        "wrap-iife": 2, // require IIFEs to be wrapped
+        "yoda": 1, // warn on Yoda conditions
+
+        // Strict Mode
+        "strict": [0, "global"],
+
+        // Variables
+        "no-catch-shadow": 2, // disallow Shadowing of Variables Inside of catch
+        "no-delete-var": 2, // disallow variables deletion (only works on object props anyway)
+        "no-label-var": 2, // disallow Labels That Are Variables Names
+        "no-shadow": 2, // disallow a local variable sharing the same name as a variable in its containing scope
+        "no-shadow-restricted-names": 0, // disallow shadowing of restricted names (NaN, Infinity, undefined)
+        "no-undef": 0, // allow undeclared variables
+        "no-undef-init": 1, // disallow explicitly initializing variable as undefined (defaults to undefined anyway)
+        "no-undefined": 0, // disallow declaring variable named undefined
+        "no-unused-vars": 0, // warn on unused variables
+        "no-use-before-define": 0, // allow early use
+
+        // Stylistic Issues
+        "array-bracket-spacing": 0, // don't enforce any spacing rules
+        "block-spacing": 0, // don't enforce any spacing rules
+        "brace-style": 0, // enforce the 'one true brace style'
+        "camelcase": [2, {properties: "never"}], // enforce camelcase
+        "comma-spacing": [2, {"before": false, "after": true}], // enforce comma spacing style
+        "comma-style": [2, "last"], // enforce commas at end of lines
+        "consistent-this": 0, // don't enforce specific alias for this
+        "eol-last": 2, // enforce newline at the end of file, with no multiple empty lines
+        "func-names": 0, // don't enforce requirement for functions to be named
+        "func-style": 0, // don't require function definitions to be either only expressions or declarations
+        "id-blacklist": 0, // don't blacklist any names for declarations
+        "id-length": [1, {"min": 1, "max": 40, "properties": "never"}], // warn if names are overly long
+        "id-match": 0, // don't enforce naming to match regexp
+        "indent": 0, // don't enforce indentation of 4 spaces
+        "jsx-quotes": [2, "prefer-single"], // prefer single quotes in JSX statements
+        "key-spacing": [1, { // warn if key spacing in objects is incorrect
+          "beforeColon": false,
+          "afterColon": true
+        }],
+        "keyword-spacing": 0, // don't enforce keyword spacing
+        "linebreak-style": 0, // allow mixing linebreak styles
+        "lines-around-comment": 2, // don't enforce line breaks around block comments
+        "max-depth": [1, 10], // warn when level of block nesting is getting silly
+        "max-len": 0, // don't enforce a max line length
+        "max-nested-callbacks": 0, // don't warn on many nested callbacks
+        "max-params": [1, 9], // warn when functions have a confusing number of parameters
+        "max-statements": 0, // don't enforce a maximum number of statements allowed in a function
+        "new-cap": 0, // require constructors to use initial caps
+        "new-parens": 2, // require parens for constructors
+        "newline-after-var": 0, // don't require a new line after a var
+        "newline-per-chained-call": 1, // require chained calls are each put on a new line for clarity
+        "no-array-constructor": 2, // disallow creation of dense arrays using the Array constructor
+        "no-bitwise": 2, // disallow bitwise operators (almost always just typos)
+        "no-continue": 0, // allow continue statement
+        "no-inline-comments": 0, // allow inline comments
+        "no-lonely-if": 2, // warn on nested if statements which should be written as else if
+        "no-mixed-spaces-and-tabs": 0, // don't warn on mixed spaces and tabs
+        "no-multiple-empty-lines": 0, // allow multiple empty lines
+        //"no-negated-condition": 2, // allow negated conditions
+        "no-nested-ternary": 2, // disallow super confusing nested ternaries
+        "no-new-object": 1, // warn when new Object() is used, as opposed to var myObject = {}
+        "no-plusplus": 0, // don't disallow ++ or --
+        "no-restricted-syntax": 0, // don't restrict any JS language features
+        "no-spaced-func": 2, // disallow spaces in function calls
+        "no-ternary": 0, // allow ternary operators
+        "no-trailing-spaces": 2, // disallow trailing spaces at the end of lines
+        "no-underscore-dangle": 0, // allow dangling underscores
+        "no-unneeded-ternary": 0, // don't enforce simpler language constructs in place of ternaries
+        "no-whitespace-before-property": 2, // disallow whitespace around the dot or before the opening bracket before properties of objects if they are on the same line
+        "object-curly-spacing": 0, // don't enforce object curly spacing
+        "one-var": [2, "never"], // one declarator per declaration per function (var) or block (let or const)
+        "one-var-declaration-per-line": 0, // don't enforce var declarations by line - handled already by one-var
+        "operator-assignment": [2, "always"], // enforce use of operator assignment shorthand where possible
+        "operator-linebreak": 0, // don't enforce an operator linebreak position
+        "padded-blocks": 0, // disallow padding in blocks
+        "quote-props": [2, "as-needed"], // use quotes only when required
+        "quotes": [2, "single"], // enforce single quotes
+        "require-jsdoc": 0, // don't require jsdoc statements
+        "semi": [2, "always"], // enforce semicolon use
+        "semi-spacing": [2, {
+          "before": false,
+          "after": true
+        }], // enforce space after semi-colon if another ststement follows on the same line
+        "sort-imports": 0, // don't enforce import sorting
+        "sort-vars": 0, // don't enforce var sorting
+        "space-before-blocks": 0, // don't enforce space before blocks
+        "space-before-function-paren": 0, // don't enforce space before function parens
+        "space-in-parens": 0, // don't enforce spaces in parens
+        "space-infix-ops": 2, // enforce spaces around infix operators
+        "space-unary-ops": 0, // don't enforce spaces in unary operators
+        "spaced-comment": 0, // require a white space before a comment
+        "wrap-regex": 2, // require regex literals to be wrapped
+
+    }
+}

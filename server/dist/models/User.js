@@ -9,8 +9,10 @@ var userSchema = new mongoose.Schema({
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    rowingRowerType: String,
+    rowingRowerDamping: String,
     rowingLoggingTimeout: Number,
-    shareRowingData: Boolean,
+    rowingShareData: Boolean,
     rowingTotalMetres: Number,
     rowingTotalTime: Number
 }, { timestamps: true });

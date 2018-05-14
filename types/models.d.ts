@@ -106,9 +106,18 @@ declare interface GridData {
 
 declare type WebsocketMessage = string;
 
-declare type WebsocketMessageType = 'message' | 'base' | 'error';
+declare type WebsocketMessageType = 'WEBSOCKET:MESSAGE' | 'WEBSOCKET:AUTHENTICATED';
 
 declare interface SessionTotals {
     metres: number;
     time: number;
+}
+
+declare interface RowerType {
+    constant: number,
+    multi: number
+} 
+
+declare interface RowerTypes {
+  waterRowerA1: RowerType
 }

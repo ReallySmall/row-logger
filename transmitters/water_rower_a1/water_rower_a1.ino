@@ -104,9 +104,6 @@ void sendRowingData() {
 
   char jsonBuffer1[300]; // create a data buffer large enough to hold the string which will be posted
 
-  rowingDataJsonObj["machineId"] = machineId;
-  rowingDataJsonObj["damping"] = damping;
-  rowingDataJsonObj["multi"] = multiplier;
   rowingDataJsonObj["base"] = baseTime;
 
   detachInterrupt(rowingStrokesSwitch);
@@ -155,7 +152,7 @@ void authenticate() {
   char loginData[60]; // create a data buffer large enough to hold the string which will be posted
   StaticJsonBuffer<300> jsonBuffer;
 
-  sprintf(loginData, "email=%s&password=%s", email, password);
+  sprintf(loginData, "email=%s&password=%s&isLogger=true", email, password);
 
   Serial.println("Getting JWT and timestamp from API");
 

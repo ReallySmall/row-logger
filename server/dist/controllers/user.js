@@ -33,13 +33,13 @@ exports.postLogin = function (req, res, next) {
                 req.logIn(user, function (error) {
                     if (error)
                         return next(error);
-                    console.log(user);
                     return res
                         .status(200)
                         .json({
                         token: jwt.sign({
                             user: user._id,
-                            userName: user.userName
+                            userName: user.userName,
+                            isLogger: req.body.isLogger
                         }, process.env.JWT_TOKEN_SECRET),
                         timestamp: new Date().getTime()
                     });

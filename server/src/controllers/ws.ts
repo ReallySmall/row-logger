@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 import { RowingData } from '../models/RowingData';
 import { User } from '../models/User';
+import { RowerTypes } from '../models/RowerTypes';  
 import { RowingDataRecorder } from '../helpers/rowingDataRecorder';
 import * as dateTimeHelpers from '../helpers/dateTimeHelper';
 import * as rowingDataHelpers from '../helpers/rowingDataHelper';
@@ -48,6 +49,7 @@ export const recordSession = (ws, req) => {
         }
 
         req.user = token.user; // otherwise flag the socket as authenticated
+
         ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'Authenticated', false), error => wsHelpers.handleWsError(error));
 
       });
@@ -57,7 +59,7 @@ export const recordSession = (ws, req) => {
       console.log('Recieved message: ', message);
 
       // attempt to extract variables from message
-      const { machineId, damping, multi, base, data } = JSON.parse(message.payload);
+      const { base, data } = JSON.parse(message.payload);
 
       // if data array exists
       // create new array with each time added to base time to get full timestamps
@@ -68,8 +70,6 @@ export const recordSession = (ws, req) => {
 
       // if an active rowing session doesn't exist yet for this user
       if(!rowingDataRecorder.sessionExists(req.user)){
-
-        console.log(req.user);
 
         // look for a user with matching API key
         User.findById(req.user, (error, user) => {
@@ -82,11 +82,21 @@ export const recordSession = (ws, req) => {
 
           }
 
-          // if all required params exist
-          if(machineId && damping && multi && base){
+          const rowerType: string = user.rowingRowerType;
+          const damping: any = user.rowingRowerDamping;
+          const { constant, multi } = RowerTypes[rowerType];
 
-            rowingDataRecorder.createSession(req.user, user._id, machineId, damping, multi, times);
+          // if all required params exist
+          if(damping && base && constant && multi){
+
+            rowingDataRecorder.createSession(req.user, user._id, rowerType, damping, multi, times);
             rowingDataRecorder.timeOutThenSave(req.user);
+
+          } else {
+
+            ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'Unexpected error, terminating', true), error => wsHelpers.handleWsError(error));
+            ws.terminate();
+            return;
 
           }
 
@@ -99,14 +109,11 @@ export const recordSession = (ws, req) => {
         rowingDataRecorder.addDataToSession(req.user, times);
         rowingDataRecorder.timeOutThenSave(req.user);
 
-        const currentDistance = rowingDataHelpers.timesToMetres([rowingDataRecorder.getSessionTimes(req.user)], multi, 4.805).toString() + 'm';
-
-        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, currentDistance, false), error => wsHelpers.handleWsError(error));
+        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'updated', false), error => wsHelpers.handleWsError(error));
 
       }
 
       req.wsInstance.getWss().clients.forEach(client => {
-        console.log(req.user);
         client.send(req.user);
       });
 

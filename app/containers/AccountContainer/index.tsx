@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
-import { account } from '../../forms';
+import { account, password } from '../../forms';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { FormContainer } from '../../containers/FormContainer';
 import { Loading, MainContentWrapper, PageHeader } from '../../components';
-import { utilsHelpers } from '../../helpers';
+import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
 
@@ -31,13 +30,22 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                 <MainContentWrapper sideBarContent={[]}>
                     <section>
                         <h2 className="visually-hidden">Form</h2>
-                        {processing && <Loading message={processing} />}
+                        {processing && <Loading message="processing" />}
                         {!processing && error && <p>{error}</p>}
-                        <div className="card">
-                            <FormContainer form="account" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={account} />
-                        </div>
+                        {!processing &&
+                            <div className="card">
+                                <div className="card-content">
+                                    <h3>Settings</h3>
+                                    <FormContainer form="account" onSubmit={this.submit} fieldData={account} />
+                                </div>
+                                <div className="card-content">
+                                    <h3>Update password</h3>
+                                    <FormContainer form="updatePassword" onSubmit={this.submit} fieldData={password} />
+                                </div>
+                            </div>
+                        }
                     </section>
-                </MainContentWrapper>
+                </MainContentWrapper>;
             </div>
 
         );
@@ -50,7 +58,7 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 function mapStateToProps(state: RootState, props) {
     return {
         processing: state.loading['ACCOUNT'],
-        error: state.error['ACCOUNT']
+        error: fetchHelpers.getErrorMessageString(state.error['ACCOUNT'])
     };
 }
 

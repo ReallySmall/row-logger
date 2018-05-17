@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 import { RowingData } from '../models/RowingData';
 import { User } from '../models/User';
-import { RowerTypes } from '../models/RowerTypes';  
+import { RowerTypes } from '../models/RowerTypes';
 import { RowingDataRecorder } from '../helpers/rowingDataRecorder';
 import * as dateTimeHelpers from '../helpers/dateTimeHelper';
 import * as rowingDataHelpers from '../helpers/rowingDataHelper';
@@ -11,12 +11,15 @@ import * as wsHelpers from '../helpers/wsHelper';
 import * as actions from '../constants/actions';
 
 const rowingDataRecorder = new RowingDataRecorder();
+const activeSessions = {};
 
 /**
  * WEBSOCKET /
  * handle creation of new rowing data.
  */
 export const recordSession = (ws, req) => {
+
+  console.log('ws connection');
 
   // client gets n milliseconds to send a valid authentication message before being disconnected
   const authenticationWindow = setTimeout(() => {
@@ -50,7 +53,17 @@ export const recordSession = (ws, req) => {
 
         req.user = token.user; // otherwise flag the socket as authenticated
 
-        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'Authenticated', false), error => wsHelpers.handleWsError(error));
+        // get the existing active session for this user, or create one if it doesn't exist
+        const activeSession = activeSessions[req.user] || {
+          connections: []
+        };
+
+        activeSession.connections.push(ws); // push this ws connection to the active session for this user
+        activeSessions[req.user] = activeSession; // update the global object with the active session for this user
+
+        activeSessions[req.user].connections.forEach((connection) => {
+          connection.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'A user client authenticated', false), error => wsHelpers.handleWsError(error));
+        });
 
       });
 
@@ -82,8 +95,8 @@ export const recordSession = (ws, req) => {
 
           }
 
-          const rowerType: string = user.rowingRowerType;
           const damping: any = user.rowingRowerDamping;
+          const rowerType: string = user.rowingRowerType;
           const { constant, multi } = RowerTypes[rowerType];
 
           // if all required params exist
@@ -109,13 +122,16 @@ export const recordSession = (ws, req) => {
         rowingDataRecorder.addDataToSession(req.user, times);
         rowingDataRecorder.timeOutThenSave(req.user);
 
-        ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'updated', false), error => wsHelpers.handleWsError(error));
-
       }
 
-      req.wsInstance.getWss().clients.forEach(client => {
-        client.send(req.user);
-      });
+      // update all user's connected clients
+      if(activeSessions[req.user] && activeSessions[req.user].connections){
+
+        activeSessions[req.user].connections.forEach((connection) => {
+          connection.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, times, false), error => wsHelpers.handleWsError(error));
+        });
+
+      }
 
     }
 

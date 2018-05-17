@@ -8,11 +8,13 @@ var rowingDataRecorder_1 = require("../helpers/rowingDataRecorder");
 var wsHelpers = require("../helpers/wsHelper");
 var actions = require("../constants/actions");
 var rowingDataRecorder = new rowingDataRecorder_1.RowingDataRecorder();
+var activeSessions = {};
 /**
  * WEBSOCKET /
  * handle creation of new rowing data.
  */
 exports.recordSession = function (ws, req) {
+    console.log('ws connection');
     // client gets n milliseconds to send a valid authentication message before being disconnected
     var authenticationWindow = setTimeout(function () {
         if (req && !req.user && ws)
@@ -37,7 +39,15 @@ exports.recordSession = function (ws, req) {
                     return;
                 }
                 req.user = token.user; // otherwise flag the socket as authenticated
-                ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'Authenticated', false), function (error) { return wsHelpers.handleWsError(error); });
+                // get the existing active session for this user, or create one if it doesn't exist
+                var activeSession = activeSessions[req.user] || {
+                    connections: []
+                };
+                activeSession.connections.push(ws); // push this ws connection to the active session for this user
+                activeSessions[req.user] = activeSession; // update the global object with the active session for this user
+                activeSessions[req.user].connections.forEach(function (connection) {
+                    connection.send(wsHelpers.createWsMessage(actions.WEBSOCKET_AUTHENTICATED, 'A user client authenticated', false), function (error) { return wsHelpers.handleWsError(error); });
+                });
             });
         }
         else {
@@ -58,8 +68,8 @@ exports.recordSession = function (ws, req) {
                         ws.terminate();
                         return;
                     }
-                    var rowerType = user.rowingRowerType;
                     var damping = user.rowingRowerDamping;
+                    var rowerType = user.rowingRowerType;
                     var _a = RowerTypes_1.RowerTypes[rowerType], constant = _a.constant, multi = _a.multi;
                     // if all required params exist
                     if (damping && base_1 && constant && multi) {
@@ -78,11 +88,13 @@ exports.recordSession = function (ws, req) {
                 // append new times to existing times
                 rowingDataRecorder.addDataToSession(req.user, times_1);
                 rowingDataRecorder.timeOutThenSave(req.user);
-                ws.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, 'updated', false), function (error) { return wsHelpers.handleWsError(error); });
             }
-            req.wsInstance.getWss().clients.forEach(function (client) {
-                client.send(req.user);
-            });
+            // update all user's connected clients
+            if (activeSessions[req.user] && activeSessions[req.user].connections) {
+                activeSessions[req.user].connections.forEach(function (connection) {
+                    connection.send(wsHelpers.createWsMessage(actions.WEBSOCKET_MESSAGE, times_1, false), function (error) { return wsHelpers.handleWsError(error); });
+                });
+            }
         }
     });
 };

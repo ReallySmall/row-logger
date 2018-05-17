@@ -9,11 +9,11 @@ const userSchema = new mongoose.Schema({
   password: String,
   passwordResetToken: String,
   passwordResetExpires: Date,
-
   rowingRowerType: String,
   rowingRowerDamping: String,
   rowingLoggingTimeout: Number,
   rowingShareData: Boolean,
+  shareRowingData: Boolean,
   rowingTotalMetres: Number,
   rowingTotalTime: Number
 

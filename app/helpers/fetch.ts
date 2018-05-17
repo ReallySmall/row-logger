@@ -20,7 +20,15 @@ export const handleFetchResponseError = (response: any, dispatch: Function, erro
 };
 
 // get an error message string from a passed in error object
+<<<<<<< HEAD
 export const getErrorMessageString = (error: any): string => {
+=======
+export const getErrorMessageString = (error: Error): string => {
+
+    if(!error){
+        return undefined;
+    }
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 
     let message: string = error.message || 'Unexpected error.';
 

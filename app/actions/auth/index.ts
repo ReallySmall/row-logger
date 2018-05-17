@@ -14,7 +14,7 @@ const wsConnect = (connect: boolean): ReduxAction => {
     return {
         type: connect ? actions.WEBSOCKET_CONNECT: actions.WEBSOCKET_DISCONNECT,
         payload: {
-            url: 'ws://localhost:8080/api'
+            url: 'wss://localhost'
         },
         error: false
     };

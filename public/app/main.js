@@ -11227,15 +11227,15 @@ var OverviewContainer_1 = __webpack_require__(1206);
 exports.OverviewContainer = OverviewContainer_1.default;
 var SessionsContainer_1 = __webpack_require__(1208);
 exports.SessionsContainer = SessionsContainer_1.default;
-var SessionContainer_1 = __webpack_require__(1212);
+var SessionContainer_1 = __webpack_require__(1213);
 exports.SessionContainer = SessionContainer_1.default;
-var CurrentSessionContainer_1 = __webpack_require__(1213);
+var CurrentSessionContainer_1 = __webpack_require__(1214);
 exports.CurrentSessionContainer = CurrentSessionContainer_1.default;
-var PublicContainer_1 = __webpack_require__(1214);
+var PublicContainer_1 = __webpack_require__(1215);
 exports.PublicContainer = PublicContainer_1.default;
-var RegisterContainer_1 = __webpack_require__(1215);
+var RegisterContainer_1 = __webpack_require__(1216);
 exports.RegisterContainer = RegisterContainer_1.default;
-var AccountContainer_1 = __webpack_require__(1216);
+var AccountContainer_1 = __webpack_require__(1217);
 exports.AccountContainer = AccountContainer_1.default;
 
 
@@ -11253,7 +11253,7 @@ var wsConnect = function (connect) {
     return {
         type: connect ? actions.WEBSOCKET_CONNECT : actions.WEBSOCKET_DISCONNECT,
         payload: {
-            url: 'ws://localhost:8080/api'
+            url: 'wss://localhost'
         },
         error: false
     };
@@ -19353,7 +19353,9 @@ var register_1 = __webpack_require__(1209);
 exports.register = register_1.default;
 var account_1 = __webpack_require__(1210);
 exports.account = account_1.default;
-var sessionFilters_1 = __webpack_require__(1211);
+var password_1 = __webpack_require__(1211);
+exports.password = password_1.default;
+var sessionFilters_1 = __webpack_require__(1212);
 exports.sessionFilters = sessionFilters_1.default;
 
 
@@ -75676,7 +75678,6 @@ var App = (function (_super) {
     App.prototype.render = function () {
         var _a = this.props, location = _a.location, isLoggedIn = _a.isLoggedIn, userName = _a.userName, appConnected = _a.appConnected, authActions = _a.authActions;
         var socketActiveClass = appConnected ? '' : 'disabled';
-        console.log(userName);
         return (React.createElement("div", null,
             React.createElement("svg", { className: "page-background", viewBox: "0 0 100 25" },
                 React.createElement("path", { fill: "#1f88e6", opacity: "0.5", d: "M0 30 V15 Q30 3 60 15 V30z" }),
@@ -94394,6 +94395,44 @@ exports.default = account;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var updatePassword = {
+    password: {
+        name: 'password',
+        display: true,
+        renderer: 'text',
+        type: 'password',
+        typeSpecific: {},
+        label: 'Password',
+        value: '',
+        placeholder: 'Your password',
+        conditionalParent: undefined,
+        required: true,
+        validators: ['required']
+    },
+    confirmPassword: {
+        name: 'confirmPassword',
+        display: true,
+        renderer: 'text',
+        type: 'password',
+        typeSpecific: {},
+        label: 'Confirm password',
+        value: '',
+        placeholder: 'Your password',
+        conditionalParent: undefined,
+        required: true,
+        validators: ['required']
+    }
+};
+exports.default = updatePassword;
+
+
+/***/ }),
+/* 1212 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var moment = __webpack_require__(1);
 var config_1 = __webpack_require__(26);
 var sessionFilters = {
@@ -94434,7 +94473,7 @@ exports.default = sessionFilters;
 
 
 /***/ }),
-/* 1212 */
+/* 1213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94540,7 +94579,7 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps, hel
 
 
 /***/ }),
-/* 1213 */
+/* 1214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94592,7 +94631,7 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps, hel
 
 
 /***/ }),
-/* 1214 */
+/* 1215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94646,7 +94685,7 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps, hel
 
 
 /***/ }),
-/* 1215 */
+/* 1216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94711,7 +94750,7 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps, hel
 
 
 /***/ }),
-/* 1216 */
+/* 1217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -94749,17 +94788,24 @@ var AccountContainer = (function (_super) {
             React.createElement(components_1.MainContentWrapper, { sideBarContent: [] },
                 React.createElement("section", null,
                     React.createElement("h2", { className: "visually-hidden" }, "Form"),
-                    processing && React.createElement(components_1.Loading, { message: processing }),
+                    processing && React.createElement(components_1.Loading, { message: "processing" }),
                     !processing && error && React.createElement("p", null, error),
-                    React.createElement("div", { className: "card" },
-                        React.createElement(FormContainer_1.FormContainer, { form: "account", formWrapperClassNames: "card-content", onSubmit: this.submit, fieldData: forms_1.account }))))));
+                    !processing &&
+                        React.createElement("div", { className: "card" },
+                            React.createElement("div", { className: "card-content" },
+                                React.createElement("h3", null, "Settings"),
+                                React.createElement(FormContainer_1.FormContainer, { form: "account", onSubmit: this.submit, fieldData: forms_1.account })),
+                            React.createElement("div", { className: "card-content" },
+                                React.createElement("h3", null, "Update password"),
+                                React.createElement(FormContainer_1.FormContainer, { form: "updatePassword", onSubmit: this.submit, fieldData: forms_1.password }))))),
+            ";"));
     };
     return AccountContainer;
 }(React.Component));
 function mapStateToProps(state, props) {
     return {
         processing: state.loading['ACCOUNT'],
-        error: state.error['ACCOUNT']
+        error: helpers_1.fetchHelpers.getErrorMessageString(state.error['ACCOUNT'])
     };
 }
 exports.default = react_redux_1.connect(mapStateToProps, null, helpers_1.utilsHelpers.mergePropsForConnect)(AccountContainer);

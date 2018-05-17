@@ -13,6 +13,7 @@ var userSchema = new mongoose.Schema({
     rowingRowerDamping: String,
     rowingLoggingTimeout: Number,
     rowingShareData: Boolean,
+    shareRowingData: Boolean,
     rowingTotalMetres: Number,
     rowingTotalTime: Number
 }, { timestamps: true });

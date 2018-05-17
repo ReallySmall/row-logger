@@ -25,6 +25,7 @@ const account: AppForm = {
         required: true,
         validators: ['required', 'email']
     },
+<<<<<<< HEAD
     password: {
         name: 'password',
         display: true,
@@ -51,6 +52,8 @@ const account: AppForm = {
         required: true,
         validators: ['required']
     },
+=======
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
     rowerType: {
         name: 'rowerType',
         display: true,

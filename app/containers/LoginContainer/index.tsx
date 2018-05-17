@@ -7,7 +7,11 @@ import { RootState } from '../../reducers';
 import { FormContainer } from '../../containers/FormContainer';
 import { PageHeader, MainContentWrapper, Loading } from '../../components';
 import { appConfig } from '../../config';
+<<<<<<< HEAD
 import { utilsHelpers } from '../../helpers';
+=======
+import { utilsHelpers, fetchHelpers } from '../../helpers';
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { Interfaces } from './interfaces';
 
 class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -56,7 +60,11 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 function mapStateToProps(state: RootState) {
     return {
         processing: state.loading['LOGIN'],
+<<<<<<< HEAD
         error: state.error['LOGIN']
+=======
+        error: fetchHelpers.getErrorMessageString(state.error['LOGIN'])
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
     };
 }
 

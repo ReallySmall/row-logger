@@ -5,7 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { FormContainer } from '../../containers/FormContainer';
 import { Loading, MainContentWrapper, PageHeader } from '../../components';
+<<<<<<< HEAD
 import { utilsHelpers } from '../../helpers';
+=======
+import { utilsHelpers, fetchHelpers } from '../../helpers';
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
 
@@ -56,7 +60,11 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 function mapStateToProps(state: RootState, props) {
     return {
         processing: state.loading['REGISTER'],
+<<<<<<< HEAD
         error: state.error['REGISTER']
+=======
+        error: fetchHelpers.getErrorMessageString(state.error['REGISTER'])
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
     };
 }
 

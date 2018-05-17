@@ -3,4 +3,4 @@ export const RowerTypes: RowerTypes = {
     constant: 4.805,
     multi: 10
   }
-}
+};

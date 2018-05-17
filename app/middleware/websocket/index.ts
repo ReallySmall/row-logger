@@ -2,7 +2,11 @@
 import { compose } from 'redux';
 import { connecting, open, closed, message } from './actions';
 import { createWebsocket } from './websocket';
+<<<<<<< HEAD
 import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND } from '../../constants/actions';
+=======
+import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND, LOGOUT_REQUEST } from '../../constants/actions';
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { appConfig } from '../../config';
 
 const partial = require('lodash/fp/partial');
@@ -83,6 +87,15 @@ const createMiddleware = () => {
         next(action);
         break;
 
+<<<<<<< HEAD
+=======
+      // User logged out
+      case LOGOUT_REQUEST:
+        close();
+        next(action);
+        break;
+
+>>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
       // User request to send a message
       case WEBSOCKET_SEND:
         if (websocket) {

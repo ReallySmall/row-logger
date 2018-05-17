@@ -35,7 +35,8 @@ export const postLogin = (req, res, next) => {
       passport.authenticate('local', (error, user, info) => {
 
         if (error) return next(error);
-        if (!user) return res.status(401).json({ message: 'Authentication failed.' });
+
+        if (!user) return res.status(401).json({ message: 'Login failed.' });
 
         req.logIn(user, (error) => {
 
@@ -43,6 +44,7 @@ export const postLogin = (req, res, next) => {
 
           return res
                   .status(200)
+                  .header('Transfer-Encoding', '')
                   .json({
                     token: jwt.sign({
                       user: user._id,

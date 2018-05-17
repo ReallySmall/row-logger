@@ -29,12 +29,13 @@ exports.postLogin = function (req, res, next) {
                 if (error)
                     return next(error);
                 if (!user)
-                    return res.status(401).json({ message: 'Authentication failed.' });
+                    return res.status(401).json({ message: 'Login failed.' });
                 req.logIn(user, function (error) {
                     if (error)
                         return next(error);
                     return res
                         .status(200)
+                        .header('Transfer-Encoding', '')
                         .json({
                         token: jwt.sign({
                             user: user._id,

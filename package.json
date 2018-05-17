@@ -151,6 +151,7 @@
     "jest": "^21.2.1",
     "mocha": "^3.5.0",
     "node-sass": "^4.5.3",
+    "nodemon": "^1.17.4",
     "postcss-pxtorem": "^4.0.1",
     "purify-css": "^1.2.5",
     "purifycss-webpack": "^0.7.0",

@@ -54,8 +54,6 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
         const { location, isLoggedIn, userName, appConnected, authActions } = this.props;
         const socketActiveClass: string = appConnected ? '' : 'disabled';
 
-        console.log(userName);
-
         return (
 
             <div>

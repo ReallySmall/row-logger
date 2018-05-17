@@ -4,12 +4,10 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <WebSocketClient.h>
 #include "secret.h" // personal connection data stored seperately to exclude from version control
 
-ESP8266WiFiMulti WiFiMulti;
 WiFiClient client;
 HTTPClient http;
 WebSocketClient webSocketClient;
@@ -20,9 +18,6 @@ const char* postRowingDataSocket = SOCKETIP; // socket for logging rowing data
 const char* email = APPUSEREMAIL;
 const char* password = APPPASSWORD;
 
-const char machineId[] = "water_rower_a1"; // the type of rower
-const char damping[] = "2000"; // ml - however full your water tank is
-
 char baseTime[14]; // the base time, which will be obtained from the API as millis from epoch
 char jwt[200]; // the jwt which will be obtained from api
 
@@ -31,7 +26,7 @@ volatile long lastTriggered = 0; //the last time the interrupt pin was triggered
 unsigned long lastPosted = millis(); // reference point for time elapsed since last post to API
 unsigned long dataArray[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // array for holding rower pulse time values
 
-const int timeOut = 4000; // millis to wait between posts to API
+const int timeOut = 3000; // millis to wait between posts to API
 
 const byte rowingStrokesSwitch = 4; // DPIO connected to rower, triggers interrupt function
 const byte debounce = 30;
@@ -149,11 +144,11 @@ void halt(const char* message) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void authenticate() {
 
-  char loginData[60]; // create a data buffer large enough to hold the string which will be posted
+  char loginData[100]; // create a data buffer large enough to hold the string which will be posted
   StaticJsonBuffer<300> jsonBuffer;
 
   sprintf(loginData, "email=%s&password=%s&isLogger=true", email, password);
-
+  
   Serial.println("Getting JWT and timestamp from API");
 
   http.begin("http://192.168.1.64:8080/api/login");
@@ -164,8 +159,10 @@ void authenticate() {
 
   if (httpCode > 0 && httpCode == HTTP_CODE_OK) {
 
-    Serial.println(http.getString());
-    JsonObject& jsonData = jsonBuffer.parseObject(http.getString()); // parse the JSON message
+    String response = http.getString();
+
+    Serial.println(response);
+    JsonObject& jsonData = jsonBuffer.parseObject(response); // parse the JSON message
 
     if (!jsonData.success()) { // if parsing the JSON failed
 
@@ -212,15 +209,19 @@ void setup() {
 
     authenticate(); // first authenticate
 
-    // then connect to websocket
-    if (client.connect(postRowingDataSocket, 8080)) {
+    const byte connected = client.connect(postRowingDataSocket, 8080);
+
+    Serial.print(connected);
+
+    // then connect to websocket  
+    if (connected) {
       Serial.println("Connected to websocket endpoint. Attempting upgrade handshake...");
     } else {
       halt("Connection failed");
     }
 
     // then set options for websocket upgrade handshake
-    webSocketClient.path = "/api";
+    webSocketClient.path = "";
     webSocketClient.host = (char*)postRowingDataSocket;
 
     // then upgrade connection to websocket

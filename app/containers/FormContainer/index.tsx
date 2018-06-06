@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { formControls } from '../../components/FormControls';
+import MenuItem from 'material-ui/MenuItem';
+import Button from '@material-ui/core/Button';
 import { Form, Field, change } from 'redux-form';
 import { fieldValidationMethods } from './validation/';
 import { RootState } from '../../reducers';
@@ -64,11 +66,9 @@ export class FormContainer extends React.Component<Interfaces.Props, Interfaces.
 
     render() {
 
-        const { form, disabled, fieldData, handleSubmit, cancelSubmit, initialValues, currentValues, submitting, valid, formWrapperClassNames, formControlClassNames, dispatch } = this.props;
-        let { changeAction, formSubmitType, formSubmitIcon, formSubmitLabel } = this.props;
+        const { form, disabled, fieldData, handleSubmit, cancelSubmit, initialValues, currentValues, submitting, valid, formWrapperClassNames, dispatch } = this.props;
+        let { changeAction, formSubmitLabel } = this.props;
 
-        formSubmitType = formSubmitType || 'success'; // style of the submit button, or default to green if not passed in
-        formSubmitIcon = formSubmitIcon || ''; // icon of the submit button, none if not passed in
         formSubmitLabel = formSubmitLabel || 'Submit'; // title of the submit button, or a default if not passed in
 
         return (
@@ -79,38 +79,33 @@ export class FormContainer extends React.Component<Interfaces.Props, Interfaces.
                         <div>
                             {fieldData && Object.keys(fieldData).map((fieldDatum, index) => { // create a form control from each item of supplied field data
 
-                                const { display, renderer, type, typeSpecific, label, placeholder, conditionalParent, options, required, validators } = fieldData[fieldDatum]; // get individual property vars to pass into renderer
+                                const { display, renderer, type, options, label, conditionalParent, required, validators } = fieldData[fieldDatum]; // get individual property vars to pass into renderer
 
                                 const formControlRenderer: any = formControls[renderer]; // get the appropriate renderer for this form control type
                                 const validationMethods: Array<any> = fieldValidationMethods(validators); // convert array list of validation types to array of validation methods
                                 const conditionalRender: boolean = !conditionalParent ? true : this.shouldFieldConditionalRender(conditionalParent);
 
-                                const otherFieldProps = { // set any other required properties to pass into the renderer - these are passed into Redux-form's Field 'props' prop
-                                    id: form + '-' + index, // create unique id for each form element to tie to labels for accessibility
-                                    disabled: disabled, // whether the control is currently disabled
-                                    label: label, // the field's label
-                                    placeholder: placeholder, // placeholder/ default value for selects
-                                    required: required, // is the field required? (used to conditionally style the label)
-                                    typeSpecific: typeSpecific, // properties specific to this form control type e.g. select options or datepicker date formatting
-                                    changeAction: changeAction, // pass in a field change handler to use to hit store manually if required
-                                };
-
                                 return ( // render the form control for this field
                                     display && formControlRenderer && conditionalRender && // if field is set to display and has a renderer defined
-                                        <div key={index} className={formControlClassNames}>
+                                        <div key={index}>
                                             <Field
+                                                id={`${form}-${index}`}
                                                 name={fieldDatum}
                                                 type={type}
-                                                props={otherFieldProps}
                                                 component={formControlRenderer}
-                                                validate={validationMethods} />
+                                                required={required}
+                                                validate={validationMethods}
+                                                disabled={disabled}
+                                                hintText={label}
+                                                floatingLabelText={label}>
+                                                    {type === 'select' && options.map((option, index) => <MenuItem key={index} value={option.value} primaryText={option.label}/>)}
+                                            </Field>
                                         </div> || null
                                 );
 
                             })}
-                            <div className={formControlClassNames}>
-                                {cancelSubmit && <button onClick={cancelSubmit} disabled={disabled || submitting || !valid} className="button button-secondary">Cancel</button>}
-                                <button type="submit" disabled={disabled || submitting || !valid} className="waves-effect waves-light btn">{formSubmitLabel}</button>
+                            <div className="form-submit-wrapper">
+                                <Button type="submit" disabled={disabled || submitting || !valid} variant="raised" size="medium" color="primary">{formSubmitLabel}</Button>
                             </div>
                         </div>
                     </fieldset>

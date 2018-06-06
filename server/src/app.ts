@@ -20,6 +20,7 @@ const expressWs = require('express-ws');
 const jwt = require('jsonwebtoken');
 const https = require('https');
 const fs = require('fs');
+const helmet = require('helmet');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -77,6 +78,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer());
 app.use(expressValidator());
+app.use(helmet());
 app.use(session({
   resave: true,
   saveUninitialized: true,
@@ -89,9 +91,8 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(lusca.csrf({ secret: 'test' }));
-// app.use(lusca.xframe('SAMEORIGIN'));
-// app.use(lusca.xssProtection(true));
+app.use(lusca.xframe('SAMEORIGIN'));
+app.use(lusca.xssProtection(true));
 
 app.use((req, res, next) => {
 
@@ -115,16 +116,16 @@ app.use(express.static(path.join(__dirname, '/../../public'), { maxAge: 31557600
 /**
  * API routes.
  */
+app.get('/api/account', userController.getUserData);
 app.get('/api/sessions', sessionsController.getSessions);
 app.get('/api/sessions/totals', sessionsController.getSessionTotals);
 app.get('/api/session', sessionsController.getSession);
 app.post('/api/session/update', sessionsController.updateSession);
 app.post('/api/session/delete', sessionsController.deleteSession);
 app.post('/api/login', userController.postLogin);
-app.post('/api/forgot', userController.postForgot);
-app.post('/api/reset/:token', userController.postReset);
 app.post('/api/register', userController.postSignup);
 app.post('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
+app.post('/api/account/rower', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.ws('/', wsController.recordSession);
@@ -133,6 +134,10 @@ app.ws('/', wsController.recordSession);
  * App route.
  */
 app.get('*', homeController.index);
+
+app.get('*', function(req, res) {
+    res.redirect('https://' + req.headers.host + req.url);
+});
 
 /**
  * Error Handler.

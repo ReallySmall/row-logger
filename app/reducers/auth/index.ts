@@ -34,6 +34,24 @@ export default (state = initialState, action) => {
                 userName: action.error ? state.userName : action.payload
             });
 
+        case actions.ACCOUNT_DETAILS_REQUEST_COMPLETE:
+
+            return Object.assign({}, state, <AuthInterface>{
+                userName: action.error ? state.userName : action.payload.userName,
+                email: action.error ? state.email : action.payload.email,
+                rowerType: action.error ? state.rowerType : action.payload.rowerType,
+                rowerDamping: action.error ? state.rowerDamping : action.payload.rowerDamping
+            });
+
+        case actions.ACCOUNT_DETAILS_UPDATE_REQUEST_COMPLETE:
+
+            return Object.assign({}, state, <AuthInterface>{
+                userName: action.error ? state.userName : action.payload.userName,
+                email: action.error ? state.email : action.payload.email,
+                rowerType: action.error ? state.rowerType : action.payload.rowerType,
+                rowerDamping: action.error ? state.rowerDamping : action.payload.rowerDamping
+            });
+
         case actions.LOGOUT_REQUEST:
 
             return state;

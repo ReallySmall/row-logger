@@ -2,6 +2,11 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import * as dateTimeHelpers from '../../helpers/dateTime';
 import * as rowingHelpers from '../../helpers/rowing';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { Interfaces } from './interfaces';
 
 export class GridOverview extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -20,20 +25,20 @@ export class GridOverview extends React.Component<Interfaces.Props, Interfaces.S
         return (
 
             <div className="card-content">
-                <table className="responsive-table">
-                    <thead>
-                        <tr>
-                            <th>Total distance</th>
-                            <th>Total time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{distance}</td>
-                            <td>{time}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Total distance</TableCell>
+                            <TableCell>Total time</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>{distance}</TableCell>
+                            <TableCell>{time}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </div>
 
         );

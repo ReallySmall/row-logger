@@ -4,10 +4,8 @@ const login: AppForm = {
         display: true,
         renderer: 'text',
         type: 'text',
-        typeSpecific: {},
         label: 'User name',
         value: '',
-        placeholder: 'Your user name',
         conditionalParent: undefined,
         required: true,
         validators: ['required']
@@ -17,10 +15,8 @@ const login: AppForm = {
         display: true,
         renderer: 'text',
         type: 'text',
-        typeSpecific: {},
         label: 'Email address',
         value: '',
-        placeholder: 'Your email address',
         conditionalParent: undefined,
         required: true,
         validators: ['required', 'email']
@@ -30,10 +26,8 @@ const login: AppForm = {
         display: true,
         renderer: 'text',
         type: 'password',
-        typeSpecific: {},
         label: 'Password',
         value: '',
-        placeholder: 'Your password',
         conditionalParent: undefined,
         required: true,
         validators: ['required']
@@ -43,10 +37,8 @@ const login: AppForm = {
         display: true,
         renderer: 'text',
         type: 'password',
-        typeSpecific: {},
         label: 'Confirm password',
         value: '',
-        placeholder: 'Your password',
         conditionalParent: undefined,
         required: true,
         validators: ['required']

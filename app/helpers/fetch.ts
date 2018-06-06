@@ -20,15 +20,11 @@ export const handleFetchResponseError = (response: any, dispatch: Function, erro
 };
 
 // get an error message string from a passed in error object
-<<<<<<< HEAD
-export const getErrorMessageString = (error: any): string => {
-=======
 export const getErrorMessageString = (error: Error): string => {
 
     if(!error){
         return undefined;
     }
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 
     let message: string = error.message || 'Unexpected error.';
 
@@ -71,6 +67,33 @@ export const setPostFetchOpts = (jwt?: string): FetchOptions => {
     if(jwt){
         fetchOpts.headers.append('Authorization', 'Bearer ' + jwt);
     }
+
+    return fetchOpts;
+
+};
+
+// returns a default options object to use for form POST requests
+export const setFormPostFetchOpts = (formData: AppFormValues, jwt?: string): FetchOptions => {
+
+    const fetchOpts: FetchOptions = {
+        method: 'POST',
+        headers: new Headers({
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        })
+    };
+
+    if(jwt){
+        fetchOpts.headers.append('Authorization', 'Bearer ' + jwt);
+    }
+
+    let formBody: string = '';
+
+    Object.keys(formData).map(key => {
+        formBody += `${key}=${formData[key]}&`;
+    };
+
+    fetchOpts.body = formBody;
 
     return fetchOpts;
 

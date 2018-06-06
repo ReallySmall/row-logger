@@ -1,17 +1,14 @@
 import * as React from 'react';
-import * as AuthActions from '../../actions/auth';
+import * as authActions from '../../actions/auth';
+import * as errorActions from '../../actions/error';
 import login from '../../forms/login';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
 import { FormContainer } from '../../containers/FormContainer';
-import { PageHeader, MainContentWrapper, Loading } from '../../components';
+import { PageHeader, MainContentWrapper, Loading, AlertDialog } from '../../components';
 import { appConfig } from '../../config';
-<<<<<<< HEAD
-import { utilsHelpers } from '../../helpers';
-=======
 import { utilsHelpers, fetchHelpers } from '../../helpers';
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { Interfaces } from './interfaces';
 
 class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -23,7 +20,7 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 
     submit = (loginDetails: AppFormValues) => {
 
-        const { logInRequest } = this.props.actions;
+        const { logInRequest } = this.props.authActions;
 
         logInRequest(loginDetails);
 
@@ -31,7 +28,7 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 
     render() {
 
-        const { processing, error } = this.props;
+        const { processing, error, errorActions } = this.props;
 
         return (
 
@@ -41,7 +38,6 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
                     <section>
                         <h2 className="visually-hidden">Form</h2>
                         {processing && <Loading message="Logging in" />}
-                        {!processing && error && <p>{error}</p>}
                         {!processing &&
                             <div className="card">
                                 <FormContainer form="login" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={login} />
@@ -60,18 +56,15 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 function mapStateToProps(state: RootState) {
     return {
         processing: state.loading['LOGIN'],
-<<<<<<< HEAD
-        error: state.error['LOGIN']
-=======
         error: fetchHelpers.getErrorMessageString(state.error['LOGIN'])
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
     };
 }
 
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(AuthActions as any, dispatch)
+        authActions: bindActionCreators(authActions as any, dispatch),
+        errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 

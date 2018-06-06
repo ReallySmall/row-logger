@@ -27,24 +27,14 @@ declare interface AppFormFieldConditionalParent {
     values: Array<any>;
 }
 
-declare interface AppFormFieldTypeSpecificData {
-    options?: Array<AppFormFieldSelectOption>;
-    maxLength?: number;
-    max?: number;
-    min?: number;
-    rangeFuture?: string;
-    rangePast?: string;
-}
-
 declare interface AppFormField {
     name: string;
     display: boolean;
     renderer: string;
     type: string;
-    typeSpecific: AppFormFieldTypeSpecificData;
+    options?: Array<AppFormFieldSelectOption>;
     label: string;
     value: any;
-    placeholder: string;
     conditionalParent?: AppFormFieldConditionalParent;
     required: boolean;
     validators: Array<string>;
@@ -121,5 +111,3 @@ declare interface RowerType {
 declare interface RowerTypes {
   waterRowerA1: RowerType;
 }
-=======
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a

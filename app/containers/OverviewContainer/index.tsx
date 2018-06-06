@@ -1,9 +1,13 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
 import * as tabActions from '../../actions/tabs';
+import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { GridHeaderContainer, GridBodyContainer } from '../../containers';
 import { ChartOverview, Loading } from '../../components';
 import { NavLink } from 'react-router-dom';
@@ -11,7 +15,7 @@ import { columns } from '../../columns/columns';
 import { totalsColumns } from '../../columns/totals';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers } from '../../helpers';
+import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -45,12 +49,12 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <div className="container">
-                <article className="row">
-                    <section className="col s12 m4">
-                        <h4>Totals</h4>
-                        <div className="card">
-                            <div className="card-content">
+            <article>
+                <Grid container spacing={24}>
+                    <Grid item xs={12} sm={4}>
+                        <section>
+                            <Typography variant="title" gutterBottom>Totals</Typography>
+                            <Paper>
                                 {processing && <Loading />}
                                 {!processing && totals &&
                                     <div>
@@ -58,24 +62,24 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                                         <ChartOverview total={112000} progress={progress} />
                                     </div>
                                 }
-                            </div>
-                        </div>
-                    </section>
-                    <section className="col s12 m8">
-                        <h4>Recent</h4>
-                        <div className="card">
-                            <div className="card-content">
+                            </Paper>
+                        </section>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                        <section>
+                            <Typography variant="title" gutterBottom>Recent</Typography>
+                            <Paper>
                                 {processing && <Loading />}
                                 {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
-                            </div>
-                        </div>
-                        {hasSessions
-                            ? <p><NavLink to="/sessions" className="waves-effect waves-light btn">View all sessions</NavLink></p>
-                            : null
-                        }
-                    </section>
-                </article>
-            </div>
+                            </Paper>
+                            {hasSessions
+                                ? <Button color="primary" component={NavLink} to="/sessions">View all sessions</Button>
+                                : null
+                            }
+                        </section>
+                    </Grid>
+                </Grid>
+            </article>
 
         );
 
@@ -86,7 +90,6 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        roles: state.auth.roles,
         processing: state.loading['SESSION_TOTALS'],
         error: state.error['SESSION_TOTALS'],
         totals: state.overview.totals,

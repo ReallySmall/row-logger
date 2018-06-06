@@ -39,6 +39,16 @@ export default (state = initialState, action) => {
 
 	} else {
 
+		// if(action.type === actions.CLEAR_ERROR && state[action.payload]){
+
+		// 	const updatedState = {...state};
+
+		// 	delete updatedState[action.payload];
+
+		// 	return updatedState;
+
+		// }
+
 		return state;
 
 	}

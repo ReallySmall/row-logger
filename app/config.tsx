@@ -3,10 +3,15 @@ export const appConfig = {
     csrf: '', // set against window object in index.tsx
     apis: {
         register: '/api/register',
+        account: '/api/account',
         login: '/api/login',
+        profile: '/api/account/profile',
+        rower: '/api/account/rower',
+        password: '/api/account/password',
         sessionTotals: '/api/sessions/totals',
         session: '/api/session',
-        sessions: '/api/sessions'
+        sessions: '/api/sessions',
+        ws: __ISDEVENV__ ? 'wss://localhost' : 'TBC'
     },
     auth: {
         sessionState: 'sessionState', // name of key in sessionStorage

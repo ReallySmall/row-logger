@@ -3,6 +3,18 @@ import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Avatar from '@material-ui/core/Avatar';
+import ImageIcon from '@material-ui/icons/Image';
+import TimerIcon from '@material-ui/icons/Timer';
+import TimeLineIcon from '@material-ui/icons/Timeline';
+import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
+import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import { FormContainer } from '../../containers/FormContainer';
 import { Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
 import { routes } from '../../routes';
@@ -34,74 +46,79 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
         return (
 
-            <div>
-                {error &&
-                    <ErrorPage title="Not found" description="This session does not exist" />
-                }
-                {!error && processing &&
-                    <Loading message="Getting session data" />
-                }
-                {!error && !processing && session &&
-                    <div>
-                        <PageHeader title={dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}></PageHeader>
-                            <MainContentWrapper sideBarContent={[]}>
-                                <article className="row">
-                                    <aside className="col s12 m3">
-                                        <h4 className="visually-hidden">Data</h4>
-                                        <div className="card">
-                                        <p>
-                                            <a className="btn-floating halfway-fab waves-effect waves-light">
-                                                <Icon name="edit" />
-                                            </a>
-                                        </p>
-                                        <div className="card-content">
-                                            <ul className="plain">
-                                                {session.distance &&
-                                                    <li>
-                                                        <p><strong>Distance</strong></p>
-                                                        <p>{rowingHelpers.metrestoKmString(session.distance)}</p>
-                                                    </li>
-                                                }
-                                                {session.time &&
-                                                    <li>
-                                                        <p><strong>Time</strong></p>
-                                                        <p>{dateTimeHelpers.millisToDuration(session.time)}</p>
-                                                    </li>
-                                                }
-                                                <li>
-                                                    <p><strong>Average speed</strong></p>
-                                                    <p>{rowingHelpers.metresSecondstoAverageSpeedString(session.distance, session.time)}</p>
-                                                </li>
-                                                {session.machineId &&
-                                                    <li>
-                                                        <p><strong>Rower type</strong></p>
-                                                        <p>{session.machineId}</p>
-                                                    </li>
-                                                }
-                                                {session.damping &&
-                                                    <li>
-                                                        <p><strong>Damping level</strong></p>
-                                                        <p>{session.damping}</p>
-                                                    </li>
-                                                }
-                                            </ul>
-                                        </div>
-                                    </div>
+            <article>
+                    {error &&
+                        <ErrorPage title="Not found" description="This session does not exist" />
+                    }
+                    {!error && processing &&
+                        <Loading message="Getting session data" />
+                    }
+                    {!error && !processing && session &&
+                        <Grid container spacing={24}>
+                            <Grid item xs={12}>
+                                <Typography variant="display3" gutterBottom>{dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}</Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={3}>
+                                <aside>
+                                    <h4 className="visually-hidden">Data</h4>
+                                    <Paper>
+                                        <List>
+                                            {session.distance &&
+                                                <ListItem>
+                                                    <Avatar>
+                                                        <TrendingFlatIcon />
+                                                    </Avatar>
+                                                    <ListItemText primary="Distance" secondary={rowingHelpers.metrestoKmString(session.distance)} />
+                                                </ListItem>
+                                            }
+                                            {session.time &&
+                                                <ListItem>
+                                                    <Avatar>
+                                                        <TimerIcon />
+                                                    </Avatar>
+                                                    <ListItemText primary="Time" secondary={dateTimeHelpers.millisToDuration(session.time)} />
+                                                </ListItem>
+                                            }
+                                            {session.distance && session.time &&
+                                                <ListItem>
+                                                    <Avatar>
+                                                        <TimeLineIcon />
+                                                    </Avatar>
+                                                    <ListItemText primary="Average speed" secondary={rowingHelpers.metresSecondstoAverageSpeedString(session.distance, session.time)} />
+                                                </ListItem>
+                                            }
+                                            {session.machineId &&
+                                                <ListItem>
+                                                    <Avatar>
+                                                        <SettingsRemoteIcon />
+                                                    </Avatar>
+                                                    <ListItemText primary="Rower type" secondary={session.machineId} />
+                                                </ListItem>
+                                            }
+                                            {session.damping &&
+                                                <ListItem>
+                                                    <Avatar>
+                                                        <SettingsRemoteIcon />
+                                                    </Avatar>
+                                                    <ListItemText primary="Damping level" secondary={session.damping} />
+                                                </ListItem>
+                                            }
+                                        </List>
+                                    </Paper>
                                 </aside>
-                                <section className="col s12 m9">
+                            </Grid>
+                            <Grid item xs={12} sm={9}>
+                                <section>
                                     <h4 className="visually-hidden">Chart</h4>
-                                    <div className="card">
-                                        <div className="card-content">
-                                            <LineChart data={session.data} />
-                                        </div>
-                                    </div>
+                                    <Paper>
+                                        <LineChart data={session.data} />
+                                    </Paper>
                                     <button className="btn">Export as CSV</button>
                                 </section>
-                            </article>
-                        </MainContentWrapper>
-                    </div>
-                }
-            </div>
+                            </Grid>
+                        </Grid>
+                    }
+            </article>
 
         );
 

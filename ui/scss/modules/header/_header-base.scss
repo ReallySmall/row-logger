@@ -19,15 +19,3 @@
 		vertical-align: middle;
 	}
 }
-
-.navbar-fixed {
-	margin: 0;
-}
-
-.nav-sub {
-	@extend .blue, .darken-1;
-	z-index: 2;
-	.active {
-		@extend .blue, .darken-2;
-	}
-}

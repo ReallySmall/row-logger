@@ -13,7 +13,6 @@ const sessionFilters: AppForm = {
         },
         label: 'From date/time',
         value: moment().startOf('day'),
-        placeholder: appConfig.dateFormats.dateTime,
         conditionalParent: undefined,
         required: true,
         validators: ['date', 'dateRange', 'required']
@@ -29,7 +28,6 @@ const sessionFilters: AppForm = {
         },
         label: 'To date/time',
         value: moment(),
-        placeholder: appConfig.dateFormats.dateTime,
         conditionalParent: undefined,
         required: true,
         validators: ['date', 'dateRange', 'required']

@@ -19,3 +19,4 @@ export { StickyWrapper } from './StickyWrapper';
 export { LineChart } from './LineChart';
 export { GridOverview } from './GridOverview';
 export { ChartOverview } from './ChartOverview';
+export { AlertDialog } from './AlertDialog';

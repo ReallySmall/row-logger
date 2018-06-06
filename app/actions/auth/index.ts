@@ -14,7 +14,7 @@ const wsConnect = (connect: boolean): ReduxAction => {
     return {
         type: connect ? actions.WEBSOCKET_CONNECT: actions.WEBSOCKET_DISCONNECT,
         payload: {
-            url: 'wss://localhost'
+            url: appConfig.apis.ws
         },
         error: false
     };
@@ -56,10 +56,9 @@ export const registerRequest = (data: AppFormValues): Function => {
             method: 'POST',
             headers: new Headers({
                 'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': csrf
+                'Content-Type': 'application/x-www-form-urlencoded'
             }),
-            body: `userName=${userName}&email=${email}&password=${password}&confirmPassword=${confirmPassword}&_csrf=${csrf}`
+            body: `userName=${userName}&email=${email}&password=${password}&confirmPassword=${confirmPassword}`
         };
 
         dispatch(<ReduxAction>{ // notify store of login request
@@ -115,10 +114,9 @@ export const logInRequest = (data: AppFormValues): Function => {
             method: 'POST',
             headers: new Headers({
                 'Accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': csrf
+                'Content-Type': 'application/x-www-form-urlencoded'
             }),
-            body: `email=${email}&password=${password}&_csrf=${csrf}`
+            body: `email=${email}&password=${password}`
         };
 
         dispatch(<ReduxAction>{ // notify store of login request

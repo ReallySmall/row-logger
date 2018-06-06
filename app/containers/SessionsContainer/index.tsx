@@ -1,6 +1,8 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import * as tabActions from '../../actions/tabs';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,7 +13,7 @@ import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers } from '../../helpers';
+import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -50,34 +52,34 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <div className="container">
-                <article className="row">
-                    <aside className="col s12 m3">
-                        <h4>Filter</h4>
-                        <div className="card">
-                            <div className="card-content">
+            <article>
+                <Grid container spacing={24}>
+                    <Grid item xs={12} sm={3}>
+                        <aside>
+                            <Typography variant="title" gutterBottom>Filter</Typography>
+                            <Paper>
                                 {processing && <Loading message="Getting sessions data" />}
                                 {!processing && error && <p>{error}</p>}
                                 {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />}
-                            </div>
-                        </div>
-                    </aside>
-                    <section className="col s12 m9">
-                        <h4>Sessions</h4>
-                        <div className="card">
-                            <div className="card-content">
+                            </Paper>
+                        </aside>
+                    </Grid>
+                    <Grid item xs={12} sm={9}>
+                        <section>
+                            <Typography variant="title" gutterBottom>Sessions</Typography>
+                            <Paper>
                                 {processing && <Loading message="Getting sessions data" />}
                                 {!processing && error && <p>{error}</p>}
                                 {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
-                            </div>
-                        </div>
-                        {hasSessions
-                            ? <button className="btn">Export as CSV</button>
-                            : null
-                        }
-                    </section>
-                </article>
-            </div>
+                            </Paper>
+                            {hasSessions
+                                ? <button className="btn">Export as CSV</button>
+                                : null
+                            }
+                        </section>
+                    </Grid>
+                </Grid>
+            </article>
 
         );
 

@@ -1,4 +1,3 @@
-@import "lib/materialize/materialize";
 @import "modules/vendor/vendor-base";
 @import "modules/shared/shared-base";
 @import "modules/icons/icons-base";
@@ -8,11 +7,16 @@
 // Input Fields
 // -------------------------
 
+main {
+	margin: 40px auto 0px auto;
+	padding: 0px 40px;
+	max-width: 1600px;
+}
+
 textarea {
   resize: vertical;
 }
 
-h1, h2, h3, h4 {
-  color: $primary-color;
-  margin-top: 0;
+table {
+	table-layout: fixed;
 }

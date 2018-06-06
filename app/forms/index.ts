@@ -1,13 +1,15 @@
 import login from './login';
 import register from './register';
-import account from './account';
+import profile from './profile';
+import rowing from './rowing';
 import password from './password';
 import sessionFilters from './sessionFilters';
 
 export {
     login,
     register,
-    account,
+    profile,
+    rowing,
     password,
     sessionFilters
 };

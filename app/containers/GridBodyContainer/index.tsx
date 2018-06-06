@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { NavLink } from 'react-router-dom';
 import { GridTableHeader, GridCheckBox, Pager } from '../../components';
 import { RootState } from '../../reducers';
@@ -24,36 +29,30 @@ class GridBodyContainer extends React.Component<Interfaces.Props, Interfaces.Sta
         return (
 
             <div className="grid-body">
-                <table className="striped">
+                <Table>
                     {showHeader &&
-                        <thead>
-                            <tr>
+                        <TableHead>
+                            <TableRow>
                                 {columns.map((column, index) => {
 
                                     const { columnId, name, sortDirection, width } = column;
                                     const columnIsSortable: boolean = sortable && column.sortable && ids.length ? true : false;
 
                                     return (
-                                        <GridTableHeader
-                                            key={index}
-                                            columnId={columnId}
-                                            name={name}
-                                            sortable={columnIsSortable}
-                                            sortDirection={sortDirection}
-                                            width={width} />
+                                        <TableCell key={index}>{name}</TableCell>
                                     );
 
                                 })}
-                            </tr>
-                        </thead>
+                            </TableRow>
+                        </TableHead>
                     }
-                    <tbody>
+                    <TableBody>
                         {rowCount > 0 && ids.map((id, index) => {
 
                             const row: any = items[id];
 
                             return (
-                                <tr key={index}>
+                                <TableRow key={index}>
                                     {columns.map((column, index) => {
 
                                         const { columnId, width, renderTemplate, renderer } = column;
@@ -68,20 +67,18 @@ class GridBodyContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                                             : value; // or just return the prebuilt label
 
                                         return (
-                                            <td key={index} style={style}>
-                                                <div className="cell-inner">
-                                                    {cellContent}
-                                                </div>
-                                            </td>
+                                            <TableCell key={index} style={style}>
+                                                {cellContent}
+                                            </TableCell>
                                         );
 
                                     })}
-                                </tr>
+                                </TableRow>
                             );
 
                         })}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
                 {!rowCount &&
                     <p>{noDataMessage}</p>
                 }

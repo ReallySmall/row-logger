@@ -9,7 +9,7 @@ export const columns: Array<Column> = [
     {
         columnId: 'date',
         name: 'Date',
-        width: '180px',
+        width: '260px',
         sortable: true,
         sortDirection: null,
         renderer: (value: string, id: string) => {

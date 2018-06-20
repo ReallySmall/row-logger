@@ -23,6 +23,9 @@ var jwt = require('jsonwebtoken');
 var https = require('https');
 var fs = require('fs');
 var helmet = require('helmet');
+var webpack = require('webpack');
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
@@ -48,6 +51,17 @@ var sslOptions = {
 var app = express();
 var server = https.createServer(sslOptions, app).listen(443);
 var wsInstance = expressWs(app, server);
+// If in dev enable HMR
+if (process.env.NODE_ENV === 'development') {
+    var config = require('../../webpack.dev.app.config.js');
+    var compiler = webpack(config);
+    app.use(webpackDevMiddleware(compiler, {
+        noInfo: false,
+        publicPath: '/public/',
+        stats: { colors: true }
+    }));
+    app.use(webpackHotMiddleware(compiler));
+}
 /**
  * Connect to MongoDB.
  */
@@ -89,6 +103,10 @@ app.use(passport.session());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 app.use(function (req, res, next) {
+
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
     if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_TOKEN_SECRET, function (error, decode) {
             req.user = error ? undefined : decode.user;

@@ -3,7 +3,6 @@ import LoginContainer from './LoginContainer';
 import FormContainer from './FormContainer';
 import GridHeaderContainer from './GridHeaderContainer';
 import GridBodyContainer from './GridBodyContainer';
-import PaginationContainer from './PaginationContainer';
 import IdleContainer from './IdleContainer';
 import OverviewContainer from './OverviewContainer';
 import SessionsContainer from './SessionsContainer';
@@ -19,7 +18,6 @@ export {
     FormContainer,
     GridHeaderContainer,
     GridBodyContainer,
-    PaginationContainer,
     IdleContainer,
     OverviewContainer,
     SessionsContainer,

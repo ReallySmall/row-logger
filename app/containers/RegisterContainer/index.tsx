@@ -3,13 +3,10 @@ import * as AuthActions from '../../actions/auth';
 import { register } from '../../forms';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import Paper from '@material-ui/core/Paper';
 import { FormContainer } from '../../containers/FormContainer';
-import { Loading, MainContentWrapper, PageHeader } from '../../components';
-<<<<<<< HEAD
-import { utilsHelpers } from '../../helpers';
-=======
+import { Page, Column, Loading, MainContentWrapper, PageHeader } from '../../components';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
 
@@ -22,7 +19,7 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
     submit = (registerDetails: AppFormValues) => {
 
-        const { registerRequest } = this.props.actions;
+        const { registerRequest } = this.props.authActions;
 
         registerRequest(registerDetails);
 
@@ -34,21 +31,17 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <div>
-                <PageHeader title="Register"></PageHeader>
-                <MainContentWrapper sideBarContent={[]}>
-                    <section>
-                        <h2 className="visually-hidden">Form</h2>
-                        {processing && <Loading message={processing} />}
+            <Page title="Account">
+                <Column title="Register" width={6}>
+                   <Paper>
+                        {processing && <Loading message="Registering" />}
                         {!processing && error && <p>{error}</p>}
                         {!processing &&
-                            <div className="card">
-                                <FormContainer form="register" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={register} />
-                            </div>
+                            <FormContainer form="register" onSubmit={this.submit} fieldData={register} />
                         }
-                    </section>
-                </MainContentWrapper>
-            </div>
+                    </Paper>
+                </Column>
+            </Page>
 
         );
 
@@ -60,18 +53,14 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 function mapStateToProps(state: RootState, props) {
     return {
         processing: state.loading['REGISTER'],
-<<<<<<< HEAD
-        error: state.error['REGISTER']
-=======
         error: fetchHelpers.getErrorMessageString(state.error['REGISTER'])
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
     };
 }
 
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(AuthActions as any, dispatch)
+        authActions: bindActionCreators(AuthActions as any, dispatch)
     };
 }
 

@@ -5,7 +5,7 @@ import { WEBSOCKET_CONNECTING, WEBSOCKET_OPEN, WEBSOCKET_CLOSED, WEBSOCKET_MESSA
 // These actions are more concerned with connection state
 // and are trigged async by the WebSocketMiddleware
 
-export const connecting = (event: Event, websocket: ?WebSocket): ReduxAction => ({
+export const connecting = (event: Event, websocket?: WebSocket): ReduxAction => ({
   type: WEBSOCKET_CONNECTING,
   payload: {
     timestamp: new Date(),

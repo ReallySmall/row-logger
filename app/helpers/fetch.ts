@@ -91,7 +91,7 @@ export const setFormPostFetchOpts = (formData: AppFormValues, jwt?: string): Fet
 
     Object.keys(formData).map(key => {
         formBody += `${key}=${formData[key]}&`;
-    };
+    });
 
     fetchOpts.body = formBody;
 

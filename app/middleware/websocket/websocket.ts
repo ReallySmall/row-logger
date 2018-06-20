@@ -20,7 +20,7 @@ const extractArgs = (config) => {
 /**
  * Create a websocket object from the incoming config
  */
-export const createWebsocket = (payload: Config) => {
+export const createWebsocket = (payload: any) => {
 
   const args = extractArgs(payload);
   const websocket = (payload.websocket) ? payload.websocket : WebSocket;

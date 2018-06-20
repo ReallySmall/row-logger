@@ -1,11 +1,13 @@
 export namespace Interfaces {
 
     export interface Props {
-        processing?: string;
-        error?: string;
-        sessionsAction?: any;
-        totals: GridData;
-        recentSessions: GridData;
+        processing: boolean;
+        error: string;
+        email: string;
+        userName: string;
+        rowerType: string;
+        rowerDamping: string;
+        accountActions: any;
     }
 
     export interface State {

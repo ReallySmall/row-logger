@@ -22,6 +22,8 @@ export default <SessionStoreState>(state = initialState, action) => {
 
         case actions.WEBSOCKET_MESSAGE:
 
+            console.log(action.payload);
+
             return state;
 
         default:

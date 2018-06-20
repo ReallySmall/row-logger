@@ -2,13 +2,13 @@ import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import * as tabActions from '../../actions/tabs';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridHeaderContainer, GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
-import { ChartOverview, Loading } from '../../components';
+import { Page, Column, ChartOverview, Loading } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
@@ -52,34 +52,26 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <article>
-                <Grid container spacing={24}>
-                    <Grid item xs={12} sm={3}>
-                        <aside>
-                            <Typography variant="title" gutterBottom>Filter</Typography>
-                            <Paper>
-                                {processing && <Loading message="Getting sessions data" />}
-                                {!processing && error && <p>{error}</p>}
-                                {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />}
-                            </Paper>
-                        </aside>
-                    </Grid>
-                    <Grid item xs={12} sm={9}>
-                        <section>
-                            <Typography variant="title" gutterBottom>Sessions</Typography>
-                            <Paper>
-                                {processing && <Loading message="Getting sessions data" />}
-                                {!processing && error && <p>{error}</p>}
-                                {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
-                            </Paper>
-                            {hasSessions
-                                ? <button className="btn">Export as CSV</button>
-                                : null
-                            }
-                        </section>
-                    </Grid>
-                </Grid>
-            </article>
+            <Page title="Sessions">
+                <Column title="Filter" width={3}>
+                   <Paper>
+                        {processing && <Loading message="Getting sessions data" />}
+                        {!processing && error && <p>{error}</p>}
+                        {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />}
+                    </Paper>
+                </Column>
+                <Column title="Sessions" width={9}>
+                    <Paper>
+                        {processing && <Loading message="Getting sessions data" />}
+                        {!processing && error && <p>{error}</p>}
+                        {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
+                    </Paper>
+                    {hasSessions
+                        ? <Button>Export as CSV</Button>
+                        : null
+                    }
+                </Column>
+            </Page>
 
         );
 

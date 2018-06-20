@@ -1,12 +1,10 @@
 export namespace Interfaces {
 
     export interface Props {
-        appConnected: boolean;
-        loggerConnected: boolean;
+    	title: string;
     }
 
     export interface State {
-        /* empty */
     }
 
 }

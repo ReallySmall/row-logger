@@ -1,7 +1,5 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
-import * as tabActions from '../../actions/tabs';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridHeaderContainer, GridBodyContainer } from '../../containers';
@@ -11,7 +9,7 @@ import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers } from '../../helpers';
+import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -26,7 +24,7 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 
         return (
 
-            <div className="container">
+            <div>
                 {(!loggerConnected || !appConnected) &&
                     <Loading message="Awaiting connection" />
                 }

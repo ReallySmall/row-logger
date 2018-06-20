@@ -30,28 +30,6 @@ export class AppFormHelper {
 
     }
 
-    // get the metadata associated with a form select option
-    getMatchingSelectOptionData(field: string, value: string): AppFormFieldSelectOption {
-
-        let selectOptionData = undefined;
-
-        this.form[field].typeSpecific.options.map(option => {
-            if (option.value === value) {
-                selectOptionData = option.meta;
-            }
-        });
-
-        return selectOptionData;
-
-    }
-
-    // set the options on a select field
-    setFieldSelectOptions(field: string, options: any): void {
-
-        this.form[field].typeSpecific.options = options;
-
-    }
-
     // set the value of a form field
     setFieldValue(field: string, value: any): void {
 

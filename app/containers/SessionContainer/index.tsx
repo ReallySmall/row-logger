@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as rolesConstants from '../../constants/roles';
 import * as sessionActions from '../../actions/sessions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -16,7 +15,7 @@ import TimeLineIcon from '@material-ui/icons/Timeline';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import { FormContainer } from '../../containers/FormContainer';
-import { Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
+import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
 import { utilsHelpers, routingHelpers, dateTimeHelpers, rowingHelpers } from '../../helpers';
@@ -46,79 +45,76 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
         return (
 
-            <article>
-                    {error &&
+            <div>
+                {error &&
+                    <Page title="Session">
                         <ErrorPage title="Not found" description="This session does not exist" />
-                    }
-                    {!error && processing &&
+                    </Page>
+                }
+                {!error && processing &&
+                    <Page title="Session">
                         <Loading message="Getting session data" />
-                    }
-                    {!error && !processing && session &&
-                        <Grid container spacing={24}>
-                            <Grid item xs={12}>
-                                <Typography variant="display3" gutterBottom>{dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}</Typography>
-                            </Grid>
-                            <Grid item xs={12} sm={3}>
-                                <aside>
-                                    <h4 className="visually-hidden">Data</h4>
-                                    <Paper>
-                                        <List>
-                                            {session.distance &&
-                                                <ListItem>
-                                                    <Avatar>
-                                                        <TrendingFlatIcon />
-                                                    </Avatar>
-                                                    <ListItemText primary="Distance" secondary={rowingHelpers.metrestoKmString(session.distance)} />
-                                                </ListItem>
-                                            }
-                                            {session.time &&
-                                                <ListItem>
-                                                    <Avatar>
-                                                        <TimerIcon />
-                                                    </Avatar>
-                                                    <ListItemText primary="Time" secondary={dateTimeHelpers.millisToDuration(session.time)} />
-                                                </ListItem>
-                                            }
-                                            {session.distance && session.time &&
-                                                <ListItem>
-                                                    <Avatar>
-                                                        <TimeLineIcon />
-                                                    </Avatar>
-                                                    <ListItemText primary="Average speed" secondary={rowingHelpers.metresSecondstoAverageSpeedString(session.distance, session.time)} />
-                                                </ListItem>
-                                            }
-                                            {session.machineId &&
-                                                <ListItem>
-                                                    <Avatar>
-                                                        <SettingsRemoteIcon />
-                                                    </Avatar>
-                                                    <ListItemText primary="Rower type" secondary={session.machineId} />
-                                                </ListItem>
-                                            }
-                                            {session.damping &&
-                                                <ListItem>
-                                                    <Avatar>
-                                                        <SettingsRemoteIcon />
-                                                    </Avatar>
-                                                    <ListItemText primary="Damping level" secondary={session.damping} />
-                                                </ListItem>
-                                            }
-                                        </List>
-                                    </Paper>
-                                </aside>
-                            </Grid>
-                            <Grid item xs={12} sm={9}>
-                                <section>
-                                    <h4 className="visually-hidden">Chart</h4>
-                                    <Paper>
-                                        <LineChart data={session.data} />
-                                    </Paper>
-                                    <button className="btn">Export as CSV</button>
-                                </section>
-                            </Grid>
-                        </Grid>
-                    }
-            </article>
+                    </Page>
+                }
+                {!error && !processing && session &&
+                    <Page title="Session">
+                        <Column>
+                            <Typography variant="display3" gutterBottom>{dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}</Typography>
+                        </Column>
+                        <Column title="Data" width={3}>
+                            <Paper>
+                                <List>
+                                    {session.distance &&
+                                        <ListItem>
+                                            <Avatar>
+                                                <TrendingFlatIcon />
+                                            </Avatar>
+                                            <ListItemText primary="Distance" secondary={rowingHelpers.metrestoKmString(session.distance)} />
+                                        </ListItem>
+                                    }
+                                    {session.time &&
+                                        <ListItem>
+                                            <Avatar>
+                                                <TimerIcon />
+                                            </Avatar>
+                                            <ListItemText primary="Time" secondary={dateTimeHelpers.millisToDuration(session.time)} />
+                                        </ListItem>
+                                    }
+                                    {session.distance && session.time &&
+                                        <ListItem>
+                                            <Avatar>
+                                                <TimeLineIcon />
+                                            </Avatar>
+                                            <ListItemText primary="Average speed" secondary={rowingHelpers.metresSecondstoAverageSpeedString(session.distance, session.time)} />
+                                        </ListItem>
+                                    }
+                                    {session.machineId &&
+                                        <ListItem>
+                                            <Avatar>
+                                                <SettingsRemoteIcon />
+                                            </Avatar>
+                                            <ListItemText primary="Rower type" secondary={session.machineId} />
+                                        </ListItem>
+                                    }
+                                    {session.damping &&
+                                        <ListItem>
+                                            <Avatar>
+                                                <SettingsRemoteIcon />
+                                            </Avatar>
+                                            <ListItemText primary="Damping level" secondary={session.damping} />
+                                        </ListItem>
+                                    }
+                                </List>
+                            </Paper>
+                        </Column>
+                        <Column title="Chart" width={9}>
+                            <Paper>
+                                <LineChart data={session.data} />
+                            </Paper>
+                        </Column>
+                    </Page>
+                }
+            </div>
 
         );
 

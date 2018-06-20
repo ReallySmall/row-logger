@@ -2,15 +2,15 @@ export const appConfig = {
     windowGlobalAppConfig: 'rowLogger', // set against window object in index.tsx
     csrf: '', // set against window object in index.tsx
     apis: {
-        register: '/api/register',
-        account: '/api/account',
-        login: '/api/login',
-        profile: '/api/account/profile',
-        rower: '/api/account/rower',
-        password: '/api/account/password',
-        sessionTotals: '/api/sessions/totals',
-        session: '/api/session',
-        sessions: '/api/sessions',
+        register: 'https://localhost/api/register',
+        account: 'https://localhost/api/account',
+        login: 'https://localhost/api/login',
+        profile: 'https://localhost/api/account/profile',
+        rower: 'https://localhost/api/account/rower',
+        password: 'https://localhost/api/account/password',
+        sessionTotals: 'https://localhost/api/sessions/totals',
+        session: 'https://localhost/api/session',
+        sessions: 'https://localhost/api/sessions',
         ws: __ISDEVENV__ ? 'wss://localhost' : 'TBC'
     },
     auth: {

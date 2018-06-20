@@ -13,7 +13,7 @@ export class Login extends React.Component<Interfaces.Props, Interfaces.State> {
         return (
 
             <div className="two-col-page narrow">
-                <PageHeader pageTitle="Login">
+                <PageHeader title="Login">
                     {!processing && error && <p className="page-header-content warning">{error}</p>}
                 </PageHeader>
                 <MainContentWrapper sideBarContent={[]}>

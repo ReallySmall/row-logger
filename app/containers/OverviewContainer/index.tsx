@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
-import * as tabActions from '../../actions/tabs';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -9,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { GridHeaderContainer, GridBodyContainer } from '../../containers';
-import { ChartOverview, Loading } from '../../components';
+import { Page, Column, ChartOverview, Loading } from '../../components';
 import { NavLink } from 'react-router-dom';
 import { columns } from '../../columns/columns';
 import { totalsColumns } from '../../columns/totals';
@@ -49,37 +48,29 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         return (
 
-            <article>
-                <Grid container spacing={24}>
-                    <Grid item xs={12} sm={4}>
-                        <section>
-                            <Typography variant="title" gutterBottom>Totals</Typography>
-                            <Paper>
-                                {processing && <Loading />}
-                                {!processing && totals &&
-                                    <div>
-                                        <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />
-                                        <ChartOverview total={112000} progress={progress} />
-                                    </div>
-                                }
-                            </Paper>
-                        </section>
-                    </Grid>
-                    <Grid item xs={12} sm={8}>
-                        <section>
-                            <Typography variant="title" gutterBottom>Recent</Typography>
-                            <Paper>
-                                {processing && <Loading />}
-                                {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
-                            </Paper>
-                            {hasSessions
-                                ? <Button color="primary" component={NavLink} to="/sessions">View all sessions</Button>
-                                : null
-                            }
-                        </section>
-                    </Grid>
-                </Grid>
-            </article>
+            <Page title="Overview">
+                <Column title="Totals" width={4}>
+                   <Paper>
+                        {processing && <Loading />}
+                        {!processing && totals &&
+                            <div>
+                                <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />
+                                <ChartOverview total={112000} progress={progress} />
+                            </div>
+                        }
+                    </Paper>
+                </Column>
+                <Column title="Recent" width={8}>
+                    <Paper>
+                        {processing && <Loading />}
+                        {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
+                    </Paper>
+                    {hasSessions
+                        ? <Button color="primary" component={NavLink} to="/sessions">View all sessions</Button>
+                        : null
+                    }
+                </Column>
+            </Page>
 
         );
 

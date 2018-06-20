@@ -13,7 +13,6 @@ declare interface Column {
     sortable: boolean;
     sortDirection: string;
     renderer: Function;
-    renderTemplate: string;
 }
 
 declare interface AppFormFieldSelectOption {

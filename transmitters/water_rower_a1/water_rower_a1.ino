@@ -5,12 +5,12 @@
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
-#include <WebSocketClient.h>
+#include <WebSocketsClient.h>
 #include "secret.h" // personal connection data stored seperately to exclude from version control
 
 WiFiClient client;
 HTTPClient http;
-WebSocketClient webSocketClient;
+WebSocketsClient webSocket;
 
 const char* wifiAP = WIFIAP; // WIFI Access Point name
 const char* wifiSSID = WIFISSID; // WIFI SSID password
@@ -117,7 +117,7 @@ void sendRowingData() {
   Serial.println("");
 
   rowingDataJsonObj.printTo(jsonBuffer1);
-  webSocketClient.sendData(jsonBuffer1);
+  webSocket.sendTXT(jsonBuffer1);
 
 }
 
@@ -221,15 +221,7 @@ void setup() {
     }
 
     // then set options for websocket upgrade handshake
-    webSocketClient.path = "";
-    webSocketClient.host = (char*)postRowingDataSocket;
-
-    // then upgrade connection to websocket
-    if (webSocketClient.handshake(client)) {
-      Serial.println("Websocket handshake successful");
-    } else {
-      halt("Websocket handshake failed");
-    }
+    webSocket.beginSSL(postRowingDataSocket, 443);
 
     attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
     pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
@@ -250,37 +242,6 @@ void setup() {
 // posts rowing data to server
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
-
-  String data; // todo, get rid of this String
-
-  webSocketClient.getData(data); // check for any messages from the server
-
-  if (data.length() > 0) { // if a message exists, read it
-
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& jsonData = jsonBuffer.parseObject(data); // parse the JSON message
-
-    if (!jsonData.success()) { // if parsing the JSON failed
-
-      Serial.println("parseObject() failed");
-
-    } else { // otherwise handle it
-
-      if (jsonData["message"]) {
-        const char* message = jsonData["message"];
-        Serial.println("Message: ");
-        Serial.print(message);
-      } else if (jsonData["error"]) {
-        const char* error = jsonData["error"];
-        Serial.println("Error: ");
-        Serial.print(error);
-      }
-
-      Serial.println("");
-
-    }
-
-  }
 
   // if base time has been obtained, there is new logged rowing data and minimum time since last message send has elapsed
   if (strlen(baseTime) > 0 && rowingStrokesDataUpdated && millis() > (lastPosted + timeOut)) {

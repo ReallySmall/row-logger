@@ -2,11 +2,7 @@
 import { compose } from 'redux';
 import { connecting, open, closed, message } from './actions';
 import { createWebsocket } from './websocket';
-<<<<<<< HEAD
-import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND } from '../../constants/actions';
-=======
 import { WEBSOCKET_CONNECT, WEBSOCKET_DISCONNECT, WEBSOCKET_SEND, LOGOUT_REQUEST } from '../../constants/actions';
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
 import { appConfig } from '../../config';
 
 const partial = require('lodash/fp/partial');
@@ -14,12 +10,12 @@ const partialRight = require('lodash/fp/partialRight');
 
 const createMiddleware = () => {
   // Hold a reference to the WebSocket instance in use.
-  let websocket: ?WebSocket;
+  let websocket: any;
 
   /**
    * A function to create the WebSocket object and attach the standard callbacks
    */
-  const initialize = ({ dispatch }, config: Config) => {
+  const initialize = ({ dispatch }, config: any) => {
     // Instantiate the websocket.
     websocket = createWebsocket(config);
 
@@ -71,7 +67,7 @@ const createMiddleware = () => {
    * The primary Redux middleware function.
    * Each of the actions handled are user-dispatched.
    */
-  return (store: Object) => (next: Function) => (action: Action) => {
+  return (store: Object) => (next: Function) => (action: any) => {
 
     switch (action.type) {
       // User request to connect
@@ -87,15 +83,12 @@ const createMiddleware = () => {
         next(action);
         break;
 
-<<<<<<< HEAD
-=======
       // User logged out
       case LOGOUT_REQUEST:
         close();
         next(action);
         break;
 
->>>>>>> ab7fa1b615d1d925d2aae5cead6780c405a7790a
       // User request to send a message
       case WEBSOCKET_SEND:
         if (websocket) {

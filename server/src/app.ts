@@ -21,6 +21,9 @@ const jwt = require('jsonwebtoken');
 const https = require('https');
 const fs = require('fs');
 const helmet = require('helmet');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
 
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -51,6 +54,22 @@ const sslOptions = {
 const app = express();
 const server = https.createServer(sslOptions, app).listen(443);
 const wsInstance = expressWs(app, server);
+
+// If in dev enable HMR
+if (process.env.NODE_ENV === 'development') {
+
+  const config = require('../../webpack.dev.app.config.js');
+  const compiler = webpack(config);
+
+  app.use(webpackDevMiddleware(compiler, {
+    noInfo: false,
+    publicPath: '/public/',
+    stats: { colors: true }
+  }));
+
+  app.use(webpackHotMiddleware(compiler));
+
+}
 
 /**
  * Connect to MongoDB.
@@ -96,6 +115,9 @@ app.use(lusca.xssProtection(true));
 
 app.use((req, res, next) => {
 
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
   if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
 
     jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_TOKEN_SECRET, (error, decode) => {
@@ -134,7 +156,6 @@ app.ws('/', wsController.recordSession);
  * App route.
  */
 app.get('*', homeController.index);
-
 app.get('*', function(req, res) {
     res.redirect('https://' + req.headers.host + req.url);
 });

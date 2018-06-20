@@ -1,7 +1,7 @@
 import {
   Checkbox,
   RadioButtonGroup,
-  SelectField,
+  Select,
   TextField,
   Toggle,
   DatePicker
@@ -10,6 +10,6 @@ import {
 export const formControls = {
     text: TextField,
     dateTime: DatePicker,
-    select: SelectField,
+    select: Select,
     singleCheckBox: Checkbox
 };

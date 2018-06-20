@@ -3,8 +3,10 @@
  */
 export const parseWsMessage = (messageJSON: string): any => {
 
+  let parsedObject = undefined;
+
    try {
-      const parsedObject = JSON.parse(messageJSON);
+      parsedObject = JSON.parse(messageJSON);
    } catch(error) {
       return undefined;
    }

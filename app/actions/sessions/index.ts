@@ -19,7 +19,7 @@ const sessionRequestComplete = (data: object, error: Error): ReduxAction => {
     };
 };
 
-const sessionsRequestComplete = (data: object, isShowRecent: boolean = false, error: Error): ReduxAction => {
+const sessionsRequestComplete = (data: object, isShowRecent: boolean, error: Error): ReduxAction => {
     return {
         type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_COMPLETE : actions.SESSIONS_REQUEST_COMPLETE,
         payload: error ? error : data,
@@ -48,11 +48,11 @@ export const sessionRequest = (id: string): Function => {
             fetch(`${sessionApi}?id=${id}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
                 if (!response.ok) {
-                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestError, auth.logOutRequest);
+                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestComplete, auth.logOutRequest);
                     return;
                 }
 
-                response.json().then(data => dispatch(sessionRequestComplete(data)));
+                response.json().then(data => dispatch(sessionRequestComplete(data, null)));
 
             }).catch(error => dispatch(sessionRequestComplete(null, error)));
 
@@ -85,7 +85,7 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
             fetch(`${sessionsApi}?limit=${limit}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
                 if (!response.ok) {
-                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestError, auth.logOutRequest);
+                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestComplete, auth.logOutRequest);
                     return;
                 }
 
@@ -101,11 +101,11 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
                         gridData.ids.push(datum.id);
                     });
 
-                    dispatch(sessionsRequestComplete(gridData, showRecent));
+                    dispatch(sessionsRequestComplete(gridData, showRecent, null));
 
                 });
 
-            }).catch(error => dispatch(sessionsRequestComplete(null, showRecent, error));
+            }).catch(error => dispatch(sessionsRequestComplete(null, showRecent, error)));
 
         }
 
@@ -134,7 +134,7 @@ export const sessionTotalsRequest = (): Function => {
             fetch(`${sessionTotalsApi}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
                 if (!response.ok) {
-                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestError, auth.logOutRequest);
+                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestComplete, auth.logOutRequest);
                     return;
                 }
 
@@ -147,7 +147,7 @@ export const sessionTotalsRequest = (): Function => {
                         ids: [data.date]
                     };
 
-                    dispatch(sessionTotalsRequestComplete(gridData));
+                    dispatch(sessionTotalsRequestComplete(gridData, null));
 
                 });
 

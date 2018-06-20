@@ -16,7 +16,7 @@ export class Logout extends React.Component<Interfaces.Props, Interfaces.State> 
         return (
 
             <div className="two-col-page narrow">
-                <PageHeader pageTitle="Log out" />
+                <PageHeader title="Log out" />
                 <MainContentWrapper sideBarContent={[]}>
                     <section>
                         <h2 className="visually-hidden">Status</h2>

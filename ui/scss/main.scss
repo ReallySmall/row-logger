@@ -4,8 +4,10 @@
 @import "modules/header/header-base";
 @import "modules/forms/forms-base";
 
-// Input Fields
-// -------------------------
+header {
+	padding: 0px 40px !important;
+	max-width: 1600px;
+}
 
 main {
 	margin: 40px auto 0px auto;

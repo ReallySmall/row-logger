@@ -1,7 +1,8 @@
+export { Page } from './Page';
+export { Column } from './Column';
 export { Header } from './Header';
 export { PageHeader } from './PageHeader';
 export { MainContentWrapper } from './MainContentWrapper';
-export { Dashboard } from './Dashboard';
 export { ErrorPage } from './ErrorPage';
 export { QueryBar } from './QueryBar';
 export { ToolBar } from './ToolBar';
@@ -15,7 +16,6 @@ export { Pager } from './Pager';
 export { GridCheckBox } from './GridCheckBox';
 export { GridTableHeader } from './GridTableHeader';
 export { ScrollWrapper } from './ScrollWrapper';
-export { StickyWrapper } from './StickyWrapper';
 export { LineChart } from './LineChart';
 export { GridOverview } from './GridOverview';
 export { ChartOverview } from './ChartOverview';

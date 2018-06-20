@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { bindActionCreators } from 'redux';
 import { formControls } from '../../components/FormControls';
-import MenuItem from 'material-ui/MenuItem';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import { Form, Field, change } from 'redux-form';
 import { fieldValidationMethods } from './validation/';
@@ -92,13 +92,12 @@ export class FormContainer extends React.Component<Interfaces.Props, Interfaces.
                                                 id={`${form}-${index}`}
                                                 name={fieldDatum}
                                                 type={type}
+                                                label={label}
                                                 component={formControlRenderer}
                                                 required={required}
                                                 validate={validationMethods}
-                                                disabled={disabled}
-                                                hintText={label}
-                                                floatingLabelText={label}>
-                                                    {type === 'select' && options.map((option, index) => <MenuItem key={index} value={option.value} primaryText={option.label}/>)}
+                                                disabled={disabled}>
+                                                    {type === 'select' && options.map((option, index) => <MenuItem key={index} value={option.value}>{option.label}</MenuItem>)}
                                             </Field>
                                         </div> || null
                                 );

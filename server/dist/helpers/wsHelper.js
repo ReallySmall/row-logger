@@ -4,8 +4,9 @@ exports.__esModule = true;
  * Check if ws message is valid JSON and is compatible structure.
  */
 exports.parseWsMessage = function (messageJSON) {
+    var parsedObject = undefined;
     try {
-        var parsedObject = JSON.parse(messageJSON);
+        parsedObject = JSON.parse(messageJSON);
     }
     catch (error) {
         return undefined;

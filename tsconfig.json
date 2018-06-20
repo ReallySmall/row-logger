@@ -24,5 +24,9 @@
   "exclude": [
     "dist",
     "node_modules"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "errorsAsWarnings": true,
+    "useCache": true
+  }
 }

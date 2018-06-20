@@ -15,7 +15,7 @@ export class ErrorPage extends React.Component<Interfaces.Props, Interfaces.Stat
         return (
 
             <div className="two-col-page wide submission-detail">
-                <PageHeader pageTitle={title}></PageHeader>
+                <PageHeader title={title}></PageHeader>
                 <MainContentWrapper sideBarContent={[]}>
                     {description}
                 </MainContentWrapper>

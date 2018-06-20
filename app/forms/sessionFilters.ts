@@ -5,13 +5,9 @@ const sessionFilters: AppForm = {
     fromDate: {
         name: 'fromDate',
         display: true,
-        renderer: 'dateTime',
-        type: 'text',
-        typeSpecific: {
-            rangeFuture: 'toDate',
-            rangePast: null
-        },
-        label: 'From date/time',
+        renderer: 'text',
+        type: 'date',
+        label: 'From date',
         value: moment().startOf('day'),
         conditionalParent: undefined,
         required: true,
@@ -20,13 +16,9 @@ const sessionFilters: AppForm = {
     toDate: {
         name: 'toDate',
         display: true,
-        renderer: 'dateTime',
-        type: 'text',
-        typeSpecific: {
-            rangeFuture: null,
-            rangePast: 'fromDate'
-        },
-        label: 'To date/time',
+        renderer: 'text',
+        type: 'date',
+        label: 'To date',
         value: moment(),
         conditionalParent: undefined,
         required: true,

@@ -6,7 +6,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
 import { FormContainer } from '../../containers/FormContainer';
-import { PageHeader, MainContentWrapper, Loading, AlertDialog } from '../../components';
+import Paper from '@material-ui/core/Paper';
+import { Page, Column, Loading, AlertDialog } from '../../components';
 import { appConfig } from '../../config';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -32,20 +33,17 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 
         return (
 
-            <div>
-                <PageHeader title="Login"></PageHeader>
-                <MainContentWrapper sideBarContent={[]}>
-                    <section>
-                        <h2 className="visually-hidden">Form</h2>
+            <Page title="Account">
+                <Column title="Login" width={6}>
+                   <Paper>
                         {processing && <Loading message="Logging in" />}
+                        {!processing && error && <p>{error}</p>}
                         {!processing &&
-                            <div className="card">
-                                <FormContainer form="login" formWrapperClassNames="card-content" onSubmit={this.submit} fieldData={login} />
-                            </div>
+                            <FormContainer form="login" onSubmit={this.submit} fieldData={login} />
                         }
-                    </section>
-                </MainContentWrapper>
-            </div>
+                    </Paper>
+                </Column>
+            </Page>
 
         );
 

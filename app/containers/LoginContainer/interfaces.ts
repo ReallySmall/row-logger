@@ -2,7 +2,8 @@ export namespace Interfaces {
 
     export interface Props {
         dispatch?: (action: any) => void;
-        actions?: any;
+        authActions?: any;
+        errorActions?: any;
         processing?: string;
         error?: string;
     }

@@ -7,7 +7,7 @@ export const metrestoKmString = (metres: number): string => {
 export const metresSecondstoAverageSpeedString = (metres: number, millis: number): string => {
 
 	const seconds: number = Math.floor(millis / 1000);
-	const averageSpeed: number = (metres / seconds).toFixed(2);
+	const averageSpeed: string = (metres / seconds).toFixed(2);
 
 	return averageSpeed + ' m/s';
 

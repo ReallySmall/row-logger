@@ -9,6 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import RowingIcon from '@material-ui/icons/Rowing';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -23,6 +24,12 @@ const styles = {
   },
   flex: {
     flex: 1,
+    svg: {
+        verticalAlign: 'middle'
+    },
+    span: {
+        verticalAlign: 'middle'
+    }
   },
   menuButton: {
     marginLeft: -12,
@@ -58,8 +65,6 @@ class Header extends React.Component<Interfaces.Props, Interfaces.State> {
 
     handleTabChanges = (event, tab) => {
 
-        console.log(this.props);
-
         const { handleTabChange } = this.props;
 
         handleTabChange(tab);
@@ -81,54 +86,57 @@ class Header extends React.Component<Interfaces.Props, Interfaces.State> {
 
         return (
 
-            <header>
-                <AppBar position="sticky">
-                    <Toolbar>
-                        <Typography className={classes.flex} variant="title" color="inherit">
-                            <span>Row</span>
-                            <span className="italic">logger</span>
-                        </Typography>
-                        {isLoggedIn && (
-                            <Tabs value={activeTab} onChange={this.handleTabChanges}>
-                                {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
-                            </Tabs>
-                        )}
-                        <IconButton
-                            aria-owns={open ? 'menu-appbar' : null}
-                            aria-haspopup="true"
-                            color="inherit"
-                            onClick={this.handleClick}>
-                                <AccountCircle />
-                        </IconButton>
-                        <Menu
-                            id="settings-menu"
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={this.handleClose}>
-                                {isLoggedIn &&
-                                    <MenuItem onClick={this.handleClose}>
-                                        <NavLink to="/account" className="button button-primary">{userName}</NavLink>
-                                    </MenuItem>
-                                }
-                                {isLoggedIn &&
-                                    <MenuItem onClick={this.handleClose}>
-                                        <a href="#" className="button button-primary" onClick={this.logOut}>Log out</a>
-                                    </MenuItem>
-                                }
-                                {!isLoggedIn &&
-                                    <MenuItem onClick={this.handleClose}>
-                                        <NavLink to="/login" className="button button-primary">Log in</NavLink>
-                                    </MenuItem>
-                                }
-                                {!isLoggedIn &&
-                                    <MenuItem onClick={this.handleClose}>
-                                        <NavLink to="/register" className="button button-primary">Register</NavLink>
-                                    </MenuItem>
-                                }
-                        </Menu>
-                    </Toolbar>
-                </AppBar>
-            </header>
+            <AppBar position="sticky">
+                <Toolbar disableGutters={true}>
+                    <Typography className={classes.flex} variant="title" color="inherit">
+                        <RowingIcon />
+                        <span>Row</span>
+                        <span className="italic">logger</span>
+                    </Typography>
+                    {isLoggedIn && (
+                        <Tabs
+                            value={activeTab}
+                            onChange={this.handleTabChanges}
+                            scrollable
+                            scrollButtons="auto">
+                            {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
+                        </Tabs>
+                    )}
+                    <IconButton
+                        aria-owns={open ? 'menu-appbar' : null}
+                        aria-haspopup="true"
+                        color="inherit"
+                        onClick={this.handleClick}>
+                            <AccountCircle />
+                    </IconButton>
+                    <Menu
+                        id="settings-menu"
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={this.handleClose}>
+                            {isLoggedIn &&
+                                <MenuItem onClick={this.handleClose}>
+                                    <NavLink to="/account" className="button button-primary">{userName}</NavLink>
+                                </MenuItem>
+                            }
+                            {isLoggedIn &&
+                                <MenuItem onClick={this.handleClose}>
+                                    <a href="#" className="button button-primary" onClick={this.logOut}>Log out</a>
+                                </MenuItem>
+                            }
+                            {!isLoggedIn &&
+                                <MenuItem onClick={this.handleClose}>
+                                    <NavLink to="/login" className="button button-primary">Log in</NavLink>
+                                </MenuItem>
+                            }
+                            {!isLoggedIn &&
+                                <MenuItem onClick={this.handleClose}>
+                                    <NavLink to="/register" className="button button-primary">Register</NavLink>
+                                </MenuItem>
+                            }
+                    </Menu>
+                </Toolbar>
+            </AppBar>
 
         );
     }

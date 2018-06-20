@@ -5,8 +5,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
+import Typography from '@material-ui/core/Typography';
 import { FormContainer } from '../../containers/FormContainer';
-import { Loading, MainContentWrapper, PageHeader } from '../../components';
+import { Page, Column, Loading, MainContentWrapper, PageHeader } from '../../components';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
@@ -50,26 +51,31 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
         return (
 
-            <div>
-                <PageHeader title="Account settings"></PageHeader>
-                <MainContentWrapper sideBarContent={[]}>
-                    <section>
-                        <h2 className="visually-hidden">Form</h2>
-                        {processing && <Loading message="processing" />}
-                        {!processing && error && <p>{error}</p>}
-                        {!processing &&
+            <Page title="Account">
+                <Column>
+                    <Typography variant="display3" gutterBottom>Account</Typography>
+                </Column>
+                <Column title="Change settings" hideTitle={true} width={6}>
+                    {processing && <Loading message="processing" />}
+                    {!processing && error && <p>{error}</p>}
+                    {!processing &&
+                        <div>
                             <Card>
-                                <h3>Profile</h3>
-                                <FormContainer form="profile" onSubmit={this.submit} initialValues={initialProfileValues} fieldData={profile} />
-                                <h3>Rower settings</h3>
-                                <FormContainer form="rowerSettings" onSubmit={this.submit} initialValues={initialRowerSettingsValues} fieldData={rowing} />
-                                <h3>Update password</h3>
-                                <FormContainer form="updatePassword" onSubmit={this.submit} fieldData={password} />
+                                <Typography variant="title">User details</Typography>
+                                <FormContainer form="profile" formSubmitLabel="Update" onSubmit={this.submit} initialValues={initialProfileValues} fieldData={profile} />
                             </Card>
-                        }
-                    </section>
-                </MainContentWrapper>;
-            </div>
+                            <Card>
+                                <Typography variant="title">Rower settings</Typography>
+                                <FormContainer form="rowerSettings" formSubmitLabel="Update" onSubmit={this.submit} initialValues={initialRowerSettingsValues} fieldData={rowing} />
+                            </Card>
+                            <Card>
+                                <Typography variant="title">Update password</Typography>
+                                <FormContainer form="updatePassword" formSubmitLabel="Update" onSubmit={this.submit} fieldData={password} />
+                            </Card>
+                        </div>
+                    }
+                </Column>
+            </Page>
 
         );
 

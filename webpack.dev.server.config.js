@@ -1,24 +1,31 @@
-const webpack = require('webpack');
 const path = require('path');
 const glob = require('glob');
-const webpackNodeExternals = require('webpack-node-externals');
+const fs = require('fs');
+const webpack = require('webpack');
+const TSLintPlugin = require('tslint-webpack-plugin');
+const noDemonPlugin = require('nodemon-webpack-plugin');
 
-// variables
 const sourcePath = path.resolve(__dirname, './server/src');
 const outPath = path.resolve(__dirname, './server/dist');
 
-// plugins
-const TSLintPlugin = require('tslint-webpack-plugin');
-const NoDemonPlugin = require('nodemon-webpack-plugin');
+const nodeModules = {};
+
+fs.readdirSync('node_modules')
+  .filter(function(x) {
+    return ['.bin'].indexOf(x) === -1;
+  })
+  .forEach(function(mod) {
+    nodeModules[mod] = 'commonjs ' + mod;
+  });
 
 module.exports = {
+  mode: 'development',
   context: sourcePath,
   entry: {
-    main: ['./app.ts'] // the route files that Webpack should start from to find and bundle the app's assets
+    app: ['./app.ts'] // the route files that Webpack should start from to find and bundle the app's assets
   },
   output: {
     path: outPath,
-    publicPath: '/',
     filename: '[name].js',
   },
   target: 'node',
@@ -32,7 +39,7 @@ module.exports = {
     rules: [
       // compile ts, tsx to JS
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         use: 'awesome-typescript-loader'
       }
     ],
@@ -42,10 +49,11 @@ module.exports = {
       __ISDEVENV__: true
     }),    
     new TSLintPlugin({ // linting
-        files: ['./app/**/*.ts', '.app/**/*.tsx'],
+        files: ['./server/**/*.ts'],
         fix: true,
         config: './tslint.json'
-    })
+    }),
+    new noDemonPlugin()
   ], // run plugins on the bundles
-  externals: [webpackNodeExternals]
+  externals: nodeModules
 };

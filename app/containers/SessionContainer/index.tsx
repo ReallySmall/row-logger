@@ -18,7 +18,7 @@ import { FormContainer } from '../../containers/FormContainer';
 import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
-import { utilsHelpers, routingHelpers, dateTimeHelpers, rowingHelpers } from '../../helpers';
+import { utilsHelpers, dateTimeHelpers, rowingHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
 class SessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -58,7 +58,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                 }
                 {!error && !processing && session &&
                     <Page title="Session">
-                        <Column>
+                        <Column width={12}>
                             <Typography variant="display3" gutterBottom>{dateTimeHelpers.formatDateHumanFriendly(session.createdAt)}</Typography>
                         </Column>
                         <Column title="Data" width={3}>

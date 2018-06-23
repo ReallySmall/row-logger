@@ -110,3 +110,8 @@ declare interface RowerType {
 declare interface RowerTypes {
   waterRowerA1: RowerType;
 }
+
+declare interface SessionsQuery {
+    limit: number;
+    showRecent: boolean;
+}

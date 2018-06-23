@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridHeaderContainer, GridBodyContainer } from '../../containers';
+import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
 import { Loading, Icon } from '../../components';
 import { columns } from '../../columns/columns';
@@ -46,8 +46,8 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.sessions.processing,
-        error: state.sessions.error
+        processing: undefined,
+        error: undefined
     };
 }
 

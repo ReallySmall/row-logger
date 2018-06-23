@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
 import { FormContainer } from '../../containers/FormContainer';
 import Paper from '@material-ui/core/Paper';
-import { Page, Column, Loading, AlertDialog } from '../../components';
+import { Page, Column, Loading } from '../../components';
 import { appConfig } from '../../config';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';

@@ -11,7 +11,7 @@ import { configureStore } from './store';
 import { App } from './containers';
 import { appConfig } from './config';
 
-const appRootElement = document.body;
+const appRootElement = document.getElementById('app');
 const store = configureStore();
 const history = createBrowserHistory();
 

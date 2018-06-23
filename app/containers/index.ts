@@ -1,9 +1,7 @@
 import App from './App';
 import LoginContainer from './LoginContainer';
-import FormContainer from './FormContainer';
-import GridHeaderContainer from './GridHeaderContainer';
+import { FormContainer } from './FormContainer';
 import GridBodyContainer from './GridBodyContainer';
-import IdleContainer from './IdleContainer';
 import OverviewContainer from './OverviewContainer';
 import SessionsContainer from './SessionsContainer';
 import SessionContainer from './SessionContainer';
@@ -16,9 +14,7 @@ export {
     App,
     LoginContainer,
     FormContainer,
-    GridHeaderContainer,
     GridBodyContainer,
-    IdleContainer,
     OverviewContainer,
     SessionsContainer,
     SessionContainer,

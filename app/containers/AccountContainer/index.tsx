@@ -52,7 +52,7 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
         return (
 
             <Page title="Account">
-                <Column>
+                <Column width={12}>
                     <Typography variant="display3" gutterBottom>Account</Typography>
                 </Column>
                 <Column title="Change settings" hideTitle={true} width={6}>

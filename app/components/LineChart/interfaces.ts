@@ -1,7 +1,7 @@
 export namespace Interfaces {
 
     export interface Props {
-        processing: boolean;
+        data: any;
     }
 
     export interface State {

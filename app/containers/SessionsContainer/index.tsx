@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridHeaderContainer, GridBodyContainer } from '../../containers';
+import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
 import { Page, Column, ChartOverview, Loading } from '../../components';
 import { columns } from '../../columns/columns';

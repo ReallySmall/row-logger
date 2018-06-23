@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { GridHeaderContainer, GridBodyContainer } from '../../containers';
+import { GridBodyContainer } from '../../containers';
 import { Page, Column, ChartOverview, Loading } from '../../components';
 import { NavLink } from 'react-router-dom';
 import { columns } from '../../columns/columns';
@@ -44,7 +44,7 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
         const { processing, error, totals, recentSessions } = this.props;
         const progress: number = totals ? totals.items[totals.ids[0]].distance : 0;
-        const hasSessions: boolean = recentSessions && recentSessions.ids && recentSessions.ids.length;
+        const hasSessions: boolean = recentSessions && recentSessions.ids && recentSessions.ids.length > 0;
 
         return (
 

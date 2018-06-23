@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridHeaderContainer, GridBodyContainer } from '../../containers';
+import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
 import { ChartOverview, Loading } from '../../components';
 import { columns } from '../../columns/columns';

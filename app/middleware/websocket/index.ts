@@ -67,7 +67,7 @@ const createMiddleware = () => {
    * The primary Redux middleware function.
    * Each of the actions handled are user-dispatched.
    */
-  return (store: Object) => (next: Function) => (action: any) => {
+  return (store: any) => (next: Function) => (action: any) => {
 
     switch (action.type) {
       // User request to connect

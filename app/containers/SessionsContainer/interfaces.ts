@@ -3,7 +3,8 @@ export namespace Interfaces {
     export interface Props {
         processing?: string;
         error?: string;
-        sessionsAction?: any;
+        sessionActions?: any;
+        sessions: any;
         totals: GridData;
         recentSessions: GridData;
     }

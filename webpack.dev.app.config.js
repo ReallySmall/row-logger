@@ -1,11 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
 const glob = require('glob');
-const hotMiddlewareScript = 'webpack-hot-middleware/client?path=http://localhost:8080/__webpack_hmr&timeout=20000&reload=true';
+const hotMiddlewareScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
 
 // variables
-const sourcePath = path.resolve(__dirname, './app');
-const outPath = path.resolve(__dirname, './public');
+const sourcePath = path.join(path.resolve() + '/app');
+const outPath = path.join(path.resolve() + '/public');
 
 // plugins
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -15,7 +15,6 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const StatsPlugin = require('stats-webpack-plugin');
 const BundlingVisualizer = require('webpack-visualizer-plugin');
 const TSLintPlugin = require('tslint-webpack-plugin');
-const HtmlWebpackPlugin=require('html-webpack-plugin');
 
 // polyfills
 require('whatwg-fetch');
@@ -65,29 +64,6 @@ module.exports = {
         fix: true,
         config: './tslint.json'
     }),
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin()
-  ], // run plugins on the bundles
-  devServer: { // starts a local devserver
-    port: 4000,
-    historyApiFallback: true,
-    contentBase: sourcePath,
-    hot: true, // live reloading
-    stats: {
-      warnings: false
-    }
-  },
-  node: {
-    // workaround for webpack-dev-server issue
-    // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179
-    fs: 'empty',
-    net: 'empty',
-    console: false,
-    global: true,
-    process: true,
-    Buffer: true,
-    __filename: "mock",
-    __dirname: "mock",
-    setImmediate: true
-  }
+    new webpack.HotModuleReplacementPlugin()
+  ] // run plugins on the bundles
 };

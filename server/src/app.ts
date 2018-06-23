@@ -33,7 +33,7 @@ dotenv.config();
 /**
  * Controllers (route handlers).
  */
-import * as homeController from './controllers/home';
+import * as homeController from './controllers/index';
 import * as sessionsController from './controllers/sessions';
 import * as userController from './controllers/user';
 import * as wsController from './controllers/ws';
@@ -63,7 +63,7 @@ if (process.env.NODE_ENV === 'development') {
 
   app.use(webpackDevMiddleware(compiler, {
     noInfo: false,
-    publicPath: '/public/',
+    publicPath: '/',
     stats: { colors: true }
   }));
 
@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === 'development') {
  * Connect to MongoDB.
  */
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI, { useMongoClient: true });
 mongoose.connection.on('error', (err) => {
   console.error(err);
   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
@@ -115,8 +115,8 @@ app.use(lusca.xssProtection(true));
 
 app.use((req, res, next) => {
 
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  //res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
   if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
 
@@ -155,10 +155,13 @@ app.ws('/', wsController.recordSession);
 /**
  * App route.
  */
-app.get('*', homeController.index);
-app.get('*', function(req, res) {
-    res.redirect('https://' + req.headers.host + req.url);
+app.get('*', (req, res) => {
+  res.sendFile(path.join(path.resolve() + '/server/dist/index.html'));
 });
+
+//app.get('*', function(req, res) {
+    //res.redirect('https://' + req.headers.host + req.url);
+//});
 
 /**
  * Error Handler.

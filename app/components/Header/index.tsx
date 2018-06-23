@@ -37,7 +37,7 @@ const styles = {
   }
 };
 
-class Header extends React.Component<Interfaces.Props, Interfaces.State> {
+class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
 
@@ -142,4 +142,4 @@ class Header extends React.Component<Interfaces.Props, Interfaces.State> {
     }
 }
 
-export default withStyles(styles)(Header);
+export const Header = withStyles(styles)(HeaderWrapped);

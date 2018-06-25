@@ -9,9 +9,20 @@
   "author": "richard iles",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack --colors --watch --config webpack.dev.server.config.js",
-    "appdev": "webpack-dev-server --colors --watch --https --config webpack.dev.app.config.js",
-    "test": "mocha --reporter spec"
+    "dev": "cross-env NODE_ENV=development && webpack --colors --watch --config webpack.dev.server.config.js",
+    "build": "cross-env NODE_ENV=development && webpack --colors --config webpack.prod.server.config.js && webpack --colors --config webpack.prod.app.config.js",
+    "test": "cross-env NODE_ENV=test jest"
+  },
+  "jest": {
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(js|jsx)$",
+    "moduleDirectories": [
+      "node_modules",
+      "app"
+    ],
+    "moduleFileExtensions": [
+      "jsx",
+      "js"
+    ]
   },
   "dependencies": {
     "@material-ui/core": "^1.1.0",
@@ -128,7 +139,7 @@
     "babel-plugin-transform-remove-strict-mode": "0.0.2",
     "browser-sync": "^2.23.6",
     "clean-webpack-plugin": "^0.1.16",
-    "copy-webpack-plugin": "^4.0.1",
+    "copy-webpack-plugin": "^4.5.1",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.11",
     "del": "^3.0.0",

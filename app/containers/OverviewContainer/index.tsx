@@ -50,15 +50,19 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
             <Page title="Overview">
                 <Column title="Totals" width={4}>
-                   <Paper>
-                        {processing && <Loading />}
-                        {!processing && totals &&
-                            <div>
+                    {processing &&                    
+                        <Paper>
+                            <Loading />
+                        </Paper>
+                    }
+                    {!processing && totals &&
+                        <div>
+                            <Paper>
                                 <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />
-                                <ChartOverview total={112000} progress={progress} />
-                            </div>
-                        }
-                    </Paper>
+                            </Paper>
+                            <ChartOverview total={112000} progress={progress} />
+                        </div>
+                    }                 
                 </Column>
                 <Column title="Recent" width={8}>
                     <Paper>
@@ -66,7 +70,7 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                         {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
                     </Paper>
                     {hasSessions
-                        ? <Button color="primary" component={NavLink} to="/sessions">View all sessions</Button>
+                        ? <Button><NavLink to="/sessions">View all sessions</NavLink></Button>
                         : null
                     }
                 </Column>

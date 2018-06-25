@@ -97,8 +97,7 @@ class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> 
                         <Tabs
                             value={activeTab}
                             onChange={this.handleTabChanges}
-                            scrollable
-                            scrollButtons="auto">
+                            >
                             {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
                         </Tabs>
                     )}

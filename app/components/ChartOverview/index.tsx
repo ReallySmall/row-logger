@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { Doughnut } from 'react-chartjs-2';
+import { StyledPaper } from '../../components';
 import Typography from '@material-ui/core/Typography';
 import { Interfaces } from './interfaces';
 
@@ -29,10 +30,10 @@ export class ChartOverview extends React.Component<Interfaces.Props, Interfaces.
 
         return (
 
-            <div>
+            <StyledPaper>
                 <Typography gutterBottom noWrap>Next target: River Aire (112 km)</Typography>
                 <Doughnut data={data} options={options} />
-            </div>
+            </StyledPaper>
 
         );
 

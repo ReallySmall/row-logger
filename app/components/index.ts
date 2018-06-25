@@ -18,3 +18,5 @@ export { ScrollWrapper } from './ScrollWrapper';
 export { LineChart } from './LineChart';
 export { GridOverview } from './GridOverview';
 export { ChartOverview } from './ChartOverview';
+export { StyledPaper } from './StyledPaper';
+export { ErrorModal } from './ErrorModal';

@@ -1,11 +1,11 @@
 import * as React from 'react';
-import * as AuthActions from '../../actions/auth';
+import * as authActions from '../../actions/auth';
+import * as errorActions from '../../actions/error';
 import { register } from '../../forms';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Paper from '@material-ui/core/Paper';
 import { FormContainer } from '../../containers/FormContainer';
-import { Page, Column, Loading, MainContentWrapper, PageHeader } from '../../components';
+import { Page, Column, Loading, MainContentWrapper, PageHeader, StyledPaper, ErrorModal } from '../../components';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
@@ -33,13 +33,13 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
             <Page title="Account">
                 <Column title="Register" width={6}>
-                   <Paper>
+                   <StyledPaper>
+                       <ErrorModal error={error} name="REGISTER" clearErrorAction={errorActions.clearError} />
                         {processing && <Loading message="Registering" />}
-                        {!processing && error && <p>{error}</p>}
                         {!processing &&
                             <FormContainer form="register" onSubmit={this.submit} fieldData={register} />
                         }
-                    </Paper>
+                    </StyledPaper>
                 </Column>
             </Page>
 
@@ -60,7 +60,8 @@ function mapStateToProps(state: RootState, props) {
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        authActions: bindActionCreators(AuthActions as any, dispatch)
+        authActions: bindActionCreators(authActions as any, dispatch),
+        errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 

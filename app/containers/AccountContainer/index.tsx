@@ -3,11 +3,10 @@ import { profile, rowing, password } from '../../forms';
 import * as accountActions from '../../actions/account';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import { FormContainer } from '../../containers/FormContainer';
-import { Page, Column, Loading, MainContentWrapper, PageHeader } from '../../components';
+import { Page, Column, Loading, MainContentWrapper, PageHeader, StyledPaper } from '../../components';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
@@ -60,18 +59,18 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                     {!processing && error && <p>{error}</p>}
                     {!processing &&
                         <div>
-                            <Card>
+                            <StyledPaper>
                                 <Typography variant="title">User details</Typography>
                                 <FormContainer form="profile" formSubmitLabel="Update" onSubmit={this.submit} initialValues={initialProfileValues} fieldData={profile} />
-                            </Card>
-                            <Card>
+                            </StyledPaper>
+                            <StyledPaper>
                                 <Typography variant="title">Rower settings</Typography>
                                 <FormContainer form="rowerSettings" formSubmitLabel="Update" onSubmit={this.submit} initialValues={initialRowerSettingsValues} fieldData={rowing} />
-                            </Card>
-                            <Card>
+                            </StyledPaper>
+                            <StyledPaper>
                                 <Typography variant="title">Update password</Typography>
                                 <FormContainer form="updatePassword" formSubmitLabel="Update" onSubmit={this.submit} fieldData={password} />
-                            </Card>
+                            </StyledPaper>
                         </div>
                     }
                 </Column>

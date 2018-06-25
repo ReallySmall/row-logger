@@ -6,8 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
 import { FormContainer } from '../../containers/FormContainer';
-import Paper from '@material-ui/core/Paper';
-import { Page, Column, Loading } from '../../components';
+import { Page, Column, Loading, StyledPaper, ErrorModal } from '../../components';
 import { appConfig } from '../../config';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -35,13 +34,11 @@ class LoginContainer extends React.Component<Interfaces.Props, Interfaces.State>
 
             <Page title="Account">
                 <Column title="Login" width={6}>
-                   <Paper>
+                   <StyledPaper>
+                        <ErrorModal error={error} name="LOGIN" clearErrorAction={errorActions.clearError} />
                         {processing && <Loading message="Logging in" />}
-                        {!processing && error && <p>{error}</p>}
-                        {!processing &&
-                            <FormContainer form="login" onSubmit={this.submit} fieldData={login} />
-                        }
-                    </Paper>
+                        {!processing && <FormContainer form="login" onSubmit={this.submit} fieldData={login} />}
+                    </StyledPaper>
                 </Column>
             </Page>
 

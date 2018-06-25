@@ -17,7 +17,7 @@ export class Loading extends React.Component<Interfaces.Props, Interfaces.State>
         return (
 
           <div className="loading-container">
-              <CircularProgress />
+              <CircularProgress size={100} thickness={2} />
               <Typography>{message || 'Loading'}</Typography>
           </div>
 

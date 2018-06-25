@@ -84,6 +84,9 @@ export class FormContainer extends React.Component<Interfaces.Props, Interfaces.
                                 const formControlRenderer: any = formControls[renderer]; // get the appropriate renderer for this form control type
                                 const validationMethods: Array<any> = fieldValidationMethods(validators); // convert array list of validation types to array of validation methods
                                 const conditionalRender: boolean = !conditionalParent ? true : this.shouldFieldConditionalRender(conditionalParent);
+                                const inputLabelProps: any = type === 'date' 
+                                    ? { shrink: true }
+                                    : {};
 
                                 return ( // render the form control for this field
                                     display && formControlRenderer && conditionalRender && // if field is set to display and has a renderer defined
@@ -93,8 +96,10 @@ export class FormContainer extends React.Component<Interfaces.Props, Interfaces.
                                                 name={fieldDatum}
                                                 type={type}
                                                 label={label}
+                                                InputLabelProps={inputLabelProps}
                                                 component={formControlRenderer}
                                                 required={required}
+                                                fullWidth={true}
                                                 validate={validationMethods}
                                                 disabled={disabled}>
                                                     {type === 'select' && options.map((option, index) => <MenuItem key={index} value={option.value}>{option.label}</MenuItem>)}

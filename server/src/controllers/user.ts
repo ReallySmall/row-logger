@@ -66,6 +66,8 @@ export const postLogin = (req, res, next) => {
 
           if (error) return next(error);
 
+          console.log('success');
+
           return res
                   .status(200)
                   .header('Transfer-Encoding', '')

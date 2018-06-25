@@ -15,7 +15,7 @@ import TimeLineIcon from '@material-ui/icons/Timeline';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import { FormContainer } from '../../containers/FormContainer';
-import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart } from '../../components';
+import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart, StyledPaper } from '../../components';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
 import { utilsHelpers, dateTimeHelpers, rowingHelpers } from '../../helpers';
@@ -108,9 +108,9 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                             </Paper>
                         </Column>
                         <Column title="Chart" width={9}>
-                            <Paper>
+                            <StyledPaper>
                                 <LineChart data={session.data} />
-                            </Paper>
+                            </StyledPaper>
                         </Column>
                     </Page>
                 }

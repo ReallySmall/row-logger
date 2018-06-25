@@ -33,7 +33,6 @@ dotenv.config();
 /**
  * Controllers (route handlers).
  */
-import * as homeController from './controllers/index';
 import * as sessionsController from './controllers/sessions';
 import * as userController from './controllers/user';
 import * as wsController from './controllers/ws';
@@ -115,9 +114,6 @@ app.use(lusca.xssProtection(true));
 
 app.use((req, res, next) => {
 
-  //res.header("Access-Control-Allow-Origin", "*");
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-
   if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
 
     jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_TOKEN_SECRET, (error, decode) => {
@@ -133,7 +129,9 @@ app.use((req, res, next) => {
 
 });
 
-app.use(express.static(path.join(__dirname, '/../../public'), { maxAge: 31557600000 }));
+console.log(path.join(path.resolve(), '/public'));
+
+app.use(express.static(path.join(path.resolve(), '/public'), { maxAge: 31557600000 }));
 
 /**
  * API routes.

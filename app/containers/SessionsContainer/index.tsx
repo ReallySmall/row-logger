@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
-import { Page, Column, ChartOverview, Loading } from '../../components';
+import { Page, Column, ChartOverview, Loading, StyledPaper } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
@@ -54,18 +54,28 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
             <Page title="Sessions">
                 <Column title="Filter" width={3}>
-                   <Paper>
-                        {processing && <Loading message="Getting sessions data" />}
-                        {!processing && error && <p>{error}</p>}
-                        {!processing && !error && <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />}
-                    </Paper>
+                   <StyledPaper>
+                        <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />
+                    </StyledPaper>
                 </Column>
                 <Column title="Sessions" width={9}>
-                    <Paper>
-                        {processing && <Loading message="Getting sessions data" />}
-                        {!processing && error && <p>{error}</p>}
-                        {!processing && sessions && <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />}
-                    </Paper>
+                    <div>
+                        {processing && 
+                            <StyledPaper>
+                                <Loading message="Getting sessions data" />
+                            </StyledPaper>
+                        }
+                        {!processing && error && 
+                            <StyledPaper>
+                                <p>{error}</p>
+                            </StyledPaper>
+                        }
+                        {!processing && sessions && 
+                            <Paper>
+                                <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />
+                            </Paper>
+                        }
+                    </div>
                     {hasSessions
                         ? <Button>Export as CSV</Button>
                         : null

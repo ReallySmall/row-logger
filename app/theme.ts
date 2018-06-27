@@ -9,18 +9,9 @@ import red from '@material-ui/core/colors/red';
 // We try our best to provide a great default value.
 export const theme = createMuiTheme({
   overrides: {
-    MuiPaper: { // Name of the component ⚛️ / style shee
-      root: {
-        //padding: '20px'
-      }
-    },
     MuiToolbar: {
       root: {
         padding: '0px'
-      }
-    },
-    MuiAppBar: {
-      root: {
       }
     },
     MuiTab: {

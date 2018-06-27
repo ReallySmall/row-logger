@@ -8,6 +8,9 @@
 #include <WebSocketsClient.h>
 #include "secret.h" // personal connection data stored seperately to exclude from version control
 
+#define DEBUG_WEBSOCKETS
+#define USE_SERIAL Serial1
+
 WiFiClient client;
 HTTPClient http;
 WebSocketsClient webSocket;
@@ -187,7 +190,35 @@ void authenticate() {
 
 }
 
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
+  switch(type) {
+    case WStype_DISCONNECTED:
+      USE_SERIAL.printf("[WSc] Disconnected!\n");
+      break;
+    case WStype_CONNECTED: {
+      USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
+
+      // send message to server when Connected
+      webSocket.sendTXT("Connected");
+    }
+      break;
+    case WStype_TEXT:
+      USE_SERIAL.printf("[WSc] get text: %s\n", payload);
+
+      // send message to server
+      // webSocket.sendTXT("message here");
+      break;
+    case WStype_BIN:
+      USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
+      hexdump(payload, length);
+
+      // send data to server
+      // webSocket.sendBIN(payload, length);
+      break;
+  }
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SETUP
@@ -209,23 +240,28 @@ void setup() {
 
     authenticate(); // first authenticate
 
-    const byte connected = client.connect(postRowingDataSocket, 8080);
-
-    Serial.print(connected);
+    const byte connected = client.connect(postRowingDataSocket, 443);
 
     // then connect to websocket  
     if (connected) {
+      
       Serial.println("Connected to websocket endpoint. Attempting upgrade handshake...");
+      
+      // then set options for websocket upgrade handshake
+      webSocket.beginSSL(postRowingDataSocket, 443, "/");
+
+
+  webSocket.onEvent(webSocketEvent);
+
+      attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
+      pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
+      digitalWrite(rowingStrokesSwitch, HIGH); // and set high
+      
     } else {
+      
       halt("Connection failed");
+      
     }
-
-    // then set options for websocket upgrade handshake
-    webSocket.beginSSL(postRowingDataSocket, 443);
-
-    attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
-    pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
-    digitalWrite(rowingStrokesSwitch, HIGH); // and set high
 
   } else {
 

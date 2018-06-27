@@ -31,11 +31,8 @@ export const appConfig = {
         keyField: 'id' // the data field used as a key
     },
     dateFormats: {
-        date: 'DD/MM/YYYY',
-        dateTime: 'DD/MM/YYYY HH:mm',
-        time: 'HH:mm',
-        submissionDateTime: 'YYYY-MM-DDTHH:mm',
-        fileExport: 'DD/MM/YYYY_HH:mm'
+        date: 'YYYY-MM-DD',
+        dateTime: 'DD/MM/YYYY HH:mm'
     },
     export: {
         maxItems: 1000,

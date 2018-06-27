@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { GridBodyContainer } from '../../containers';
-import { Page, Column, ChartOverview, Loading } from '../../components';
+import { Page, Column, ChartOverview, Loading, StyledPaper } from '../../components';
 import { NavLink } from 'react-router-dom';
 import { columns } from '../../columns/columns';
 import { totalsColumns } from '../../columns/totals';
@@ -51,9 +51,9 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
             <Page title="Overview">
                 <Column title="Totals" width={4}>
                     {processing &&                    
-                        <Paper>
+                        <StyledPaper>
                             <Loading />
-                        </Paper>
+                        </StyledPaper>
                     }
                     {!processing && totals &&
                         <div>
@@ -65,12 +65,18 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                     }                 
                 </Column>
                 <Column title="Recent" width={8}>
-                    <Paper>
-                        {processing && <Loading />}
-                        {!processing && recentSessions && <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />}
-                    </Paper>
+                    {processing && 
+                        <StyledPaper>
+                            <Loading />
+                        </StyledPaper>
+                    }
+                    {!processing && recentSessions && 
+                        <Paper>
+                            <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />
+                        </Paper>
+                    }
                     {hasSessions
-                        ? <Button><NavLink to="/sessions">View all sessions</NavLink></Button>
+                        ? <Button style={{ marginTop: '20px' }} variant="raised"><NavLink to="/sessions">View all sessions</NavLink></Button>
                         : null
                     }
                 </Column>

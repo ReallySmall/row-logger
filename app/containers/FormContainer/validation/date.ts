@@ -7,8 +7,10 @@ export const date = (value: string) => { // is value a valid date?
         return undefined;
     }
 
-    // validate input date with moment.js - either date alone, or date + time are acceptable
-    const isDate: boolean = moment(value, appConfig.dateFormats.date, true).isValid() || moment(value, appConfig.dateFormats.dateTime, true).isValid();
+    console.log(value, moment(value, appConfig.dateFormats.date, true).isValid());
+
+    // validate input date with moment.js
+    const isDate: boolean = moment(value, appConfig.dateFormats.date, true).isValid();
 
     return isDate ? undefined : 'Invalid date';
 

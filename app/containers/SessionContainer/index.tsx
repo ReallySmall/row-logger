@@ -44,9 +44,14 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
         const { processing, error, session } = this.props;
 
+        let chartData: any = {};
+        let chartOptions: any = {};
+
         if(session && session.times){
 
-            const strokes: Array<any> = session.times;
+            console.log(session);
+
+            const strokes: Array<number> = session.times;
             const samplePointSeconds: number = session.multi;
             const timeAxisTicks: Array<string> = ['0:00'];
             const firstStroke: number = strokes[0];
@@ -55,8 +60,8 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                 y: '0'
             }];
 
-            let samplePoint: number = 10 * 1000;
-            let tick: number = 10;
+            let samplePoint: number = samplePointSeconds * 1000;
+            let tick: number = samplePointSeconds;
 
             strokes.forEach((strokeData: number, index: number) => {
 
@@ -68,7 +73,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
                     chartStrokesData.push({
                         x: stroke,
-                        y: (((index * 10) / 4.805) / ratio).toFixed(2)
+                        y: (((index * samplePointSeconds) / 4.805) / ratio).toFixed(2)
                     });
 
                     timeAxisTicks.push(tick % 60 === 0 ? tick / 60 + ':00' : Math.floor(tick / 60) + ':' + tick % 60);
@@ -80,7 +85,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
             });
 
-            const computedChartData: any = {
+            chartData = {
                 labels: timeAxisTicks,
                 datasets: [
                     {
@@ -93,7 +98,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                 ]
             };
 
-            const chartOptions: any = {
+            chartOptions = {
                 animation: {
                     duration: 0
                 },
@@ -190,7 +195,7 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                         </Column>
                         <Column title="Chart" width={9}>
                             <StyledPaper>
-                                <LineChart data={computedChartData} options={chartOptions} />
+                                <LineChart data={chartData} options={chartOptions} />
                             </StyledPaper>
                         </Column>
                     </Page>

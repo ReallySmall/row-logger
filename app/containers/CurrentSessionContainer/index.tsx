@@ -25,12 +25,15 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         return (
 
             <div>
-                {(!loggerConnected || !appConnected) &&
-                    <Loading message="Awaiting connection" />
+                {!appConnected &&
+                    <Loading message="Connecting to service" />
+                }
+                {appConnected && !loggerConnected &&
+                    <Loading message="Connect and switch on your logger" />
                 }
                 {loggerConnected && appConnected &&
-                    <article className="row">
-
+                    <article>
+                        <h1>CONNECTED</h1>
                     </article>
                 }
             </div>

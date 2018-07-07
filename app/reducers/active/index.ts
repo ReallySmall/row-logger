@@ -14,7 +14,7 @@ export default <SessionStoreState>(state = initialState, action) => {
                 appConnected: true
             });
 
-        case actions.WEBSOCKET_DISCONNECT:
+        case actions.WEBSOCKET_CLOSED:
 
             return Object.assign({}, state, <ActiveInterface>{
                 appConnected: false
@@ -22,9 +22,25 @@ export default <SessionStoreState>(state = initialState, action) => {
 
         case actions.WEBSOCKET_MESSAGE:
 
-            console.log(action.payload);
+            const serverWsAction: any = JSON.parse(action.payload.data);
 
-            return state;
+            console.log(serverWsAction);
+
+            switch(serverWsAction.type){
+
+                case actions.WEBSOCKET_LOGGER_CONNECTED:
+
+                    return Object.assign({}, state, <ActiveInterface>{
+                        loggerConnected: true
+                    });
+
+                case actions.WEBSOCKET_LOGGER_DISCONNECTED:
+
+                    return Object.assign({}, state, <ActiveInterface>{
+                        loggerConnected: false
+                    });
+
+            }
 
         default:
             return <ActiveInterface> state;

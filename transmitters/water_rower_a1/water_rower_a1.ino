@@ -1,18 +1,14 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// INCLUDES AND GLOBAL VARS
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
 #include <WebSocketsClient.h>
+#include <Hash.h>
 #include "secret.h" // personal connection data stored seperately to exclude from version control
 
-#define DEBUG_WEBSOCKETS
-#define USE_SERIAL Serial1
-
-WiFiClient client;
 HTTPClient http;
+ESP8266WiFiMulti WiFiMulti;
 WebSocketsClient webSocket;
 
 const char* wifiAP = WIFIAP; // WIFI Access Point name
@@ -40,6 +36,56 @@ byte currentDataArrayIndex = 0;
 byte pulses = 0;
 
 boolean rowingStrokesDataUpdated; // has more data been logged by the ISR?
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// WEBSOCKET EVENT HANDLER
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+
+  StaticJsonBuffer<300> jsonBuffer;
+  JsonObject& rowingDataJsonObj = jsonBuffer.createObject();
+  char jsonBuffer1[300]; // create a data buffer large enough to hold the string which will be posted
+
+  switch (type) {
+
+    case WStype_DISCONNECTED:
+
+      Serial.printf("[WSc] Disconnected!\n");
+
+      break;
+
+    case WStype_CONNECTED:
+
+      Serial.printf("[WSc] Connected to url: %s\n",  payload);
+
+      rowingDataJsonObj["error"] = false;
+      rowingDataJsonObj["type"] = "auth";
+      rowingDataJsonObj["payload"] = jwt;
+
+      rowingDataJsonObj.printTo(jsonBuffer1);
+
+      webSocket.sendTXT(jsonBuffer1); // send the JWT to authenticate
+
+      break;
+
+    case WStype_TEXT:
+
+      Serial.printf("[WSc] get text: %s\n", payload);
+
+      break;
+
+    case WStype_BIN:
+
+      Serial.printf("[WSc] get binary length: %u\n", length);
+      hexdump(payload, length);
+
+      break;
+
+  }
+
+}
 
 
 
@@ -107,22 +153,23 @@ void sendRowingData() {
   detachInterrupt(rowingStrokesSwitch);
 
   for (int i = 0; i < dataArrayLength; i++) {
+
     if (dataArray[i] > 0) {
-      Serial.print(dataArray[i]);
-      Serial.print(" ");
       data.add(dataArray[i]);
     }
+
     dataArray[i] = 0;
+
   }
 
   attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING);
-
-  Serial.println("");
 
   rowingDataJsonObj.printTo(jsonBuffer1);
   webSocket.sendTXT(jsonBuffer1);
 
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HALT ON NETWORK ERRORS
@@ -139,19 +186,19 @@ void halt(const char* message) {
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// AUTHENTICATE WITH THE SERVER
-// sends email and password
-// and gets JWT for authenticating on websocket
-// and current server timestamp
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void authenticate() {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// AUTHENTICATE WITH THE SERVER
+//// sends email and password
+//// and gets JWT for authenticating on websocket
+//// and current server timestamp
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void connectToServer() {
 
   char loginData[100]; // create a data buffer large enough to hold the string which will be posted
   StaticJsonBuffer<300> jsonBuffer;
 
   sprintf(loginData, "email=%s&password=%s&isLogger=true", email, password);
-  
+
   Serial.println("Getting JWT and timestamp from API");
 
   http.begin("http://192.168.1.64:8080/api/login");
@@ -164,7 +211,6 @@ void authenticate() {
 
     String response = http.getString();
 
-    Serial.println(response);
     JsonObject& jsonData = jsonBuffer.parseObject(response); // parse the JSON message
 
     if (!jsonData.success()) { // if parsing the JSON failed
@@ -173,11 +219,15 @@ void authenticate() {
 
     } else { // otherwise handle it
 
-      if (jsonData["timestamp"]) { // set the base time
-        const char* timeStamp = jsonData["timestamp"]; // get the base time
-        sprintf(baseTime, "%s", timeStamp); // and assign to the global variable
-      }
-      
+      const char* token = jsonData["token"]; // get the base time
+      const char* timeStamp = jsonData["timestamp"]; // get the base time
+
+      sprintf(jwt, "%s", token); // and assign to the global variable
+      sprintf(baseTime, "%s", timeStamp); // and assign to the global variable
+
+      webSocket.beginSSL("192.168.1.64", 443);
+      webSocket.onEvent(webSocketEvent);
+
     }
 
   } else if (httpCode < 0 || httpCode != HTTP_CODE_OK) {
@@ -190,96 +240,44 @@ void authenticate() {
 
 }
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 
-  switch(type) {
-    case WStype_DISCONNECTED:
-      USE_SERIAL.printf("[WSc] Disconnected!\n");
-      break;
-    case WStype_CONNECTED: {
-      USE_SERIAL.printf("[WSc] Connected to url: %s\n", payload);
-
-      // send message to server when Connected
-      webSocket.sendTXT("Connected");
-    }
-      break;
-    case WStype_TEXT:
-      USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-
-      // send message to server
-      // webSocket.sendTXT("message here");
-      break;
-    case WStype_BIN:
-      USE_SERIAL.printf("[WSc] get binary length: %u\n", length);
-      hexdump(payload, length);
-
-      // send data to server
-      // webSocket.sendBIN(payload, length);
-      break;
-  }
-
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SETUP
-// connect to internet, then server websocket
-// initialise IO pins
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
 
-  Serial.begin(115200); // start serial
-  WiFi.begin(wifiAP, wifiSSID); // start WIFI
+  Serial.begin(115200);
 
-  // wait for WIFI to connect
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(50); // delay required between checks or client will crash
+  for (uint8_t t = 4; t > 0; t--) {
+    Serial.printf("[SETUP] BOOT WAIT %d...\n", t);
+    Serial.flush();
+    delay(1000);
   }
 
-  // once WIFI connected
-  if (WiFi.status() == WL_CONNECTED) {
+  WiFiMulti.addAP("PLUSNET-98HF", "a769b594ad");
 
-    authenticate(); // first authenticate
-
-    const byte connected = client.connect(postRowingDataSocket, 443);
-
-    // then connect to websocket  
-    if (connected) {
-      
-      Serial.println("Connected to websocket endpoint. Attempting upgrade handshake...");
-      
-      // then set options for websocket upgrade handshake
-      webSocket.beginSSL(postRowingDataSocket, 443, "/");
-
-
-  webSocket.onEvent(webSocketEvent);
-
-      attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
-      pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
-      digitalWrite(rowingStrokesSwitch, HIGH); // and set high
-      
-    } else {
-      
-      halt("Connection failed");
-      
-    }
-
-  } else {
-
-    Serial.print("Error connecting");
-
+  while (WiFiMulti.run() != WL_CONNECTED) {
+    delay(100);
   }
+
+  connectToServer();
+
+  attachInterrupt(rowingStrokesSwitch, rowingStrokesSwitchTriggered, FALLING); // register interrupt to capture each signal from the rower
+  pinMode(rowingStrokesSwitch, INPUT_PULLUP); // add pullup to interrupt pin
+  digitalWrite(rowingStrokesSwitch, HIGH); // and set high
 
 }
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MAIN LOOP
-// posts rowing data to server
+// LOOP
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
 
-  // if base time has been obtained, there is new logged rowing data and minimum time since last message send has elapsed
+  webSocket.loop();
+
   if (strlen(baseTime) > 0 && rowingStrokesDataUpdated && millis() > (lastPosted + timeOut)) {
 
     sendRowingData(); // send the rowing data to the API

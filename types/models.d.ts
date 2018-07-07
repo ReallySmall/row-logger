@@ -95,7 +95,9 @@ declare interface GridData {
 
 declare type WebsocketMessage = string;
 
-declare type WebsocketMessageType = 'WEBSOCKET:MESSAGE' | 'WEBSOCKET:AUTHENTICATED';
+declare type WebsocketMessageType = 'WEBSOCKET:MESSAGE' | 'WEBSOCKET:LOGGER_CONNECTED' | 'WEBSOCKET:CLIENT_CONNECTED' | 'WEBSOCKET:LOGGER_DISCONNECTED' | 'WEBSOCKET:CLIENT_DISCONNECTED';
+
+declare interface WebsocketActiveSessionClients {}
 
 declare interface SessionTotals {
     metres: number;

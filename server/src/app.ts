@@ -129,8 +129,6 @@ app.use((req, res, next) => {
 
 });
 
-console.log(path.join(path.resolve(), '/public'));
-
 app.use(express.static(path.join(path.resolve(), '/public'), { maxAge: 31557600000 }));
 
 /**

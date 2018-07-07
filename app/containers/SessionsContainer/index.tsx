@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
+import * as errorActions from '../../actions/error';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
@@ -8,7 +9,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
-import { Page, Column, ChartOverview, Loading, StyledPaper } from '../../components';
+import { Page, Column, ChartOverview, Loading, StyledPaper, ErrorModal } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import { routes } from '../../routes';
@@ -53,6 +54,7 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
         return (
 
             <Page title="Sessions">
+                <ErrorModal error={error} name="LOGIN" clearErrorAction={errorActions.clearError} />
                 <Column title="Filter" width={3}>
                    <StyledPaper>
                         <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />
@@ -63,11 +65,6 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                         {processing && 
                             <StyledPaper>
                                 <Loading message="Getting sessions data" />
-                            </StyledPaper>
-                        }
-                        {!processing && error && 
-                            <StyledPaper>
-                                <p>{error}</p>
                             </StyledPaper>
                         }
                         {!processing && sessions && 
@@ -101,7 +98,8 @@ function mapStateToProps(state: RootState, props) {
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        sessionActions: bindActionCreators(sessionActions as any, dispatch)
+        sessionActions: bindActionCreators(sessionActions as any, dispatch),
+        errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 

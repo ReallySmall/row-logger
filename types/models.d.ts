@@ -93,7 +93,7 @@ declare interface GridData {
     ids: Array<string>;
 }
 
-declare type WebsocketMessage = string;
+declare type WebsocketMessage = string | number | Array<number> | Array<string>;
 
 declare type WebsocketMessageType = 'WEBSOCKET:MESSAGE' | 'WEBSOCKET:LOGGER_CONNECTED' | 'WEBSOCKET:CLIENT_CONNECTED' | 'WEBSOCKET:LOGGER_DISCONNECTED' | 'WEBSOCKET:CLIENT_DISCONNECTED';
 

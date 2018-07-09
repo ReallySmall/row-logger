@@ -7,6 +7,7 @@ import { FormContainer } from '../..//containers/FormContainer';
 import { Loading, Icon } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
+import Button from '@material-ui/core/Button';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
 import { utilsHelpers } from '../../helpers';
@@ -24,18 +25,10 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 
         return (
 
-            <div className="container">
-                <article className="row">
-                    <section className="col s12 m12">
-                        <div className="col s12 m4">
-                            <Icon name="arduino" />
-                        </div>
-                        <div className="col s12 m4">
-                            <Icon name="node" />
-                        </div>
-                    </section>
-                </article>
-            </div>
+            <article className="row">
+                <Button size="large" color="primary">Login</Button>
+                <Button size="large" color="primary">Register</Button>
+            </article>
 
         );
 

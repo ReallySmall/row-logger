@@ -33,8 +33,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
         // if the initial requested route is anything other than the root, store it in state
         // this will be used later to redirect user to requested route once successfully logged in
         this.state = {
-            requestedInitialPath: props.location.pathname !== routes.base.pathname ? props.location.pathname : null,
-            tabSelected: props.location.pathname
+            requestedInitialPath: props.location.pathname !== routes.base.pathname ? props.location.pathname : null
         };
 
     }
@@ -57,16 +56,13 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
         const { history } = this.props;
 
-        this.setState({
-            tabSelected: tabSelected
-        }, history.push(tabSelected));
+        history.push(tabSelected);
 
     }
 
     // the render method of App builds the main page layout and renders content based on routing and current user permissions
     render() {
 
-        const { tabSelected } = this.state;
         const { location, isLoggedIn, userName, appConnected, authActions } = this.props;
         const socketActiveClass: string = appConnected ? '' : 'disabled';
 
@@ -89,7 +85,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
             <div>
                 <h1 className="visually-hidden">RowLogger</h1>
-                <Header heading="RowLogger" isLoggedIn={isLoggedIn} userName={userName} authActions={authActions} tabs={tabs} activeTab={tabSelected} handleTabChange={this.handleTabChange} />
+                <Header heading="RowLogger" isLoggedIn={isLoggedIn} userName={userName} authActions={authActions} tabs={tabs} activeTab={location.pathname} handleTabChange={this.handleTabChange} />
                 <main>
                     <Switch>
                         <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />

@@ -12,7 +12,7 @@ const rowingDataSchema = new mongoose.Schema({
   },
   machineId: String,
   damping: String,
-  multi: String,
+  multi: Number,
   times: Array,
   note: String
 

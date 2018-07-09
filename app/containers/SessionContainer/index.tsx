@@ -49,10 +49,8 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
         if(session && session.times){
 
-            console.log(session);
-
             const strokes: Array<number> = session.times;
-            const samplePointSeconds: number = session.multi;
+            let samplePointSeconds: number = session.multi;
             const timeAxisTicks: Array<string> = ['0:00'];
             const firstStroke: number = strokes[0];
             const chartStrokesData: Array<any> = [{
@@ -60,11 +58,9 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
                 y: '0'
             }];
 
-            let samplePoint: number = samplePointSeconds * 1000;
-            let tick: number = samplePointSeconds;
-
             strokes.forEach((strokeData: number, index: number) => {
 
+                const samplePoint: number = samplePointSeconds * 1000;
                 const stroke: number = strokeData - firstStroke;
 
                 if(stroke >= samplePoint){
@@ -73,13 +69,12 @@ class SessionContainer extends React.Component<Interfaces.Props, Interfaces.Stat
 
                     chartStrokesData.push({
                         x: stroke,
-                        y: (((index * samplePointSeconds) / 4.805) / ratio).toFixed(2)
+                        y: (((index * 10) / 4.805) / ratio).toFixed(2)
                     });
 
-                    timeAxisTicks.push(tick % 60 === 0 ? tick / 60 + ':00' : Math.floor(tick / 60) + ':' + tick % 60);
+                    timeAxisTicks.push(samplePointSeconds % 60 === 0 ? samplePointSeconds / 60 + ':00' : Math.floor(samplePointSeconds / 60) + ':' + samplePointSeconds % 60);
 
-                    tick += samplePointSeconds;
-                    samplePoint += samplePointSeconds * 1000;
+                    samplePointSeconds += session.multi;
 
                 }
 

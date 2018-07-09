@@ -96,9 +96,8 @@ class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> 
                     {isLoggedIn && (
                         <Tabs
                             value={activeTab}
-                            onChange={this.handleTabChanges}
-                            >
-                            {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
+                            onChange={this.handleTabChanges}>
+                                {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
                         </Tabs>
                     )}
                     <IconButton

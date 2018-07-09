@@ -12,7 +12,6 @@ export namespace Interfaces {
 
     export interface State {
         requestedInitialPath: string;
-        tabSelected: string;
     }
 
 }

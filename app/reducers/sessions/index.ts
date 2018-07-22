@@ -11,7 +11,8 @@ export default <DetailsStoreState>(state = initialState, action) => {
         case actions.SESSIONS_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <DashboardSessionsInterface>{
-                sessions: action.error ? state.sessions : action.payload
+                sessions: action.error ? state.sessions : action.payload.data,
+                params: action.error ? state.sessions : action.payload.params,
             });
 
         default:

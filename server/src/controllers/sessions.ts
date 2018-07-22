@@ -35,11 +35,19 @@ export const getSessionTotals = (req, res) => {
 export const getSessions = (req, res) => {
 
 	const limit: number = req.query.limit ? parseInt(req.query.limit, 10) : 100;
+	const fromDate: string = req.query.fromDate ? moment(req.query.fromDate).toISOString() : moment('2000-01-01').toISOString();
+	const toDate: string = req.query.toDate ? moment(req.query.toDate).toISOString() : moment().toISOString();
 
 	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
 
 	RowingData
-		.find({ user: req.user })
+		.find({
+			user: req.user,
+			createdAt: {
+			    $gte: fromDate,
+				$lt: toDate
+			}
+		})
 		.select('-id -user')
 		.sort('-createdAt')
 		.limit(limit)
@@ -57,7 +65,15 @@ export const getSessions = (req, res) => {
 	      		};
 	      	});
 
-      		res.status(200).json(sanitisedData);
+	      	const params: any = {
+				fromDate: req.query.fromDate || undefined,
+				toDate: req.query.toDate || undefined,
+	      	};
+
+      		res.status(200).json({
+      			data: sanitisedData,
+      			params: params
+      		});
 
 	    });
 

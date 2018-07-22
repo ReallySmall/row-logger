@@ -15,6 +15,7 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import { Interfaces } from './interfaces';
 
@@ -24,12 +25,21 @@ const styles = {
   },
   flex: {
     flex: 1,
-    svg: {
-        verticalAlign: 'middle'
-    },
     span: {
         verticalAlign: 'middle'
     }
+  },
+  homeLink: {
+      color: 'white',
+      textDecoration: 'none',
+      textTransform: 'uppercase',
+      fontSize: '18px',
+      lineHeight: '25px'
+  },
+  homeIcon: {
+    verticalAlign: 'middle',
+    fill: 'white',
+    marginRight: 10
   },
   menuButton: {
     marginLeft: -12,
@@ -88,11 +98,15 @@ class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> 
 
             <AppBar position="sticky">
                 <Toolbar disableGutters={true}>
-                    <Typography className={classes.flex} variant="title" color="inherit">
-                        <RowingIcon />
-                        <span>Row</span>
-                        <span className="italic">logger</span>
-                    </Typography>
+                    <div className={classes.flex}>
+                        <Typography>
+                            <NavLink to="/" className={classes.homeLink}>
+                                <RowingIcon className={classes.homeIcon} />
+                                <span>Row</span>
+                                <span className="italic">logger</span>
+                            </NavLink>
+                        </Typography>
+                    </div>
                     {isLoggedIn && (
                         <Tabs
                             value={activeTab}
@@ -100,39 +114,33 @@ class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> 
                                 {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
                         </Tabs>
                     )}
-                    <IconButton
-                        aria-owns={open ? 'menu-appbar' : null}
-                        aria-haspopup="true"
-                        color="inherit"
-                        onClick={this.handleClick}>
-                            <AccountCircle />
-                    </IconButton>
-                    <Menu
-                        id="settings-menu"
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={this.handleClose}>
-                            {isLoggedIn &&
-                                <MenuItem onClick={this.handleClose}>
-                                    <NavLink to="/account" className="button button-primary">{userName}</NavLink>
-                                </MenuItem>
-                            }
-                            {isLoggedIn &&
-                                <MenuItem onClick={this.handleClose}>
-                                    <a href="#" className="button button-primary" onClick={this.logOut}>Log out</a>
-                                </MenuItem>
-                            }
-                            {!isLoggedIn &&
-                                <MenuItem onClick={this.handleClose}>
-                                    <NavLink to="/login" className="button button-primary">Log in</NavLink>
-                                </MenuItem>
-                            }
-                            {!isLoggedIn &&
-                                <MenuItem onClick={this.handleClose}>
-                                    <NavLink to="/register" className="button button-primary">Register</NavLink>
-                                </MenuItem>
-                            }
-                    </Menu>
+                    {isLoggedIn && (
+                        <IconButton
+                            aria-owns={open ? 'menu-appbar' : null}
+                            aria-haspopup="true"
+                            color="inherit"
+                            onClick={this.handleClick}>
+                                <AccountCircle />
+                        </IconButton>
+                    )}
+                    {isLoggedIn && (
+                        <Menu
+                            id="settings-menu"
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={this.handleClose}>
+                                {isLoggedIn &&
+                                    <MenuItem onClick={this.handleClose}>
+                                        <NavLink to="/account" className="button button-primary">{userName}</NavLink>
+                                    </MenuItem>
+                                }
+                                {isLoggedIn &&
+                                    <MenuItem onClick={this.handleClose}>
+                                        <a href="#" className="button button-primary" onClick={this.logOut}>Log out</a>
+                                    </MenuItem>
+                                }
+                        </Menu>
+                    )}
                 </Toolbar>
             </AppBar>
 

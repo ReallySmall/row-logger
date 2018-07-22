@@ -6,6 +6,8 @@ declare type FetchError = string | object;
 
 declare type DetailId = string;
 
+declare type UUID = string;
+
 declare interface Column {
     columnId: string;
     name: string;
@@ -116,4 +118,31 @@ declare interface RowerTypes {
 declare interface SessionsQuery {
     limit: number;
     showRecent: boolean;
+    fromDate: string;
+    toDate: string;
 }
+
+declare interface WebSocketClient {
+    readyState: number;
+    isLogger: boolean;
+    isAlive: boolean;
+    connectionId: UUID;
+    recordingSessionId: UUID;
+    on: Function;
+    send: Function;
+    terminate: Function;
+    ping: Function;
+    pong: Function;
+    base: number;
+    multi: number;
+    constant: number;
+    damping: number;
+    rowerType: string;
+}
+
+declare interface WebsocketClientMessage {
+    id: string,
+    times: Array<number>,
+    multi: number,
+    constant: number
+} 

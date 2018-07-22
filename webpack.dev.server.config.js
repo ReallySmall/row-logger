@@ -50,7 +50,7 @@ module.exports = {
       __ISDEVENV__: true
     }),    
     new TSLintPlugin({ // linting
-        files: ['./server/**/*.ts'],
+        files: ['./server/src/**/*.ts'],
         fix: true,
         config: './tslint.json'
     }),

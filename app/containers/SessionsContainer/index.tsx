@@ -40,24 +40,32 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
     }
 
-    filterSubmit(values){
+    filterSubmit(filterValues){
 
+        const { sessionsRequest } = this.props.sessionActions;
+        const { fromDate, toDate } = filterValues;
 
+        sessionsRequest({
+            showRecent: false,
+            limit: 100,
+            fromDate: fromDate,
+            toDate: toDate
+        });
 
     }
 
     render() {
 
-        const { processing, error, totals, sessions } = this.props;
+        const { processing, error, totals, sessions, activeFilters } = this.props;
         const hasSessions: boolean = sessions && sessions.ids && sessions.ids.length;
 
         return (
 
             <Page title="Sessions">
-                <ErrorModal error={error} name="LOGIN" clearErrorAction={errorActions.clearError} />
+                <ErrorModal error={error} name="SESSIONS" clearErrorAction={errorActions.clearError} />
                 <Column title="Filter" width={3}>
                    <StyledPaper>
-                        <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} disabled={!hasSessions} />
+                        <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} initialValues={activeFilters} disabled={Boolean(processing)} />
                     </StyledPaper>
                 </Column>
                 <Column title="Sessions" width={9}>
@@ -73,10 +81,6 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                             </Paper>
                         }
                     </div>
-                    {hasSessions
-                        ? <Button>Export as CSV</Button>
-                        : null
-                    }
                 </Column>
             </Page>
 
@@ -91,7 +95,8 @@ function mapStateToProps(state: RootState, props) {
     return {
         processing: state.loading['SESSIONS'],
         error: state.error['SESSIONS'],
-        sessions: state.sessions.sessions
+        sessions: state.sessions.sessions,
+        activeFilters: state.sessions.params
     };
 }
 

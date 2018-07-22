@@ -24,8 +24,6 @@ export default <SessionStoreState>(state = initialState, action) => {
 
             const serverWsAction: any = JSON.parse(action.payload.data);
 
-            console.log(serverWsAction);
-
             switch(serverWsAction.type){
 
                 case actions.WEBSOCKET_LOGGER_CONNECTED:
@@ -39,6 +37,34 @@ export default <SessionStoreState>(state = initialState, action) => {
                     return Object.assign({}, state, <ActiveInterface>{
                         loggerConnected: false
                     });
+
+                case actions.WEBSOCKET_MESSAGE:
+
+                    if(serverWsAction.payload){
+
+                        const {id, times, multi, constant} = serverWsAction.payload;
+
+                        if(id !== state.sessionId){
+
+                            return Object.assign({}, state, <ActiveInterface>{
+                                sessionId: initialState.sessionId,
+                                times: initialState.times,
+                                multi: initialState.multi,
+                                constant: initialState.constant
+                            });
+
+                        }
+
+                        return Object.assign({}, state, <ActiveInterface>{
+                            sessionId: serverWsAction.payload.id,
+                            times: [...state.times, ...serverWsAction.payload.times],
+                            multi: serverWsAction.payload.multi,
+                            constant: serverWsAction.payload.constant
+                        });
+
+                    }
+
+                    return state;
 
             }
 

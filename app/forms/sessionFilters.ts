@@ -10,8 +10,8 @@ const sessionFilters: AppForm = {
         label: 'From date',
         value: moment().startOf('day'),
         conditionalParent: undefined,
-        required: true,
-        validators: ['date', 'required']
+        required: false,
+        validators: ['date']
     },
     toDate: {
         name: 'toDate',
@@ -21,8 +21,8 @@ const sessionFilters: AppForm = {
         label: 'To date',
         value: moment(),
         conditionalParent: undefined,
-        required: true,
-        validators: ['date', 'required']
+        required: false,
+        validators: ['date']
     }
 };
 

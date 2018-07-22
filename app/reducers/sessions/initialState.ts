@@ -1,5 +1,6 @@
 import DashboardSessionsInterface from './interfaces';
 
 export default <DashboardSessionsInterface> {
-    sessions: undefined
+    sessions: undefined,
+    params: undefined
 };

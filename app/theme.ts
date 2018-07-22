@@ -19,6 +19,11 @@ export const theme = createMuiTheme({
         minHeight: '64px'
       }
     },
+    MuiButton: {
+      root: {
+        color: 'white'
+      }
+    },
     MuiFormControl: {
       root: {
         marginBottom: '20px'

@@ -31,7 +31,7 @@ export class ChartOverview extends React.Component<Interfaces.Props, Interfaces.
         return (
 
             <StyledPaper>
-                <Typography gutterBottom noWrap>Next target: River Aire (112 km)</Typography>
+                <Typography variant="body2" gutterBottom >Next target: River Aire (112 km)</Typography>
                 <Doughnut data={data} options={options} />
             </StyledPaper>
 

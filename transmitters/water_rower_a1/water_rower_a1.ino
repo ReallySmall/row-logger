@@ -144,11 +144,14 @@ void sendRowingData() {
 
   StaticJsonBuffer<300> jsonBuffer;
   JsonObject& rowingDataJsonObj = jsonBuffer.createObject();
-  JsonArray& data = rowingDataJsonObj.createNestedArray("data");
+  JsonObject& payload = rowingDataJsonObj.createNestedObject("payload");
+  JsonArray& data = payload.createNestedArray("data");
 
   char jsonBuffer1[300]; // create a data buffer large enough to hold the string which will be posted
 
-  rowingDataJsonObj["base"] = baseTime;
+  rowingDataJsonObj["type"] = "WEBSOCKET:MESSAGE";
+  rowingDataJsonObj["error"] = false;
+  payload["base"] = baseTime;
 
   detachInterrupt(rowingStrokesSwitch);
 

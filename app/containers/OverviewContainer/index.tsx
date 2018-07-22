@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
-import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';

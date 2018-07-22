@@ -17,7 +17,7 @@ export default <DetailsStoreState>(state = initialState, action) => {
         case actions.SESSIONS_RECENT_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <DashboardOverviewInterface>{
-                recentSessions: action.error ? state.totals : action.payload
+                recentSessions: action.error ? state.totals : action.payload.data
             });
 
         default:

@@ -77,11 +77,13 @@ class GridBodyContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                             );
 
                         })}
+                        {!rowCount &&
+                            <TableRow>
+                                <TableCell>{noDataMessage}</TableCell>
+                            </TableRow>
+                        }
                     </TableBody>
                 </Table>
-                {!rowCount &&
-                    <p>{noDataMessage}</p>
-                }
             </div>
 
         );

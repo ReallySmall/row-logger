@@ -17,77 +17,86 @@ export class RowingDataRecorder {
 
   }
 
-  sessionExists(key: string){
+  public sessionExists(sessionId: UUID): boolean {
 
-  	return this.sessions[key] ? true : false;
+  	return this.sessions[sessionId] ? true : false;
 
   }
 
-  createSession(key: string, user: any, machineId: string, damping: any, multi: number, times: Array<number>){
+  public createSession(sessionId: UUID, user: any, machineId: string, damping: any, multi: number, times: Array<number>): void {
 
-  	if(key && !this.sessions[key]){
+  	if(sessionId && !this.sessions[sessionId]){
 
-  		this.sessions[key] = {
-			timeOut: undefined,
+  		this.sessions[sessionId] = {
+			  timeOut: undefined,
   		};
 
-	  	this.sessions[key].data = {
-			user: user,
-			machineId: machineId,
-			damping: damping,
-			multi: multi,
-			times: times,
+	  	this.sessions[sessionId] = {
+  			user: user,
+  			machineId: machineId,
+  			damping: damping,
+  			multi: multi,
+  			times: times,
 	  	};
 
   	}
 
   }
 
-  deleteSession(key: string){
+  public deleteSession(sessionId: UUID){
 
-  	if(key && this.sessions[key]){
-  		delete this.sessions[key];
-  	}
+  	if(sessionId && this.sessions[sessionId]){
 
-  }
+      delete this.sessions[sessionId];
 
-  addDataToSession(key: string, data: Array<number>){
-
-  	if(key && this.sessions[key]){
-    	this.sessions[key].times = [...this.sessions[key].times, ...data];
     }
 
   }
 
-  getSessionTimes(key: string){
+  public addDataToSession(sessionId: UUID, data: Array<number>): void {
 
-  	if(key && this.sessions[key]){
-    	return this.sessions[key].times;
+  	if(sessionId && this.sessions[sessionId]){
+
+      this.sessions[sessionId].times = [...this.sessions[sessionId].times, ...data];
+
     }
 
   }
 
-  cancelSaveTimeOut(key: string){
+  public getSessionTimes(sessionId: UUID): Array<number> {
 
-  	if(key && this.sessions[key]){
-    	clearTimeout(this.sessions[key].timeOut);
-	  }
+  	if(sessionId && this.sessions[sessionId]){
+
+      return this.sessions[sessionId].times;
+
+    }
+
+    return [];
 
   }
 
-  timeOutThenSave(key: string){
+  public cancelSaveTimeOut(sessionId: UUID): void {
 
-  	if(key && this.sessions[key]){
+  	if(sessionId && this.sessions[sessionId]){
 
-	    this.sessions[key].timeOut = setTimeout(() => {
+    	clearTimeout(this.sessions[sessionId].timeOut);
 
-	      const rowingData = new RowingData(this.sessions[key].data);
+    }
+
+  }
+
+  public timeOutThenSave(sessionId: UUID): void {
+
+  	if(sessionId && this.sessions[sessionId]){
+
+	    this.sessions[sessionId].timeOut = setTimeout(() => {
+
+	      const rowingData = new RowingData(this.sessions[sessionId].data);
 
 	      rowingData
 	        .save()
 	        .then(item => {
 	          console.log('data saved');
-	          //updateRowingTotals(rowingData.user, 10);
 	        })
 	        .catch(error => error && console.log('unable to save data:', error));
 

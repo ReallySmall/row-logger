@@ -8,6 +8,7 @@ import { Loading, Icon } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import Button from '@material-ui/core/Button';
+import { NavLink } from 'react-router-dom';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
 import { utilsHelpers } from '../../helpers';
@@ -26,8 +27,8 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
         return (
 
             <article className="row">
-                <Button size="large" color="primary">Login</Button>
-                <Button size="large" color="primary">Register</Button>
+                <Button variant="raised" size="large" color="primary"><NavLink to={routes.login.pathname}>Login</NavLink></Button>
+                <Button variant="raised" size="large" color="primary"><NavLink to={routes.register.pathname}>Register</NavLink></Button>
             </article>
 
         );

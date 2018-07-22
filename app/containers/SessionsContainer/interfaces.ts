@@ -7,6 +7,7 @@ export namespace Interfaces {
         sessions: any;
         totals: GridData;
         recentSessions: GridData;
+        activeFilters: AppFormValues;
     }
 
     export interface State {

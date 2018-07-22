@@ -19,10 +19,13 @@ const sessionRequestComplete = (data: object, error: Error): ReduxAction => {
     };
 };
 
-const sessionsRequestComplete = (data: object, isShowRecent: boolean, error: Error): ReduxAction => {
+const sessionsRequestComplete = (data: object, params: object, isShowRecent: boolean, error: Error): ReduxAction => {
     return {
         type: isShowRecent ? actions.SESSIONS_RECENT_REQUEST_COMPLETE : actions.SESSIONS_REQUEST_COMPLETE,
-        payload: error ? error : data,
+        payload: error ? error : {
+            data: data,
+            params: params
+        },
         error: error ? true : false
     };
 };
@@ -64,7 +67,7 @@ export const sessionRequest = (id: string): Function => {
 
 export const sessionsRequest = (query: SessionsQuery): Function => {
 
-    const { showRecent, limit } = query;
+    const { showRecent, limit, fromDate, toDate } = query;
 
     return (dispatch) => {
 
@@ -82,7 +85,7 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
                 payload: 'Requesting sessions'
             });
 
-            fetch(`${sessionsApi}?limit=${limit}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
+            fetch(`${sessionsApi}?limit=${limit}&fromDate=${fromDate ? fromDate : ''}&toDate=${toDate ? toDate : ''}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
                 if (!response.ok) {
                     fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestComplete, auth.logOutRequest);
@@ -96,16 +99,16 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
                         ids: []
                     };
 
-                    data.map((datum, index) => {
+                    data.data.map((datum, index) => {
                         gridData.items[datum.id] = datum;
                         gridData.ids.push(datum.id);
                     });
 
-                    dispatch(sessionsRequestComplete(gridData, showRecent, null));
+                    dispatch(sessionsRequestComplete(gridData, data.params, showRecent, null));
 
                 });
 
-            }).catch(error => dispatch(sessionsRequestComplete(null, showRecent, error)));
+            }).catch(error => dispatch(sessionsRequestComplete(null, null, showRecent, error)));
 
         }
 

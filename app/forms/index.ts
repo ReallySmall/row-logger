@@ -4,6 +4,7 @@ import profile from './profile';
 import rowing from './rowing';
 import password from './password';
 import sessionFilters from './sessionFilters';
+import sessionNote from './sessionNote';
 
 export {
     login,
@@ -11,5 +12,6 @@ export {
     profile,
     rowing,
     password,
-    sessionFilters
+    sessionFilters,
+    sessionNote
 };

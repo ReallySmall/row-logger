@@ -112,6 +112,12 @@ app.use(passport.session());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  next();
+});
+
 app.use((req, res, next) => {
 
   if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
@@ -124,7 +130,9 @@ app.use((req, res, next) => {
     });
 
   } else {
+
     next();
+
   }
 
 });

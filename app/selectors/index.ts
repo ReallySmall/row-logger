@@ -1,0 +1,18 @@
+export const getProcessing: Function = (state): boolean => Object.keys(state.loading).length > 0;
+export const getError: Function = (state): any => Object.keys(state.error).length > 0 ? Object.keys(state.error) : undefined;
+export const getIsLoggedIn: Function = (state): string => state.auth.isLoggedIn;
+export const getEmail: Function = (state): string => state.auth.email;
+export const getUserName: Function = (state): string => state.auth.userName;
+export const getRowerType: Function = (state): string => state.auth.rowerType;
+export const getRowerDamping: Function = (state): string => state.auth.rowDamping;
+export const getRowerDamping: Function = (state): string => state.auth.rowDamping;
+export const getRowerDamping: Function = (state): string => state.auth.rowDamping;
+export const getAppConnected: Function = (state): boolean => state.active.appConnected;
+export const getLoggerConnected: Function = (state): boolean => state.active.loggerConnected;
+export const getTimes: Function = (state): any => state.active.times;
+export const getMulti: Function = (state): any => state.active.multi;
+export const getConstant: Function = (state): any => state.active.constant;
+export const getRecentSessions: Function = (state): any => state.overview.recentSessions;
+export const getTotals: Function = (state): any => state.overview.totals;
+export const getTotals: Function = (state): any => state.session.data[id];
+export const getParams: Function = (state): any => state.sessions.params;

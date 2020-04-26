@@ -20,30 +20,29 @@ import { Interfaces } from './interfaces';
 class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
+
         super(props, context);
+
         this.filterSubmit = this.filterSubmit.bind(this);
+
     }
 
     componentDidMount(){
 
-        const { sessionActions, processing, sessions } = this.props;
-        const { sessionsRequest } = sessionActions;
+        const { sessionActions: { sessionsRequest }, 
+                sessions } = this.props;
 
-        if(!processing){
-
-            !sessions && sessionsRequest({
-                showRecent: false,
-                limit: 100
-            });
-
-        }
+        !sessions && sessionsRequest({
+            showRecent: false,
+            limit: 100
+        });
 
     }
 
     filterSubmit(filterValues){
 
-        const { sessionsRequest } = this.props.sessionActions;
         const { fromDate, toDate } = filterValues;
+        const { sessionActions: { sessionsRequest } } = this.props;
 
         sessionsRequest({
             showRecent: false,
@@ -56,26 +55,23 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
     render() {
 
-        const { processing, error, totals, sessions, activeFilters } = this.props;
+        const { totals, 
+                sessions, 
+                activeFilters } = this.props;
+
         const hasSessions: boolean = sessions && sessions.ids && sessions.ids.length;
 
         return (
 
             <Page title="Sessions">
-                <ErrorModal error={error} name="SESSIONS" clearErrorAction={errorActions.clearError} />
                 <Column title="Filter" width={3}>
                    <StyledPaper>
-                        <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} initialValues={activeFilters} disabled={Boolean(processing)} />
+                        <FormContainer form="filters" onSubmit={this.filterSubmit} fieldData={sessionFilters} initialValues={activeFilters} />
                     </StyledPaper>
                 </Column>
                 <Column title="Sessions" width={9}>
                     <div>
-                        {processing && 
-                            <StyledPaper>
-                                <Loading message="Getting sessions data" />
-                            </StyledPaper>
-                        }
-                        {!processing && sessions && 
+                        {sessions && 
                             <Paper>
                                 <GridBodyContainer columns={columns} items={sessions.items} ids={sessions.ids} showHeader={true} sortable={false} />
                             </Paper>
@@ -93,8 +89,6 @@ class SessionsContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.loading['SESSIONS'],
-        error: state.error['SESSIONS'],
         sessions: state.sessions.sessions,
         activeFilters: state.sessions.params
     };
@@ -103,8 +97,7 @@ function mapStateToProps(state: RootState, props) {
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        sessionActions: bindActionCreators(sessionActions as any, dispatch),
-        errorActions: bindActionCreators(errorActions as any, dispatch)
+        sessionActions: bindActionCreators(sessionActions as any, dispatch)
     };
 }
 

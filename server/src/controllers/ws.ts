@@ -144,7 +144,7 @@ export const recordSession = (ws: WebSocketClient, req: any) => {
 
     // if data array exists
     // create new array with each time added to base time to get full timestamps
-    const times: Array<number> = data && data.length ? data.map(datum => parseInt(base, 10) + parseInt(datum, 10)) : [];
+    const times: Array<number> = data && data.length ? data.map(datum => ws.base + parseInt(datum, 10)) : [];
 
     // if an active rowing session doesn't exist yet for this user
     if(activeSessions[req.user] && !activeSessions[req.user].dataSet){
@@ -171,6 +171,8 @@ export const recordSession = (ws: WebSocketClient, req: any) => {
 
         // if all required params exist
         if(ws.damping && ws.base && ws.constant && ws.multi && activeSessions[req.user]){
+
+          ws.recordingSessionId = new uuidv4();
 
           activeSessions[req.user].createDataSet(ws.rowerType, ws.damping, ws.multi, times); // create a new recording session
           activeSessions[req.user].saveDataSet(); // set up the timeout before session save
@@ -207,7 +209,7 @@ export const recordSession = (ws: WebSocketClient, req: any) => {
       times: times,
       multi: ws.multi,
       constant: ws.constant
-    }, ws);
+    } as WebsocketClientMessage, ws);
 
   });
 

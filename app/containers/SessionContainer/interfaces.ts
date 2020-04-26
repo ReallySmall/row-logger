@@ -9,7 +9,7 @@ export namespace Interfaces {
     }
 
     export interface State {
-        /* empty */
+        editing: boolean;
     }
 
 }

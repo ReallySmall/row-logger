@@ -13,8 +13,10 @@ import { Interfaces } from './interfaces';
 class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
+
         super(props, context);
         this.submit = this.submit.bind(this);
+
     }
 
     submit = (registerDetails: AppFormValues) => {
@@ -34,10 +36,18 @@ class RegisterContainer extends React.Component<Interfaces.Props, Interfaces.Sta
             <Page title="Account">
                 <Column title="Register" width={6}>
                    <StyledPaper>
-                       <ErrorModal error={error} name="REGISTER" clearErrorAction={errorActions.clearError} />
-                        {processing && <Loading message="Registering" />}
+                       <ErrorModal 
+                           error={error} 
+                           name="REGISTER" 
+                           clearErrorAction={errorActions.clearError} />
+                        {processing && 
+                            <Loading message="Registering" />
+                        }
                         {!processing &&
-                            <FormContainer form="register" onSubmit={this.submit} fieldData={register} />
+                            <FormContainer 
+                                form="register" 
+                                onSubmit={this.submit} 
+                                fieldData={register} />
                         }
                     </StyledPaper>
                 </Column>

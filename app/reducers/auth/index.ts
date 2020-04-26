@@ -46,10 +46,10 @@ export default (state = initialState, action) => {
         case actions.ACCOUNT_DETAILS_UPDATE_REQUEST_COMPLETE:
 
             return Object.assign({}, state, <AuthInterface>{
-                userName: action.error ? state.userName : action.payload.userName,
-                email: action.error ? state.email : action.payload.email,
-                rowerType: action.error ? state.rowerType : action.payload.rowerType,
-                rowerDamping: action.error ? state.rowerDamping : action.payload.rowerDamping
+                userName: action.error || !action.payload.userName ? state.userName : action.payload.userName,
+                email: action.error || !action.payload.email ? state.email : action.payload.email,
+                rowerType: action.error || !action.payload.rowerType ? state.rowerType : action.payload.rowerType,
+                rowerDamping: action.error || !action.payload.rowerDamping ? state.rowerDamping : action.payload.rowerDamping
             });
 
         case actions.LOGOUT_REQUEST:

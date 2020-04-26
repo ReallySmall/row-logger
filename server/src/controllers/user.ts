@@ -215,8 +215,8 @@ export const postUpdateProfile = (req, res, next) => {
  */
 export const postUpdatePassword = (req, res, next) => {
 
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+  req.assert('newPassword', 'Password must be at least 4 characters long').len(4);
+  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.newPassword);
 
   const errors = req.validationErrors();
 
@@ -226,7 +226,7 @@ export const postUpdatePassword = (req, res, next) => {
 
     if (error) return next(error);
 
-    user.password = req.body.password;
+    user.password = req.body.newPassword;
 
     user.save((error) => {
       if (error) return next(error);

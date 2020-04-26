@@ -18,50 +18,62 @@ import { RootState } from '../../reducers';
 import { utilsHelpers, rowingHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
 
-const getSteps = () => ['Connecting to service', 'Connecting to rower', 'Ready'];
-
-const getStepContent = (step: number) => {
-
-  switch (step) {
-    case 0:
-      return ``;
-    case 1:
-      return 'Connect logger to the rower and switch on';
-    case 2:
-      return `Start rowing to begin the session`;
-    default:
-      return '';
-  }
-
-}
-
 class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
 
         super(props, context);
 
+        this.getSteps = this.getSteps.bind(this);
+
     }
+
+    private getSteps() {
+
+        return [
+            {
+                label: ['Connecting to service', 'Connected to service'],
+                content: [``, ``]
+            },
+            {
+                label: ['Connecting to rower', 'Connected to rower'],
+                content: ['Connect logger to the rower and switch on, then ', ``]
+            },
+            {
+                label: ['Ready', 'In progress'],
+                content: [`Start rowing to begin the session`, ``]
+            }
+        ];
+
+
+    } 
 
     render() {
 
-        const { appConnected, loggerConnected, times, constant, multi } = this.props;
+        const { appConnected, 
+                loggerConnected, 
+                times, 
+                constant, 
+                multi } = this.props;
+
+        const steps: Array<any> = this.getSteps();
         
         let activeStep: number = 0;
-
-        const steps = getSteps();
-
         let data: any = {};
         let options: any = {};
         let metres: number = 0;
         let time: number = 0;
 
         if(appConnected){
+
             activeStep = 1;
+
         }
 
         if(loggerConnected){
+
             activeStep = 2;
+
         }
 
         if(times.length){
@@ -78,43 +90,40 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         return (
 
             <Page title="Current session">
-                {!appConnected || !loggerConnected || !steps.length}
-                <Stepper activeStep={activeStep} orientation="vertical">
-                  {steps.map((label, index) => {
-                    return (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                        <StepContent>
-                          <Typography variant="caption">{getStepContent(index)}</Typography>
-                        </StepContent>
-                      </Step>
-                    );
-                  })}
-                </Stepper>
-                {loggerConnected && appConnected &&
+                {(!appConnected || !loggerConnected || !steps.length) &&
                     <React.Fragment>
-                        {!times.length && 
-                            <Column width={12}>
-                                <StyledPaper>
-                                    <p>Start rowing</p>
-                                </StyledPaper>
-                            </Column>
-                        }
-                        {times.length && 
-                            <React.Fragment>
-                                <Column width={6}>
-                                    <StyledPaper>
-                                        <h2>{metres}</h2>
-                                        <h2>{time}</h2>
-                                    </StyledPaper>
-                                </Column>
-                                <Column width={6}>
-                                    <StyledPaper>
-                                        <LineChart data={data} options={options} />
-                                    </StyledPaper>
-                                </Column>
-                            </React.Fragment>
-                        }
+                        <Column width={4}>
+                            <Stepper activeStep={activeStep} orientation="vertical">
+                              {steps.map((step, index) => {
+                                return (
+                                  <Step key={index}>
+                                    <StepLabel>{activeStep > index ? step.label[1] : step.label[0]}</StepLabel>
+                                    <StepContent>
+                                      <Typography variant="caption">{activeStep > index ? step.content[1] : step.content[0]}</Typography>
+                                    </StepContent>
+                                  </Step>
+                                );
+                              })}
+                            </Stepper>
+                        </Column>
+                        <Column width={4}>
+                            <Loading message="Getting ready..." />
+                        </Column>
+                    </React.Fragment>
+                }
+                {loggerConnected && appConnected && times.length &&
+                    <React.Fragment>
+                        <Column width={6}>
+                            <StyledPaper>
+                                <h2>{metres}</h2>
+                                <h2>{time}</h2>
+                            </StyledPaper>
+                        </Column>
+                        <Column width={6}>
+                            <StyledPaper>
+                                <LineChart data={data} options={options} />
+                            </StyledPaper>
+                        </Column>
                     </React.Fragment>
                 }
             </Page>

@@ -27,8 +27,18 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
         return (
 
             <article className="row">
-                <Button variant="raised" size="large" color="primary"><NavLink to={routes.login.pathname}>Login</NavLink></Button>
-                <Button variant="raised" size="large" color="primary"><NavLink to={routes.register.pathname}>Register</NavLink></Button>
+                <Button 
+                    variant="raised" 
+                    size="large" 
+                    color="primary">
+                        <NavLink to={routes.login.pathname}>Login</NavLink>
+                </Button>
+                <Button 
+                    variant="raised" 
+                    size="large" 
+                    color="primary">
+                        <NavLink to={routes.register.pathname}>Register</NavLink>
+                </Button>
             </article>
 
         );

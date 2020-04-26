@@ -7,7 +7,7 @@ export const appConfig = {
         login: 'https://localhost/api/login',
         profile: 'https://localhost/api/account/profile',
         rower: 'https://localhost/api/account/rower',
-        password: 'https://localhost/api/account/password',
+        updatePassword: 'https://localhost/api/account/password',
         sessionTotals: 'https://localhost/api/sessions/totals',
         session: 'https://localhost/api/session',
         sessions: 'https://localhost/api/sessions',

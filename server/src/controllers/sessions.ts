@@ -12,16 +12,30 @@ import * as resHelpers from '../helpers/resHelper';
  */
 export const getSessionTotals = (req, res) => {
 
-	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+	const { user } = req;
 
-	User.findById(req.user, (error, user) => {
+	if(!user) {
 
-    	if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
+		return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+
+	}
+
+	User.findById(user, (error, record) => {
+
+    	if (error) {
+
+    		return res.status(500).json(resHelpers.jsonErrorMessage);
+
+    	}
+
+    	const { createdAt,
+    			rowingTotalMetres,
+    			rowingTotalTime } = record;
 
 		res.status(200).json({
-  			date: user.createdAt,
-  			distance: user.rowingTotalMetres || 0,
-  			time: user.rowingTotalTime || 0
+  			date: createdAt,
+  			distance: rowingTotalMetres || 0,
+  			time: rowingTotalTime || 0
       	});
 
     });
@@ -34,15 +48,25 @@ export const getSessionTotals = (req, res) => {
  */
 export const getSessions = (req, res) => {
 
-	const limit: number = req.query.limit ? parseInt(req.query.limit, 10) : 100;
-	const fromDate: string = req.query.fromDate ? moment(req.query.fromDate).toISOString() : moment('2000-01-01').toISOString();
-	const toDate: string = req.query.toDate ? moment(req.query.toDate).toISOString() : moment().toISOString();
+	const { user, query } = req;
 
-	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+	if(!user) {
+
+		return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+
+	}
+
+	const { limit,
+			fromDate,
+			toDate } = query;
+
+	const limit: number = limit ? parseInt(limit, 10) : 100;
+	const fromDate: string = fromDate ? moment(fromDate).toISOString() : moment('2000-01-01').toISOString();
+	const toDate: string = toDate ? moment(toDate).toISOString() : moment().toISOString();
 
 	RowingData
 		.find({
-			user: req.user,
+			user: user,
 			createdAt: {
 			    $gte: fromDate,
 				$lt: toDate
@@ -54,20 +78,31 @@ export const getSessions = (req, res) => {
 		.lean({ virtuals: true })
 		.exec((error, data) => {
 
-	    	if (error) return res.status(500).json(resHelpers.jsonErrorMessage);
+	    	if (error) {
 
-	      	const sanitisedData: any = data.map((datum: any)=> {
+	    		return res.status(500).json(resHelpers.jsonErrorMessage);
+
+	    	}
+
+	      	const sanitisedData: any = data.map((datum: any) => {
+
+	      		const { id,
+	      				createdAt,
+	      				distance,
+	      				time } = datum;
+
 	      		return {
-	      			id: datum.id,
-	      			date: datum.createdAt,
-	      			distance: datum.distance,
-	      			time: datum.time
+	      			id: id,
+	      			date: createdAt,
+	      			distance: distance,
+	      			time: time
 	      		};
+
 	      	});
 
 	      	const params: any = {
-				fromDate: req.query.fromDate || undefined,
-				toDate: req.query.toDate || undefined,
+				fromDate: fromDate || undefined,
+				toDate: toDate || undefined,
 	      	};
 
       		res.status(200).json({
@@ -85,16 +120,28 @@ export const getSessions = (req, res) => {
  */
 export const getSession = (req, res) => {
 
-	if(!req.user) return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+	const { user, query: { id } } = req;
+
+	if(!user) {
+
+		return res.status(401).json(resHelpers.jsonUnauthorisedMessage);
+
+	}
 
 	RowingData
-		.findById(req.query.id)
-		.exec((err, data) => {
+		.findById(id)
+		.exec((error, data) => {
 
-	    	if (err) return res.status(500).json(resHelpers.jsonErrorMessage);
+	    	if (error) {
+
+	    		return res.status(500).json(resHelpers.jsonErrorMessage);
+
+	    	}
 
 	      	if(!data || !data.user || data.user.toString() !== req.user){
+
 	    		return res.status(404).json(resHelpers.jsonNotFoundMessage);
+
   			}
 
       		res.status(200).json(data);

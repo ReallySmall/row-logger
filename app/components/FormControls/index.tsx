@@ -1,7 +1,7 @@
 import {
   Checkbox,
   Select,
-  TextField,
+  TextField
 } from 'redux-form-material-ui';
 
 export const formControls = {

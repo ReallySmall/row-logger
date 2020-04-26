@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as errorActions from '../../actions/error';
 import { profile, rowing, password } from '../../forms';
 import * as accountActions from '../../actions/account';
 import { bindActionCreators } from 'redux';
@@ -6,7 +7,7 @@ import { connect } from 'react-redux';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import { FormContainer } from '../../containers/FormContainer';
-import { Page, Column, Loading, MainContentWrapper, PageHeader, StyledPaper } from '../../components';
+import { Page, Column, Loading, MainContentWrapper, PageHeader, StyledPaper, ErrorModal } from '../../components';
 import { utilsHelpers, fetchHelpers } from '../../helpers';
 import { RootState } from '../../reducers';
 import { Interfaces } from './interfaces';
@@ -51,6 +52,7 @@ class AccountContainer extends React.Component<Interfaces.Props, Interfaces.Stat
         return (
 
             <Page title="Account">
+                {error && <ErrorModal error={error} name="ACCOUNT_DETAILS" clearErrorAction={errorActions.clearError} />}
                 <Column width={12}>
                     <Typography variant="display3" gutterBottom>Account</Typography>
                 </Column>
@@ -97,7 +99,8 @@ function mapStateToProps(state: RootState, props) {
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch) {
     return {
-        accountActions: bindActionCreators(accountActions as any, dispatch)
+        accountActions: bindActionCreators(accountActions as any, dispatch),
+        errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 

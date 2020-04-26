@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import * as errorActions from '../../actions/error';
 import * as authActions from '../../actions/auth';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
@@ -10,7 +11,7 @@ import { routes } from '../../routes';
 import { appConfig } from '../../config';
 import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom';
 import { RegisterContainer, AccountContainer, PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, CurrentSessionContainer, LoginContainer } from '../../containers';
-import { ErrorPage, Header } from '../../components';
+import { StyledPaper, ErrorPage, ErrorModal, Header, Loading } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
 import { getSessionDataViaLocalStorage } from '../../helpers/storage';
 import { Interfaces } from './interfaces';
@@ -40,14 +41,18 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     componentDidUpdate() {
 
-        const { isLoggedIn, location, history } = this.props;
         const { requestedInitialPath } = this.state;
+        const { isLoggedIn, 
+                location, 
+                history } = this.props;
 
         // once logged in, if a particular page was originally requested, go to it
         if (isLoggedIn && requestedInitialPath && (requestedInitialPath !== location.pathname)) {
+
             this.setState({
                 requestedInitialPath: null
             }, history.push(requestedInitialPath));
+
         }
 
     }
@@ -63,7 +68,15 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
     // the render method of App builds the main page layout and renders content based on routing and current user permissions
     render() {
 
-        const { location, isLoggedIn, userName, appConnected, authActions } = this.props;
+        const { location, 
+                isLoggedIn,
+                processing,
+                error,
+                userName, 
+                appConnected, 
+                authActions,
+                errorActions: { clearError } } = this.props;
+
         const socketActiveClass: string = appConnected ? '' : 'disabled';
 
         const tabs = [
@@ -87,6 +100,12 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                 <h1 className="visually-hidden">RowLogger</h1>
                 <Header heading="RowLogger" isLoggedIn={isLoggedIn} userName={userName} authActions={authActions} tabs={tabs} activeTab={location.pathname} handleTabChange={this.handleTabChange} />
                 <main>
+                    <ErrorModal error={''} name="SESSIONS" clearErrorAction={clearError} />
+                    {processing && 
+                        <StyledPaper>
+                            <Loading message="Getting sessions data" />
+                        </StyledPaper>
+                    }
                     <Switch>
                         <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />
                         <Route exact path={routes.sessions.pathname} render={() => isLoggedIn ? <SessionsContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
@@ -113,6 +132,8 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
+        processing: state.loading,
+        error: state.error,
         isLoggedIn: state.auth.isLoggedIn,
         userName: state.auth.userName,
         appConnected: state.active.appConnected
@@ -122,7 +143,8 @@ function mapStateToProps(state: RootState, props) {
 // React-Redux function which injects actions into this container as props
 function mapDispatchToProps(dispatch, props) {
     return {
-        authActions: bindActionCreators(authActions as any, dispatch)
+        authActions: bindActionCreators(authActions as any, dispatch),
+        errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 

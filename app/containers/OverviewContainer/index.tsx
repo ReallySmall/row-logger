@@ -19,12 +19,17 @@ import { Interfaces } from './interfaces';
 class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
+
         super(props, context);
+
     }
 
     componentDidMount(){
 
-        const { sessionActions, processing, totals, recentSessions } = this.props;
+        const { sessionActions, 
+                processing, 
+                totals, 
+                recentSessions } = this.props;
         const { sessionsRequest, sessionTotalsRequest } = sessionActions;
 
         if(!processing){
@@ -41,7 +46,11 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
 
     render() {
 
-        const { processing, error, totals, recentSessions } = this.props;
+        const { processing, 
+                error, 
+                totals, 
+                recentSessions } = this.props;
+
         const progress: number = totals ? totals.items[totals.ids[0]].distance : 0;
         const hasSessions: boolean = recentSessions && recentSessions.ids && recentSessions.ids.length > 0;
 
@@ -55,12 +64,17 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                         </StyledPaper>
                     }
                     {!processing && totals &&
-                        <div>
+                        <>
                             <Paper>
-                                <GridBodyContainer columns={totalsColumns} items={totals.items} ids={totals.ids} showHeader={true} sortable={false} />
+                                <GridBodyContainer 
+                                    columns={totalsColumns} 
+                                    items={totals.items} 
+                                    ids={totals.ids} 
+                                    showHeader={true} 
+                                    sortable={false} />
                             </Paper>
                             <ChartOverview total={112000} progress={progress} />
-                        </div>
+                        </>
                     }                 
                 </Column>
                 <Column title="Recent" width={8}>
@@ -71,12 +85,24 @@ class OverviewContainer extends React.Component<Interfaces.Props, Interfaces.Sta
                     }
                     {!processing && recentSessions && 
                         <Paper>
-                            <GridBodyContainer columns={columns} items={recentSessions.items} ids={recentSessions.ids} showHeader={true} sortable={false} />
+                            <GridBodyContainer 
+                                columns={columns} 
+                                items={recentSessions.items} 
+                                ids={recentSessions.ids} 
+                                showHeader={true} 
+                                sortable={false} />
                         </Paper>
                     }
                     {hasSessions
-                        ? <Button style={{ marginTop: '20px' }} variant="raised"><NavLink to="/sessions">View all sessions</NavLink></Button>
-                        : null
+
+                        ?   <Button 
+                                style={{ marginTop: '20px' }} 
+                                variant="raised">
+                                    <NavLink to="/sessions">View all sessions</NavLink>
+                            </Button>
+                        
+                        :   null
+
                     }
                 </Column>
             </Page>

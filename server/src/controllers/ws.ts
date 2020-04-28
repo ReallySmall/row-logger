@@ -1,6 +1,3 @@
-import { RowingData } from '../models/RowingData';
-import { User } from '../models/User';
-import { RowerTypes } from '../models/RowerTypes';
 import { WSSessionManager } from '../helpers/wsSessionManager';
 import * as dateTimeHelpers from '../helpers/dateTimeHelper';
 import * as rowingDataHelpers from '../helpers/rowingDataHelper';

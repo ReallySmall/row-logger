@@ -33,14 +33,7 @@ dotenv.config();
 /**
  * Controllers (route handlers).
  */
-import * as sessionsController from './controllers/sessions';
-import * as userController from './controllers/user';
 import * as wsController from './controllers/ws';
-
-/**
- * API keys and Passport configuration.
- */
-const passportConfig = require('./config/passport');
 
 /**
  * Create Express server.
@@ -71,17 +64,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 /**
- * Connect to MongoDB.
- */
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI, { useMongoClient: true });
-mongoose.connection.on('error', (err) => {
-  console.error(err);
-  console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-  process.exit();
-});
-
-/**
  * Express configuration.
  */
 app.set('host', '0.0.0.0');
@@ -97,44 +79,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer());
 app.use(expressValidator());
 app.use(helmet());
-app.use(session({
-  resave: true,
-  saveUninitialized: true,
-  secret: 'test',
-  store: new MongoStore({
-    url: process.env.MONGODB_URI || process.env.MONGOLAB_URI,
-    autoReconnect: true,
-    clear_interval: 3600
-  })
-}));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 
 app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   next();
-});
-
-app.use((req, res, next) => {
-
-  if(req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer'){
-
-    jwt.verify(req.headers.authorization.split(' ')[1], process.env.JWT_TOKEN_SECRET, (error, decode) => {
-
-      req.user = error ? undefined : decode.user;
-      next();
-
-    });
-
-  } else {
-
-    next();
-
-  }
-
 });
 
 app.use(express.static(path.join(path.resolve(), '/public'), { maxAge: 31557600000 }));
@@ -142,18 +93,6 @@ app.use(express.static(path.join(path.resolve(), '/public'), { maxAge: 315576000
 /**
  * API routes.
  */
-app.get('/api/account', userController.getUserData);
-app.get('/api/sessions', sessionsController.getSessions);
-app.get('/api/sessions/totals', sessionsController.getSessionTotals);
-app.get('/api/session', sessionsController.getSession);
-app.post('/api/session/update', sessionsController.updateSession);
-app.post('/api/session/delete', sessionsController.deleteSession);
-app.post('/api/login', userController.postLogin);
-app.post('/api/register', userController.postSignup);
-app.post('/api/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
-app.post('/api/account/rower', passportConfig.isAuthenticated, userController.postUpdateProfile);
-app.post('/api/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
-app.post('/api/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.ws('/', wsController.recordSession);
 
 /**

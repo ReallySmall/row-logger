@@ -4,19 +4,19 @@ import LoadingInterface from './interfaces';
 
 export default (state = initialState, action) => {
 
-    const actionType: string = action.type;
+    const { type, payload } = action;
 
     const requestSuffix: string = '_REQUEST';
     const requestSuccessSuffix: string = '_REQUEST_COMPLETE';
 
-    const isLoading: boolean = (new RegExp(requestSuffix + '$')).test(actionType);
-    const isLoadingComplete: boolean = (new RegExp(requestSuccessSuffix + '$')).test(actionType);
+    const isLoading: boolean = (new RegExp(requestSuffix + '$')).test(type);
+    const isLoadingComplete: boolean = (new RegExp(requestSuccessSuffix + '$')).test(payload);
 
     let actionTypeBase: string = '';
 
     if(isLoading){
 
-        actionTypeBase = actionType.substring(0, actionType.lastIndexOf(requestSuffix));
+        actionTypeBase = type.substring(0, type.lastIndexOf(requestSuffix));
 
         return {
             ...state,
@@ -25,12 +25,17 @@ export default (state = initialState, action) => {
 
     } else if(isLoadingComplete){
 
-        actionTypeBase = actionType.substring(0, actionType.lastIndexOf(requestSuccessSuffix));
+        actionTypeBase = type.substring(0, type.lastIndexOf(requestSuccessSuffix));
 
-        return {
-            ...state,
-            [actionTypeBase]: false
-        };
+        const nextState = {...state};
+
+        if(nextState.actionTypeBase){
+
+            delete nextState.actionTypeBase;
+
+        }
+
+        return nextState;
 
     }
 

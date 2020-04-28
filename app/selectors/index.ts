@@ -1,4 +1,4 @@
-export const getProcessing: Function = (state): boolean => Object.keys(state.loading).length > 0;
+export const getIsProcessing: Function = (state): boolean => Object.keys(state.loading).length > 0;
 export const getError: Function = (state): any => Object.keys(state.error).length > 0 ? Object.keys(state.error) : undefined;
 export const getIsLoggedIn: Function = (state): string => state.auth.isLoggedIn;
 export const getEmail: Function = (state): string => state.auth.email;

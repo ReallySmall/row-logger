@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import * as selectors from '../../selectors';
 import * as errorActions from '../../actions/error';
 import * as authActions from '../../actions/auth';
 import { bindActionCreators, compose } from 'redux';
@@ -18,42 +19,11 @@ import { Interfaces } from './interfaces';
 
 class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
-    // the constructor of App is where any initial setup should happen, e.g. automatic authentication
     constructor(props?: Interfaces.Props, context?: any) {
 
         super(props, context);
 
         this.handleTabChange = this.handleTabChange.bind(this);
-
-        const { logInRequestWithJWT } = this.props.authActions;
-        const loginData: string = sessionStorage.getItem(appConfig.auth.sessionState); // look for a JWT in session storage
-
-        getSessionDataViaLocalStorage(loginData, logInRequestWithJWT); // if there's another tab with the authenticated app open, copy authentication to this tab
-        logInRequestWithJWT(); // when the app first loads, check whether a JWT exists in sessionStorage to auto-login
-
-        // if the initial requested route is anything other than the root, store it in state
-        // this will be used later to redirect user to requested route once successfully logged in
-        this.state = {
-            requestedInitialPath: props.location.pathname !== routes.base.pathname ? props.location.pathname : null
-        };
-
-    }
-
-    componentDidUpdate() {
-
-        const { requestedInitialPath } = this.state;
-        const { isLoggedIn, 
-                location, 
-                history } = this.props;
-
-        // once logged in, if a particular page was originally requested, go to it
-        if (isLoggedIn && requestedInitialPath && (requestedInitialPath !== location.pathname)) {
-
-            this.setState({
-                requestedInitialPath: null
-            }, history.push(requestedInitialPath));
-
-        }
 
     }
 
@@ -65,7 +35,6 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     }
 
-    // the render method of App builds the main page layout and renders content based on routing and current user permissions
     render() {
 
         const { location, 
@@ -83,10 +52,6 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
             {
                 label: 'Overview',
                 value: routes.base.pathname
-            },
-            {
-                label: 'Sessions',
-                value: routes.sessions.pathname
             },
             {
                 label: 'Active session',
@@ -107,13 +72,9 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                         </StyledPaper>
                     }
                     <Switch>
-                        <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <OverviewContainer routing={location} /> : <PublicContainer /> } />
-                        <Route exact path={routes.sessions.pathname} render={() => isLoggedIn ? <SessionsContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
+                        <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <SessionsContainer routing={location} /> : <PublicContainer /> } />
                         <Route exact path={routes.activeSession.pathname} render={() => isLoggedIn ? <CurrentSessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
                         <Route exact path={routes.session.pathname} render={() => isLoggedIn ? <SessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
-                        <Route exact path={routes.login.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <LoginContainer />} />
-                        <Route exact path={routes.register.pathname} render={() => isLoggedIn ? <Redirect to={routes.base.pathname} /> : <RegisterContainer />} />
-                        <Route exact path={routes.account.pathname} render={() => !isLoggedIn ? <Redirect to={routes.base.pathname} /> : <AccountContainer />} />
                         <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />
                     </Switch>
                 </main>
@@ -132,7 +93,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        processing: state.loading,
+        processing: selectors.getIsProcessing(state),
         error: state.error,
         isLoggedIn: state.auth.isLoggedIn,
         userName: state.auth.userName,

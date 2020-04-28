@@ -8,6 +8,8 @@ import { Loading, Icon } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart, StyledPaper, ErrorModal } from '../../components';
 import { NavLink } from 'react-router-dom';
 import { routes } from '../../routes';
 import { RootState } from '../../reducers';
@@ -17,28 +19,25 @@ import { Interfaces } from './interfaces';
 class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State> {
 
     constructor(props?: Interfaces.Props, context?: any) {
+
         super(props, context);
+
     }
 
     render() {
 
-        const { processing, error } = this.props;
-
         return (
 
             <article className="row">
-                <Button 
-                    variant="raised" 
-                    size="large" 
-                    color="primary">
-                        <NavLink to={routes.login.pathname}>Login</NavLink>
-                </Button>
-                <Button 
-                    variant="raised" 
-                    size="large" 
-                    color="primary">
-                        <NavLink to={routes.register.pathname}>Register</NavLink>
-                </Button>
+                <StyledPaper>
+                    <Typography>An IOT app for tracking indoor rowing using a Bluetooth Low Energy device and Google sheets.</Typography>
+                    <Button 
+                        variant="raised" 
+                        size="large" 
+                        color="secondary">
+                            Login with Google Account
+                    </Button>
+                </StyledPaper> 
             </article>
 
         );
@@ -47,20 +46,10 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 
 }
 
-// React-Redux function which injects application state into this container as props
-function mapStateToProps(state: RootState, props) {
-    return {
-        processing: undefined,
-        error: undefined
-    };
-}
-
-// React-Redux function which injects actions into this container as props
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
     return {
         sessionActions: bindActionCreators(sessionActions as any, dispatch)
     };
 }
 
-// Plug into the Redux application state by wrapping component with React-Redux Connect()
-export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(PublicContainer);
+export default connect(null, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(PublicContainer);

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
+import * as authActions from '../../actions/auth';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridBodyContainer } from '../../containers';
@@ -22,6 +23,19 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 
         super(props, context);
 
+        window.onSignIn = (googleUser){
+
+          var profile = googleUser.getBasicProfile();
+
+          console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+          console.log('Name: ' + profile.getName());
+          console.log('Image URL: ' + profile.getImageUrl());
+          console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+          props.authActions.logInRequestComplete(profile.getName());
+
+        }
+
     }
 
     render() {
@@ -31,12 +45,7 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
             <article className="row">
                 <StyledPaper>
                     <Typography>An IOT app for tracking indoor rowing using a Bluetooth Low Energy device and Google sheets.</Typography>
-                    <Button 
-                        variant="raised" 
-                        size="large" 
-                        color="secondary">
-                            Login with Google Account
-                    </Button>
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 </StyledPaper> 
             </article>
 
@@ -48,6 +57,7 @@ class PublicContainer extends React.Component<Interfaces.Props, Interfaces.State
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        authActions: bindActionCreators(authActions as any, dispatch),
         sessionActions: bindActionCreators(sessionActions as any, dispatch)
     };
 }

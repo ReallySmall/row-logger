@@ -1,15 +1,10 @@
 // action creators are functions which return actions
 // an action is a simple object which must contain a 'type' property. It may also contain other properties such as a 'data' payload
-// action creators are wrapped with Redux's dispatch() to send actions to the store - this is the only way the store can be updated
-// they are passed into UI components via props and normally called by a user interaction
-
-import * as jwtDecode from 'jwt-decode';
 import * as actions from '../../constants/actions';
 import { appConfig } from '../../config';
 import { fetchHelpers, storageHelpers } from '../../helpers';
 
-// notify of successful login
-const wsConnect = (connect: boolean): ReduxAction => {
+export const wsConnect = (connect: boolean): ReduxAction => {
 
     return {
         type: connect ? actions.WEBSOCKET_CONNECT: actions.WEBSOCKET_DISCONNECT,
@@ -21,13 +16,45 @@ const wsConnect = (connect: boolean): ReduxAction => {
 
 };
 
-// notify of successful login
-const logInRequestComplete = (userName: string, error: Error): ReduxAction => {
+export const logInRequest = (): ReduxAction => {
+
+    return {
+        type: actions.LOGIN_REQUEST,
+        payload: undefined,
+        error: false
+    };
+
+};
+
+export const logInRequestComplete = (userName: string, token: string, error: Error): ReduxAction => {
 
     return {
         type: actions.LOGIN_REQUEST_COMPLETE,
-        payload: error ? error : userName,
+        payload: error ? error : {
+            userName: userName,
+            token: token
+        },
         error: error ? true : false
+    };
+
+};
+
+export const logOutRequest = (): ReduxAction => {
+
+    return {
+        type: actions.LOGOUT_REQUEST,
+        payload: undefined,
+        error: false
+    };
+
+};
+
+export const logOutRequestComplete = (): ReduxAction => {
+
+    return {
+        type: actions.LOGOUT_REQUEST_COMPLETE,
+        payload: undefined,
+        error: false
     };
 
 };

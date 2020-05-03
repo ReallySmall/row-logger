@@ -37,29 +37,21 @@ export const sessionRequest = (id: string): Function => {
         const sessionData: string = sessionStorage.getItem(appConfig.auth.sessionState);
         const sessionApi: string = appConfig.apis.session;
 
-        if (!sessionData) {
+        dispatch(<ReduxAction>{
+            type: actions.SESSION_REQUEST,
+            data: 'Requesting session'
+        });
 
-            dispatch(auth.logOutRequest(appConfig.auth.messages.notAuthenticated));
+        fetch(`${sessionApi}?id=${id}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
-        } else {
+            if (!response.ok) {
+                fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestComplete, auth.logOutRequest);
+                return;
+            }
 
-            dispatch(<ReduxAction>{
-                type: actions.SESSION_REQUEST,
-                data: 'Requesting session'
-            });
+            response.json().then(data => dispatch(sessionRequestComplete(data, null)));
 
-            fetch(`${sessionApi}?id=${id}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
-
-                if (!response.ok) {
-                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionRequestComplete, auth.logOutRequest);
-                    return;
-                }
-
-                response.json().then(data => dispatch(sessionRequestComplete(data, null)));
-
-            }).catch(error => dispatch(sessionRequestComplete(null, error)));
-
-        }
+        }).catch(error => dispatch(sessionRequestComplete(null, error)));
 
     };
 
@@ -74,43 +66,35 @@ export const sessionsRequest = (query: SessionsQuery): Function => {
         const sessionData: string = sessionStorage.getItem(appConfig.auth.sessionState);
         const sessionsApi: string = appConfig.apis.sessions;
 
-        if (!sessionData) {
+        dispatch(<ReduxAction>{
+            type: showRecent ? actions.SESSIONS_RECENT_REQUEST : actions.SESSIONS_REQUEST,
+            payload: 'Requesting sessions'
+        });
 
-            dispatch(auth.logOutRequest(appConfig.auth.messages.notAuthenticated));
+        fetch(`${sessionsApi}?limit=${limit}&fromDate=${fromDate ? fromDate : ''}&toDate=${toDate ? toDate : ''}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
 
-        } else {
+            if (!response.ok) {
+                fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestComplete, auth.logOutRequest);
+                return;
+            }
 
-            dispatch(<ReduxAction>{
-                type: showRecent ? actions.SESSIONS_RECENT_REQUEST : actions.SESSIONS_REQUEST,
-                payload: 'Requesting sessions'
-            });
+            response.json().then(data => {
 
-            fetch(`${sessionsApi}?limit=${limit}&fromDate=${fromDate ? fromDate : ''}&toDate=${toDate ? toDate : ''}`, fetchHelpers.setGetFetchOpts(sessionData)).then(response => {
+                const gridData: GridData = {
+                    items: {},
+                    ids: []
+                };
 
-                if (!response.ok) {
-                    fetchHelpers.handleFetchResponseError(response, dispatch, sessionsRequestComplete, auth.logOutRequest);
-                    return;
-                }
-
-                response.json().then(data => {
-
-                    const gridData: GridData = {
-                        items: {},
-                        ids: []
-                    };
-
-                    data.data.map((datum, index) => {
-                        gridData.items[datum.id] = datum;
-                        gridData.ids.push(datum.id);
-                    });
-
-                    dispatch(sessionsRequestComplete(gridData, data.params, showRecent, null));
-
+                data.data.map((datum, index) => {
+                    gridData.items[datum.id] = datum;
+                    gridData.ids.push(datum.id);
                 });
 
-            }).catch(error => dispatch(sessionsRequestComplete(null, null, showRecent, error)));
+                dispatch(sessionsRequestComplete(gridData, data.params, showRecent, null));
 
-        }
+            });
+
+        }).catch(error => dispatch(sessionsRequestComplete(null, null, showRecent, error)));
 
     };
 

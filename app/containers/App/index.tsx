@@ -1,20 +1,16 @@
 import * as React from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Modal from '@material-ui/core/Modal';
 import * as selectors from '../../selectors';
 import * as errorActions from '../../actions/error';
 import * as authActions from '../../actions/auth';
-import { bindActionCreators, compose } from 'redux';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import * as ReactDOM from 'react-dom';
 import { RootState } from '../../reducers';
 import { routes } from '../../routes';
-import { appConfig } from '../../config';
-import { BrowserRouter as Router, Switch, Route, NavLink, Redirect } from 'react-router-dom';
-import { RegisterContainer, AccountContainer, PublicContainer, OverviewContainer, SessionsContainer, SessionContainer, CurrentSessionContainer, LoginContainer } from '../../containers';
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import { HomeContainer, SessionContainer, CurrentSessionContainer } from '../../containers';
 import { StyledPaper, ErrorPage, ErrorModal, Header, Loading } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
-import { getSessionDataViaLocalStorage } from '../../helpers/storage';
 import { Interfaces } from './interfaces';
 
 class App extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -27,7 +23,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     }
 
-    handleTabChange(tabSelected: any){
+    private handleTabChange(tabSelected: string): void {
 
         const { history } = this.props;
 
@@ -35,22 +31,26 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     }
 
-    render() {
+    public componentDidMount(){
+
+        this.props.authActions.logInRequest();
+
+    }
+
+    public render(): any {
 
         const { location, 
                 isLoggedIn,
-                processing,
+                isProcessing,
                 error,
                 userName, 
                 appConnected, 
                 authActions,
                 errorActions: { clearError } } = this.props;
 
-        const socketActiveClass: string = appConnected ? '' : 'disabled';
-
         const tabs = [
             {
-                label: 'Overview',
+                label: 'Home',
                 value: routes.base.pathname
             },
             {
@@ -63,16 +63,23 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
             <div>
                 <h1 className="visually-hidden">RowLogger</h1>
-                <Header heading="RowLogger" isLoggedIn={isLoggedIn} userName={userName} authActions={authActions} tabs={tabs} activeTab={location.pathname} handleTabChange={this.handleTabChange} />
+                <Header 
+                    heading="RowLogger" 
+                    isLoggedIn={isLoggedIn} 
+                    userName={userName} 
+                    authActions={authActions} 
+                    tabs={tabs} 
+                    activeTab={location.pathname} 
+                    handleTabChange={this.handleTabChange} />
                 <main>
                     <ErrorModal error={''} name="SESSIONS" clearErrorAction={clearError} />
-                    {processing && 
+                    <Modal open={isProcessing}>
                         <StyledPaper>
-                            <Loading message="Getting sessions data" />
+                            <Loading message="Processing" />
                         </StyledPaper>
-                    }
+                    </Modal>
                     <Switch>
-                        <Route exact path={routes.base.pathname} render={() => isLoggedIn ? <SessionsContainer routing={location} /> : <PublicContainer /> } />
+                        <Route exact path={routes.base.pathname} render={() => <HomeContainer routing={location} /> } />
                         <Route exact path={routes.activeSession.pathname} render={() => isLoggedIn ? <CurrentSessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
                         <Route exact path={routes.session.pathname} render={() => isLoggedIn ? <SessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
                         <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />
@@ -90,25 +97,20 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
 }
 
-// React-Redux function which injects application state into this container as props
-function mapStateToProps(state: RootState, props) {
+const mapStateToProps = (state: RootState) => {
     return {
-        processing: selectors.getIsProcessing(state),
-        error: state.error,
-        isLoggedIn: state.auth.isLoggedIn,
-        userName: state.auth.userName,
-        appConnected: state.active.appConnected
+        isProcessing: selectors.getIsProcessing(state),
+        isLoggedIn:  selectors.getIsLoggedIn(state),
+        userName: selectors.getUserName(state),
+        error: selectors.getError(state)
     };
 }
 
-// React-Redux function which injects actions into this container as props
-function mapDispatchToProps(dispatch, props) {
+const mapDispatchToProps = (dispatch) => {
     return {
         authActions: bindActionCreators(authActions as any, dispatch),
         errorActions: bindActionCreators(errorActions as any, dispatch)
     };
 }
 
-// Plug into the Redux application state by wrapping component with React-Redux Connect()
-//export default connect(mapStateToProps, mapDispatchToProps, mergePropsForConnect)((withStyles(styles))(App));
 export default connect(mapStateToProps, mapDispatchToProps, mergePropsForConnect)(App);

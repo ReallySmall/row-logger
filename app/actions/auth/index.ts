@@ -26,14 +26,11 @@ export const logInRequest = (): ReduxAction => {
 
 };
 
-export const logInRequestComplete = (userName: string, token: string, error: Error): ReduxAction => {
+export const logInRequestComplete = (authData: any, error: Error): ReduxAction => {
 
     return {
         type: actions.LOGIN_REQUEST_COMPLETE,
-        payload: error ? error : {
-            userName: userName,
-            token: token
-        },
+        payload: error ? error : authData,
         error: error ? true : false
     };
 

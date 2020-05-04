@@ -2,7 +2,7 @@ import * as actions from '../../constants/actions';
 import initialState from './initialState';
 import LoadingInterface from './interfaces';
 
-export default (state = initialState, action) => {
+export default (state = initialState, action): LoadingInterface => {
 
     const { type, payload } = action;
 
@@ -10,7 +10,7 @@ export default (state = initialState, action) => {
     const requestSuccessSuffix: string = '_REQUEST_COMPLETE';
 
     const isLoading: boolean = (new RegExp(requestSuffix + '$')).test(type);
-    const isLoadingComplete: boolean = (new RegExp(requestSuccessSuffix + '$')).test(payload);
+    const isLoadingComplete: boolean = (new RegExp(requestSuccessSuffix + '$')).test(type);
 
     let actionTypeBase: string = '';
 
@@ -29,9 +29,9 @@ export default (state = initialState, action) => {
 
         const nextState = {...state};
 
-        if(nextState.actionTypeBase){
+        if(nextState[actionTypeBase]){
 
-            delete nextState.actionTypeBase;
+            delete nextState[actionTypeBase];
 
         }
 

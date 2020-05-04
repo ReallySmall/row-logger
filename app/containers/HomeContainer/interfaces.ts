@@ -1,11 +1,10 @@
 export namespace Interfaces {
 
     export interface Props {
-        processing?: string;
-        error?: string;
-        sessionActions?: any;
+    	isLoggedIn: boolean;
+        sessionActions: any;
+        authActions: any;
         sessions: any;
-        totals: GridData;
         recentSessions: GridData;
         activeFilters: AppFormValues;
     }

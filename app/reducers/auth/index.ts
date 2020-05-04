@@ -1,6 +1,5 @@
 import initialState from './initialState';
 import * as actions from '../../constants/actions';
-import { appConfig } from '../../config';
 
 import AuthInterface from './interfaces';
 
@@ -12,14 +11,19 @@ export default (state = initialState, action) => {
 
             const { error, payload } = action;
 
-            const userName: string = payload.userName;
-            const token: string = payload.token;
+            const userName: string = payload && payload.userName;
+            const token: string = payload && payload.token;
+            const isLoggedIn: boolean = Boolean(userName) && Boolean(token);
 
-            return Object.assign({}, state, <AuthInterface>{
-                isLoggedIn: error ? false : true,
-                userName: error ? initialState.userName : userName,
-                token: token
-            });
+            if(!error){
+
+                return Object.assign({}, state, <AuthInterface>{
+                    isLoggedIn: isLoggedIn,
+                    userName: userName,
+                    token: token
+                });
+
+            }
 
         case actions.LOGOUT_REQUEST_COMPLETE:
 

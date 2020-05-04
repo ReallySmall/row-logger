@@ -33,7 +33,9 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     public componentDidMount(){
 
-        this.props.authActions.logInRequest();
+        const { authActions: { logInRequest } } = this.props;
+
+        logInRequest();
 
     }
 

@@ -7,25 +7,38 @@ const createMiddleware = () => {
 
         const { getState, dispatch } = store;
 
-        const state: RootState = getState();
+        const state: any = getState();
 
   		const actionHandlers: any = {
 
     	    [actionConstants.LOGIN_REQUEST] (action: ReduxAction): any {
 
-		        window.gapi.load('auth2', () => {
+		        (window as any).gapi.load('auth2', () => {
 
-		            window.googleAuth = window.gapi.auth2.init({
+		            (window as any).googleAuth = (window as any).gapi.auth2.init({
 		                client_id: '979270325926-cgt0rmaildrg2jopodakv5assj504dng'
 		            }).then((auth) => {
 
 						const isLoggedIn: boolean = auth.currentUser.get().isSignedIn();
 
-						dispatch(logInRequestComplete('cheese', 'token', undefined));
+						console.log(isLoggedIn);
+
+						if(isLoggedIn){
+
+							dispatch(logInRequestComplete({
+								userName: 'Me',
+								token: 'token'
+							}, undefined));
+
+						} else {
+
+							dispatch(logInRequestComplete(undefined, undefined));
+
+						}
 
 		            }, (error) => {
 
-		                console.log(error);
+						dispatch(logInRequestComplete(undefined, error));
 
 		            });
 
@@ -35,18 +48,16 @@ const createMiddleware = () => {
 
 			[actionConstants.LOGOUT_REQUEST] (action: ReduxAction): any {
 
-				const authInstance: any = window.gapi.auth2.getAuthInstance();
+				const authInstance: any = (window as any).gapi.auth2.getAuthInstance();
 
 				authInstance
 					.signOut()
 					.then(() => {
 
-						console.log(123);
+						authInstance.disconnect();
 						dispatch(logOutRequestComplete());
 
 					});
-
-				authInstance.disconnect();
 
 			}
 

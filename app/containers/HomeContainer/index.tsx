@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
-import * as errorActions from '../../actions/error';
-import Grid from '@material-ui/core/Grid';
+import * as authActions from '../../actions/auth';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -9,10 +8,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { GridBodyContainer } from '../../containers';
 import { FormContainer } from '../..//containers/FormContainer';
-import { Page, Column, ChartOverview, Loading, StyledPaper, ErrorModal } from '../../components';
+import { Page, Column, StyledPaper } from '../../components';
 import { columns } from '../../columns/columns';
 import { sessionFilters } from '../../forms';
-import { routes } from '../../routes';
 import { RootState } from '../../reducers';
 import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -65,7 +63,6 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
     render() {
 
         const { isLoggedIn,
-                totals, 
                 sessions, 
                 activeFilters } = this.props;
 
@@ -123,8 +120,7 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
 }
 
-// React-Redux function which injects application state into this container as props
-function mapStateToProps(state: RootState, props) {
+const mapStateToProps = (state: RootState): any => {
     return {
         isLoggedIn: state.auth.isLoggedIn,
         sessions: state.sessions.sessions,
@@ -132,12 +128,11 @@ function mapStateToProps(state: RootState, props) {
     };
 }
 
-// React-Redux function which injects actions into this container as props
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch: any): any => {
     return {
+        authActions: bindActionCreators(authActions as any, dispatch),
         sessionActions: bindActionCreators(sessionActions as any, dispatch)
     };
 }
 
-// Plug into the Redux application state by wrapping component with React-Redux Connect()
 export default connect(mapStateToProps, mapDispatchToProps, utilsHelpers.mergePropsForConnect)(HomeContainer);

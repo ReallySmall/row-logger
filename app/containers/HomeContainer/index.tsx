@@ -30,7 +30,7 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
         const { authActions: { logInRequest } } = this.props;
 
-        logInRequest();
+        logInRequest(true);
 
     }
 

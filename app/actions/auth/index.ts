@@ -16,11 +16,11 @@ export const wsConnect = (connect: boolean): ReduxAction => {
 
 };
 
-export const logInRequest = (): ReduxAction => {
+export const logInRequest = (isUser: boolean = false): ReduxAction => {
 
     return {
         type: actions.LOGIN_REQUEST,
-        payload: undefined,
+        payload: isUser,
         error: false
     };
 

@@ -24,29 +24,15 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 
         super(props, context);
 
-        this.getSteps = this.getSteps.bind(this);
+        this.handleConnect = this.handleConnect.bind();
 
     }
 
-    private getSteps() {
-
-        return [
-            {
-                label: ['Connecting to service', 'Connected to service'],
-                content: [``, ``]
-            },
-            {
-                label: ['Connecting to rower', 'Connected to rower'],
-                content: ['Connect logger to the rower and switch on, then ', ``]
-            },
-            {
-                label: ['Ready', 'In progress'],
-                content: [`Start rowing to begin the session`, ``]
-            }
-        ];
+    private handleConnect(){
 
 
-    } 
+
+    }
 
     render() {
 
@@ -56,7 +42,7 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
                 constant, 
                 multi } = this.props;
 
-        const steps: Array<any> = this.getSteps();
+        const isInSetUpMode: boolean = !loggerConnected;
         
         let activeStep: number = 0;
         let data: any = {};
@@ -64,15 +50,9 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         let metres: number = 0;
         let time: number = 0;
 
-        if(appConnected){
-
-            activeStep = 1;
-
-        }
-
         if(loggerConnected){
 
-            activeStep = 2;
+            activeStep = 1;
 
         }
 
@@ -90,41 +70,80 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         return (
 
             <Page title="Current session">
-                {(!appConnected || !loggerConnected || !steps.length) &&
-                    <React.Fragment>
-                        <Column width={4}>
-                            <Stepper activeStep={activeStep} orientation="vertical">
-                              {steps.map((step, index) => {
-                                return (
-                                  <Step key={index}>
-                                    <StepLabel>{activeStep > index ? step.label[1] : step.label[0]}</StepLabel>
-                                    <StepContent>
-                                      <Typography variant="caption">{activeStep > index ? step.content[1] : step.content[0]}</Typography>
-                                    </StepContent>
-                                  </Step>
-                                );
-                              })}
-                            </Stepper>
-                        </Column>
-                        <Column width={4}>
-                            <Loading message="Getting ready..." />
-                        </Column>
-                    </React.Fragment>
-                }
-                {loggerConnected && appConnected && times.length &&
-                    <React.Fragment>
-                        <Column width={6}>
-                            <StyledPaper>
-                                <h2>{metres}</h2>
-                                <h2>{time}</h2>
-                            </StyledPaper>
-                        </Column>
-                        <Column width={6}>
-                            <StyledPaper>
-                                <LineChart data={data} options={options} />
-                            </StyledPaper>
-                        </Column>
-                    </React.Fragment>
+                {isInSetUpMode
+
+                    ?   <React.Fragment>
+                            <Column width={4}>
+                                <Stepper activeStep={activeStep} orientation="horizontal">
+                                    <Step>
+                                        <StepLabel>
+                                            {activeStep === 0 
+
+                                                ?   'Awaiting connection to logger' 
+                                                :   'Connected to logger'
+
+                                            }
+                                        </StepLabel>
+                                        <StepContent>
+                                            <Typography variant="caption">
+                                                {activeStep === 0 
+
+                                                    ?   'Switch on the logger and connect' 
+                                                    :   ''
+
+                                                }
+                                            </Typography>
+                                        </StepContent>
+                                    </Step>
+                                    <Step>
+                                        <StepLabel>
+                                            {activeStep === 1 
+
+                                                ?   'Ready' 
+                                                :   'In progress'
+
+                                            }
+                                        </StepLabel>
+                                        <StepContent>
+                                            <Typography variant="caption">
+                                                {activeStep === 1 
+
+                                                    ?   'Start rowing to begin the session' 
+                                                    :   ''
+
+                                                }
+                                            </Typography>
+                                        </StepContent>
+                                    </Step>     
+                                </Stepper>
+                            </Column>
+                            <Column width={4}>
+                                <StyledPaper variant="">
+                                    <Button 
+                                        variant="raised" 
+                                        size="large" 
+                                        color="secondary"
+                                        onClick={this.handleConnect}>
+                                            Connect
+                                    </Button>
+                                </StyledPaper>
+                            </Column>
+                        </React.Fragment>
+                    
+                    :   <React.Fragment>
+                            <Column width={6}>
+                                <StyledPaper>
+                                    <h2>{metres}</h2>
+                                    <h2>{time}</h2>
+                                </StyledPaper>
+                            </Column>
+                            <Column width={6}>
+                                <StyledPaper>
+                                    <LineChart data={data} options={options} />
+                                </StyledPaper>
+                            </Column>
+                        </React.Fragment>
+
                 }
             </Page>
 
@@ -137,7 +156,6 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 // React-Redux function which injects application state into this container as props
 function mapStateToProps(state: RootState, props) {
     return {
-        appConnected: state.active.appConnected,
         loggerConnected: state.active.loggerConnected,
         times: state.active.times,
         multi: state.active.multi,

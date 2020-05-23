@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { SideBar } from '../../components';
 import { Interfaces } from './interfaces';
 
 export class MainContentWrapper extends React.Component<Interfaces.Props, Interfaces.State> {
@@ -16,10 +15,7 @@ export class MainContentWrapper extends React.Component<Interfaces.Props, Interf
         return (
             <div>
                 <div className="container">
-                    {sideBarContent && <SideBar sideBarContent={sideBarContent} />}
-                    <div>
-                        {children}
-                    </div>
+                    {children}
                 </div>
             </div>
         );

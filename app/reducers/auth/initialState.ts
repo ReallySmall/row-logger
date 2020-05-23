@@ -5,5 +5,6 @@ export default <AuthInterface>{
     userName: undefined,
     email: undefined,
     rowerType: undefined,
-    rowerDamping: undefined
+    rowerDamping: undefined,
+    token: ''
 };

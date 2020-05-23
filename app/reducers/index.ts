@@ -1,6 +1,5 @@
 import * as actions from '../constants/actions';
-import { combineReducers, Reducer } from 'redux';
-import { reducer as formReducer } from 'redux-form';
+import { combineReducers } from 'redux';
 import auth from './auth/';
 import AuthInterface from './auth/interfaces';
 import overview from './overview/';
@@ -25,7 +24,6 @@ export interface RootState {
     active: ActiveInterface;
     loading: LoadingInterface;
     error: ErrorInterface;
-    form: any;
 }
 
 // reducers to pass an action through to update state
@@ -35,7 +33,6 @@ const appReducer = combineReducers<RootState>({
     auth,
     session,
     active,
-    form: formReducer,
     loading,
     error
 });

@@ -3,7 +3,6 @@
  */
 const express = require('express');
 const compression = require('compression');
-const session = require('express-session');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const chalk = require('chalk');
@@ -11,13 +10,8 @@ const errorHandler = require('errorhandler');
 const expressSanitizer = require('express-sanitizer');
 const lusca = require('lusca');
 const dotenv = require('dotenv');
-const MongoStore = require('connect-mongo')(session);
 const path = require('path');
-const mongoose = require('mongoose');
-const passport = require('passport');
 const expressValidator = require('express-validator');
-const expressWs = require('express-ws');
-const jwt = require('jsonwebtoken');
 const https = require('https');
 const fs = require('fs');
 const helmet = require('helmet');
@@ -31,11 +25,6 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 dotenv.config();
 
 /**
- * Controllers (route handlers).
- */
-import * as wsController from './controllers/ws';
-
-/**
  * Create Express server.
  */
 const sslOptions = {
@@ -45,7 +34,6 @@ const sslOptions = {
 
 const app = express();
 const server = https.createServer(sslOptions, app).listen(443);
-const wsInstance = expressWs(app, server);
 
 // If in dev enable HMR
 if (process.env.NODE_ENV === 'development') {
@@ -89,11 +77,6 @@ app.use(function(req, res, next) {
 });
 
 app.use(express.static(path.join(path.resolve(), '/public'), { maxAge: 31557600000 }));
-
-/**
- * API routes.
- */
-app.ws('/', wsController.recordSession);
 
 /**
  * App route.

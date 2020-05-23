@@ -7,7 +7,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import RowingIcon from '@material-ui/icons/Rowing';
 import { Interfaces } from './interfaces';
 
 const styles = {
@@ -82,7 +81,6 @@ class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> 
                     <div className={classes.flex}>
                         <Typography>
                             <NavLink to="/" className={classes.homeLink}>
-                                <RowingIcon className={classes.homeIcon} />
                                 <span>Row</span>
                                 <span className="italic">logger</span>
                             </NavLink>

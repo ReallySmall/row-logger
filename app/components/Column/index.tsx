@@ -4,28 +4,24 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { Interfaces } from './interfaces';
 
-export class Column extends React.Component<Interfaces.Props, Interfaces.State> {
+export const Column = (props: Interfaces.Props) => {
 
-    constructor(props?: Interfaces.Props, context?: any) {
-        super(props, context);
-    }
+    const { title, 
+            hideTitle, 
+            children, 
+            width } = props;
 
-    render() {
+    return (
 
-        const { title, hideTitle, children, width } = this.props;
+        <Grid item xs={12} sm={width}>
+            <section>
+                {!hideTitle &&
+                    <Typography variant="h2" className={hideTitle ? 'visually-hidden' : ''} gutterBottom>{title}</Typography>
+                }
+                {children}
+            </section>
+        </Grid>
 
-        return (
+    );
 
-            <Grid item xs={12} sm={width}>
-                <section>
-                    {!hideTitle &&
-                        <Typography variant="title" className={hideTitle ? 'visually-hidden' : ''} gutterBottom>{title}</Typography>
-                    }
-                    {children}
-                </section>
-            </Grid>
-
-        );
-
-    }
 }

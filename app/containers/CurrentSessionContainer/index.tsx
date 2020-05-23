@@ -2,18 +2,13 @@ import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridBodyContainer } from '../../containers';
-import { FormContainer } from '../..//containers/FormContainer';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { Page, Column, Loading, ErrorPage, Icon, MainContentWrapper, PageHeader, LineChart, StyledPaper, ErrorModal } from '../../components';
-import { columns } from '../../columns/columns';
-import { sessionFilters } from '../../forms';
-import { routes } from '../../routes';
+import { Column, Loading, LineChart, StyledPaper } from '../../components';
 import { RootState } from '../../reducers';
 import { utilsHelpers, rowingHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -24,25 +19,30 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 
         super(props, context);
 
-        this.handleConnect = this.handleConnect.bind();
+        this.handleConnect = this.handleConnect.bind(this);
+
+        this.state = {
+            isLoggerConnected: false
+        };
 
     }
 
-    private handleConnect(){
+    private handleConnect(): void {
 
-
+        this.setState({
+            isLoggerConnected: true
+        });
 
     }
 
     render() {
 
-        const { appConnected, 
-                loggerConnected, 
-                times, 
+        const { isLoggerConnected } = this.state;
+        const { times, 
                 constant, 
                 multi } = this.props;
 
-        const isInSetUpMode: boolean = !loggerConnected;
+        const isSessionActive: boolean = isLoggerConnected && times.length > 0;
         
         let activeStep: number = 0;
         let data: any = {};
@@ -50,7 +50,7 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
         let metres: number = 0;
         let time: number = 0;
 
-        if(loggerConnected){
+        if(isLoggerConnected){
 
             activeStep = 1;
 
@@ -69,83 +69,85 @@ class CurrentSessionContainer extends React.Component<Interfaces.Props, Interfac
 
         return (
 
-            <Page title="Current session">
-                {isInSetUpMode
+            <>        
+                <Stepper activeStep={activeStep} orientation="vertical">
+                        <Step>
+                            <StepLabel>
+                                {activeStep === 0 
 
-                    ?   <React.Fragment>
-                            <Column width={4}>
-                                <Stepper activeStep={activeStep} orientation="horizontal">
-                                    <Step>
-                                        <StepLabel>
-                                            {activeStep === 0 
+                                    ?   'Switch on the logger and connect' 
+                                    :   'Connected to logger'
 
-                                                ?   'Awaiting connection to logger' 
-                                                :   'Connected to logger'
+                                }
+                            </StepLabel>
+                            <StepContent>
+                                <Typography variant="caption">
+                                    {activeStep === 0 
 
-                                            }
-                                        </StepLabel>
-                                        <StepContent>
-                                            <Typography variant="caption">
-                                                {activeStep === 0 
+                                        ?   <Button 
+                                                variant="contained"
+                                                size="large" 
+                                                color="secondary"
+                                                onClick={this.handleConnect}>
+                                                    Connect
+                                            </Button> 
+                                        :   null
 
-                                                    ?   'Switch on the logger and connect' 
-                                                    :   ''
+                                    }
+                                </Typography>
+                            </StepContent>
+                        </Step>
+                        <Step>
+                            <StepLabel>
+                                {activeStep === 0
 
-                                                }
-                                            </Typography>
-                                        </StepContent>
-                                    </Step>
-                                    <Step>
-                                        <StepLabel>
-                                            {activeStep === 1 
+                                    ?   <>
+                                            Waiting for connection
+                                            <Loading variant="linear" message={null} />
+                                        </>
+                                    :   activeStep === 1
+                                        
+                                        ?   'Start rowing to begin the session'
+                                        :   'Session complete'
 
-                                                ?   'Ready' 
-                                                :   'In progress'
+                                }
+                            </StepLabel>
+                        </Step>
+                        {isSessionActive &&
+                            <Step>
+                                <StepLabel>
+                                    {activeStep < 2 
 
-                                            }
-                                        </StepLabel>
-                                        <StepContent>
-                                            <Typography variant="caption">
-                                                {activeStep === 1 
+                                        ?   'Session complete' 
+                                        :   <Button 
+                                                size="large" 
+                                                color="secondary"
+                                                onClick={this.handleConnect}>
+                                                    Save
+                                            </Button>
 
-                                                    ?   'Start rowing to begin the session' 
-                                                    :   ''
-
-                                                }
-                                            </Typography>
-                                        </StepContent>
-                                    </Step>     
-                                </Stepper>
-                            </Column>
-                            <Column width={4}>
-                                <StyledPaper variant="">
-                                    <Button 
-                                        variant="raised" 
-                                        size="large" 
-                                        color="secondary"
-                                        onClick={this.handleConnect}>
-                                            Connect
-                                    </Button>
-                                </StyledPaper>
-                            </Column>
-                        </React.Fragment>
-                    
-                    :   <React.Fragment>
-                            <Column width={6}>
-                                <StyledPaper>
-                                    <h2>{metres}</h2>
-                                    <h2>{time}</h2>
-                                </StyledPaper>
-                            </Column>
-                            <Column width={6}>
-                                <StyledPaper>
-                                    <LineChart data={data} options={options} />
-                                </StyledPaper>
-                            </Column>
-                        </React.Fragment>
-
+                                    }
+                                </StepLabel>
+                            </Step>
+                        }     
+                    </Stepper>
+                {isSessionActive &&
+                    <>
+                        <Column width={8}>
+                            <StyledPaper>
+                                <h2>{metres}</h2>
+                                <h2>{time}</h2>
+                            </StyledPaper>
+                        </Column>
+                        <Column width={8}>
+                            <StyledPaper>
+                                <LineChart data={data} options={options} />
+                            </StyledPaper>
+                        </Column>
+                    </>
+                        
                 }
-            </Page>
+            </>
 
         );
 

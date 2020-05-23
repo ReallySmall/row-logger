@@ -1,26 +1,34 @@
 import * as React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import * as classNames from 'classnames';
 import { Interfaces } from './interfaces';
 
-export class Loading extends React.Component<Interfaces.Props, Interfaces.State> {
+export const Loading = ({
+  message = 'Loading',
+  variant
+}: Interfaces.Props) => {
 
-    constructor(props?: Interfaces.Props, context?: any) {
-        super(props, context);
-    }
+  const isLinear: boolean = variant === 'linear';
+  const align: string = isLinear ? 'left' : 'center';
 
-    render() {
+  return (
 
-        const { message } = this.props;
+    <div className="loading-container">
 
-        return (
+      {isLinear
 
-          <div className="loading-container">
-              <CircularProgress size={100} thickness={2} />
-              <Typography>{message || 'Loading'}</Typography>
-          </div>
+        ? <LinearProgress color="primary" />
+        : <CircularProgress size={100} thickness={2} />}
 
-        );
-    }
+      {message &&
+        <Typography align={align}>
+          {message}
+        </Typography>
+      }
+    </div>
+
+  );
+
 }

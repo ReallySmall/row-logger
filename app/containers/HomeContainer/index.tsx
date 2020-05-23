@@ -1,16 +1,16 @@
 import * as React from 'react';
 import * as sessionActions from '../../actions/sessions';
 import * as authActions from '../../actions/auth';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { GridBodyContainer } from '../../containers';
-import { FormContainer } from '../..//containers/FormContainer';
-import { Page, Column, StyledPaper } from '../../components';
-import { columns } from '../../columns/columns';
-import { sessionFilters } from '../../forms';
+import { CurrentSessionContainer } from '../../containers';
+import { Page, Column } from '../../components';
 import { RootState } from '../../reducers';
 import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -21,16 +21,7 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
         super(props, context);
 
-        this.handleLogin = this.handleLogin.bind(this);
         this.handleFilterSubmit = this.handleFilterSubmit.bind(this);
-
-    }
-
-    private handleLogin(): void {
-
-        const { authActions: { logInRequest } } = this.props;
-
-        logInRequest(true);
 
     }
 
@@ -48,70 +39,52 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
     }
 
-    public componentDidMount(): void {
-
-        const { sessionActions: { sessionsRequest }, 
-                sessions } = this.props;
-
-        !sessions && sessionsRequest({
-            showRecent: false,
-            limit: 100
-        });
-
-    }
-
     render() {
 
-        const { isLoggedIn,
-                sessions, 
-                activeFilters } = this.props;
+        const { sessions } = this.props;
+
+        const createData = (date, distance, time) => {
+            return { date, distance, time };
+        }
+
+        const rows = [
+            createData(new Date(), 5000, 6000000),
+            createData(new Date(), 5000, 6000000),
+            createData(new Date(), 5000, 6000000),
+            createData(new Date(), 5000, 6000000),
+            createData(new Date(), 5000, 6000000),
+        ];
 
         const hasSessions: boolean = sessions && sessions.ids && sessions.ids.length;
 
         return (
 
-            <Page title="Sessions">
-                <Column title="About" width={12}>
-                    <StyledPaper>
-                        <Typography>An IOT app for tracking indoor rowing using a Bluetooth Low Energy device and Google sheets.</Typography>
-                        {!isLoggedIn &&
-                            <Button 
-                                variant="raised" 
-                                size="large" 
-                                color="secondary"
-                                onClick={this.handleLogin}>
-                                    Login with Google
-                            </Button>
-                        }
-                    </StyledPaper>
+            <Page title="Home">
+                <Column title="Start Session" width={3}>
+                    <CurrentSessionContainer />
                 </Column>
-                {isLoggedIn && hasSessions &&
-                    <>
-                        <Column title="Filter" width={3}>
-                           <StyledPaper>
-                                <FormContainer 
-                                    form="filters" 
-                                    onSubmit={this.handleFilterSubmit} 
-                                    fieldData={sessionFilters} 
-                                    initialValues={activeFilters} />
-                            </StyledPaper>
-                        </Column>
-                        <Column title="Sessions" width={9}>
-                            <div>
-                                {sessions && 
-                                    <Paper>
-                                        <GridBodyContainer 
-                                            columns={columns} 
-                                            items={sessions.items} 
-                                            ids={sessions.ids} 
-                                            showHeader={true} 
-                                            sortable={false} />
-                                    </Paper>
-                                }
-                            </div>
-                        </Column>
-                    </>
-                }
+                <Column title="Recent sessions" width={9}>
+                    <TableContainer>
+                        <Table className="" aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell align="right">Distance</TableCell>
+                                    <TableCell align="right">Time</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((row, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell align="right">{row.date.toString()}</TableCell>
+                                        <TableCell align="right">{row.distance}</TableCell>
+                                        <TableCell align="right">{row.time}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Column>
             </Page>
 
         );
@@ -122,9 +95,7 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
 const mapStateToProps = (state: RootState): any => {
     return {
-        isLoggedIn: state.auth.isLoggedIn,
-        sessions: state.sessions.sessions,
-        activeFilters: state.sessions.params
+        sessions: state.sessions.sessions
     };
 }
 

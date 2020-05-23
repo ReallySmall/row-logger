@@ -17,7 +17,7 @@ export class Page extends React.Component<Interfaces.Props, Interfaces.State> {
 
             <article>
                 <h1 className="visually-hidden">{title}</h1>
-                <Grid container spacing={24}>
+                <Grid container>
                     {children}
                 </Grid>
             </article>

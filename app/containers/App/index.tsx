@@ -1,15 +1,19 @@
 import * as React from 'react';
-import Modal from '@material-ui/core/Modal';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import * as selectors from '../../selectors';
 import * as errorActions from '../../actions/error';
 import * as authActions from '../../actions/auth';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
-import { routes } from '../../routes';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
-import { HomeContainer, SessionContainer, CurrentSessionContainer } from '../../containers';
-import { StyledPaper, ErrorPage, ErrorModal, Header, Loading } from '../../components';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { HomeContainer } from '../../containers';
+import { ErrorPage, ErrorModal, Header, Loading, Column } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
 import { Interfaces } from './interfaces';
 
@@ -19,7 +23,16 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
         super(props, context);
 
+        this.handleLogin = this.handleLogin.bind(this);
         this.handleTabChange = this.handleTabChange.bind(this);
+
+    }
+
+    private handleLogin(): void {
+
+        const { authActions: { logInRequest } } = this.props;
+
+        logInRequest(true);
 
     }
 
@@ -41,8 +54,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     public render(): any {
 
-        const { location, 
-                isLoggedIn,
+        const { isLoggedIn,
                 isProcessing,
                 error,
                 userName, 
@@ -50,16 +62,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                 authActions,
                 errorActions: { clearError } } = this.props;
 
-        const tabs = [
-            {
-                label: 'Home',
-                value: routes.base.pathname
-            },
-            {
-                label: 'Active session',
-                value: routes.activeSession.pathname
-            }
-        ];
+        const tabs = [];
 
         return (
 
@@ -74,18 +77,37 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                     activeTab={location.pathname} 
                     handleTabChange={this.handleTabChange} />
                 <main>
+                    <Column title="About" width={12}>
+                        <ExpansionPanel expanded={false}>
+                            <ExpansionPanelSummary
+                                aria-controls="panel1bh-content"
+                                id="panel1bh-header">
+                                    <Typography>An IOT app for tracking indoor rowing using a Bluetooth Low Energy device and Google sheets.</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+                                <Typography>Lorem ipsum.</Typography>
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+                        {!isLoggedIn &&
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={this.handleLogin}>
+                                    Login with Google
+                            </Button>
+                        }            
+                    </Column>
                     <ErrorModal error={''} name="SESSIONS" clearErrorAction={clearError} />
-                    <Modal open={isProcessing}>
-                        <StyledPaper>
-                            <Loading message="Processing" />
-                        </StyledPaper>
-                    </Modal>
-                    <Switch>
-                        <Route exact path={routes.base.pathname} render={() => <HomeContainer routing={location} /> } />
-                        <Route exact path={routes.activeSession.pathname} render={() => isLoggedIn ? <CurrentSessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
-                        <Route exact path={routes.session.pathname} render={() => isLoggedIn ? <SessionContainer routing={location} /> : <Redirect to={routes.base.pathname} /> } />
-                        <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />
-                    </Switch>
+                    {isProcessing
+
+                        ?   <Loading message="Processing" />
+                            
+                        :   <Switch>
+                                <Route exact path="/" render={() => isLoggedIn ? <HomeContainer /> : null } />
+                                <Route render={() => <ErrorPage title="Page not found" description="This page may have been moved or deleted." />} />
+                            </Switch>  
+                    
+                    }
                 </main>
                 <svg className="page-background" viewBox="0 0 100 25">
                     <path fill="#1f88e6" opacity="0.5" d="M0 30 V15 Q30 3 60 15 V30z" />

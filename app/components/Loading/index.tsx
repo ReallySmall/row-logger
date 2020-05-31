@@ -11,7 +11,7 @@ export const Loading = ({
 }: Interfaces.Props) => {
 
   const isLinear: boolean = variant === 'linear';
-  const align: string = isLinear ? 'left' : 'center';
+  const align: any = isLinear ? 'left' : 'center';
 
   return (
 

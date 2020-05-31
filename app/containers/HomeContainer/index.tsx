@@ -4,13 +4,13 @@ import * as authActions from '../../actions/auth';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { CurrentSessionContainer } from '../../containers';
-import { Page, Column } from '../../components';
+import { Page, Column, StyledPaper } from '../../components';
 import { RootState } from '../../reducers';
 import { utilsHelpers } from '../../helpers';
 import { Interfaces } from './interfaces';
@@ -61,10 +61,13 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
 
             <Page title="Home">
                 <Column title="Start Session" width={3}>
-                    <CurrentSessionContainer />
+                    <Paper>
+                        <CurrentSessionContainer />
+                    </Paper>
                 </Column>
-                <Column title="Recent sessions" width={9}>
-                    <TableContainer>
+                <Column width={1}></Column>
+                <Column title="Recent sessions" width={8}>
+                    <Paper>
                         <Table className="" aria-label="simple table">
                             <TableHead>
                                 <TableRow>
@@ -83,7 +86,7 @@ class HomeContainer extends React.Component<Interfaces.Props, Interfaces.State> 
                                 ))}
                             </TableBody>
                         </Table>
-                    </TableContainer>
+                    </Paper>
                 </Column>
             </Page>
 

@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { Interfaces } from './interfaces';
+import ArrowForwardIcon from '@material-ui/icons/es/ArrowForward';
+import { Props } from './interfaces';
 
-const styles = {
+const useStyles = makeStyles((theme: any) => createStyles({
     root: {
         flexGrow: 1,
     },
@@ -19,88 +18,51 @@ const styles = {
             verticalAlign: 'middle'
         }
     },
-    homeLink: {
+    link: {
         color: 'white',
         textDecoration: 'none',
         textTransform: 'uppercase',
         fontSize: '18px',
         lineHeight: '25px'
-    },
-    homeIcon: {
-        verticalAlign: 'middle',
-        fill: 'white',
-        marginRight: 10
-    },
-    menuButton: {
-        marginLeft: -12,
-        marginRight: 20,
     }
-};
+}));
 
-class HeaderWrapped extends React.Component<Interfaces.Props, Interfaces.State> {
+export const Header = (props: Props) => {
 
-    constructor(props?: Interfaces.Props, context?: any) {
+    const handleLogOut = (event: any): void => {
 
-        super(props, context);
-
-        this.handleLogOut = this.handleLogOut.bind(this);
-        this.handleTabChanges = this.handleTabChanges.bind(this);
-
-        this.state = {
-            anchorEl: null,
-        };
-
-    }
-
-    private handleLogOut(event: any): void {
-
-        const { logOutRequest } = this.props.authActions;
+        const { logOutRequest } = props.authActions;
 
         event.preventDefault();
         logOutRequest();
 
     }
 
-    private handleTabChanges(event: any, tab: string): void {
+    const { flex, link } = useStyles(props);
+    const { isLoggedIn, userName } = props;
 
-        const { handleTabChange } = this.props;
+    return (
 
-        handleTabChange(tab);
+        <AppBar position="sticky">
+            <Toolbar disableGutters={true}>
+                <div className={flex}>
+                    <Typography>
+                        <NavLink to="/" className={link}>
+                            <span>Row</span>
+                            <span className="italic">logger</span>
+                        </NavLink>
+                    </Typography>
+                </div>
+                {isLoggedIn &&
+                    <>
+                        <Typography>Welcome {userName}&nbsp;</Typography>
+                        <ArrowForwardIcon />  
+                        <Button onClick={handleLogOut}>Logout</Button>
+                    </>
+                }
+            </Toolbar>
+        </AppBar>
 
-    }
+    );
 
-    render() {
-
-        const { classes, heading, isLoggedIn, userName, tabs, activeTab } = this.props;
-        const { anchorEl } = this.state;
-
-        return (
-
-            <AppBar position="sticky">
-                <Toolbar disableGutters={true}>
-                    <div className={classes.flex}>
-                        <Typography>
-                            <NavLink to="/" className={classes.homeLink}>
-                                <span>Row</span>
-                                <span className="italic">logger</span>
-                            </NavLink>
-                        </Typography>
-                    </div>
-                    {isLoggedIn &&
-                        <>
-                            <Tabs
-                                value={activeTab}
-                                onChange={this.handleTabChanges}>
-                                {tabs.map((tab, index) => <Tab key={index} label={tab.label} value={tab.value} />)}
-                            </Tabs>
-                            <Button onClick={this.handleLogOut}>Logout</Button>
-                        </>
-                    }
-                </Toolbar>
-            </AppBar>
-
-        );
-    }
 }
-
-export const Header = withStyles(styles)(HeaderWrapped);

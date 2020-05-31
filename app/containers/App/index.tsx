@@ -2,7 +2,7 @@ import * as React from 'react';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@material-ui/icons/es/ExpandMore';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import * as selectors from '../../selectors';
@@ -11,7 +11,7 @@ import * as authActions from '../../actions/auth';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { RootState } from '../../reducers';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { HomeContainer } from '../../containers';
 import { ErrorPage, ErrorModal, Header, Loading, Column } from '../../components';
 import { mergePropsForConnect } from '../../helpers/utils';
@@ -23,8 +23,14 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
         super(props, context);
 
+        const { isLoggedIn } = props;
+
         this.handleLogin = this.handleLogin.bind(this);
-        this.handleTabChange = this.handleTabChange.bind(this);
+        this.handleTogglePanel = this.handleTogglePanel.bind(this);
+
+        this.state = {
+            isPanelExpanded: isLoggedIn
+        };
 
     }
 
@@ -36,11 +42,13 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     }
 
-    private handleTabChange(tabSelected: string): void {
+    private handleTogglePanel(): void {
 
-        const { history } = this.props;
+        const { isPanelExpanded } = this.state;
 
-        history.push(tabSelected);
+        this.setState({
+            isPanelExpanded: !isPanelExpanded
+        });
 
     }
 
@@ -54,6 +62,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
 
     public render(): any {
 
+        const { isPanelExpanded } = this.state;
         const { isLoggedIn,
                 isProcessing,
                 error,
@@ -62,7 +71,7 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                 authActions,
                 errorActions: { clearError } } = this.props;
 
-        const tabs = [];
+        const expandIcon: any = isLoggedIn ? <ExpandMoreIcon /> : null;
 
         return (
 
@@ -72,16 +81,14 @@ class App extends React.Component<Interfaces.Props, Interfaces.State> {
                     heading="RowLogger" 
                     isLoggedIn={isLoggedIn} 
                     userName={userName} 
-                    authActions={authActions} 
-                    tabs={tabs} 
-                    activeTab={location.pathname} 
-                    handleTabChange={this.handleTabChange} />
+                    authActions={authActions} />
                 <main>
-                    <Column title="About" width={12}>
-                        <ExpansionPanel expanded={false}>
+                    <Column title="About" shouldHideTitle={true} width={12}>
+                        <ExpansionPanel expanded={isPanelExpanded || !isLoggedIn} onChange={this.handleTogglePanel}>
                             <ExpansionPanelSummary
                                 aria-controls="panel1bh-content"
-                                id="panel1bh-header">
+                                id="panel1bh-header"
+                                expandIcon={expandIcon}>
                                     <Typography>An IOT app for tracking indoor rowing using a Bluetooth Low Energy device and Google sheets.</Typography>
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails>
